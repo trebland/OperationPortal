@@ -77,5 +77,17 @@ namespace API.Controllers
 
             return new JsonResult(new { error = "Could not access database" });
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult TestHTTPS()
+        {
+            if (HttpContext.Request.IsHttps)
+            {
+                return new JsonResult(new { error = "" });
+            }
+
+            return new JsonResult(new { error = "Request was not https" });
+        }
     }
 }
