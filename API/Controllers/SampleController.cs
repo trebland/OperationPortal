@@ -12,6 +12,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
+using API.Data;
 
 namespace API.Controllers
 {
@@ -63,6 +64,18 @@ namespace API.Controllers
                 LastName = "test",
                 Roles = roles
             }); ;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult TestCon()
+        {
+            if (SampleRepository.PostgresTest())
+            {
+                return new JsonResult (new { error = "" });
+            }
+
+            return new JsonResult(new { error = "Could not access database" });
         }
     }
 }
