@@ -39,8 +39,9 @@ namespace API
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("LocalConnection"));
+                options.UseNpgsql(Configuration.GetConnectionString("DevConnection"));
+                //options.UseSqlServer(
+                  //  Configuration.GetConnectionString("LocalConnection"));
 
                 options.UseOpenIddict();
             });
