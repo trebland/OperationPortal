@@ -79,6 +79,9 @@ namespace API
 
                     // Accept token requests that don't specify a client_id.
                     options.AcceptAnonymousClients();
+
+                    // Allow http auth requests.  Only for temporary use in development
+                    options.DisableHttpsRequirement();
                 })
                 .AddValidation();
 
