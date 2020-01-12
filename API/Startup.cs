@@ -56,6 +56,10 @@ namespace API
                 options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
                 options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
             });
+            services.Configure<ConfigurationModel>(options =>
+            {
+                options.ConnectionString = Configuration.GetConnectionString("DevConnection");
+            });
 
             services.AddOpenIddict()
                 .AddCore(options =>
