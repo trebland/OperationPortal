@@ -16,11 +16,11 @@ namespace API.Data
                 using (NpgsqlConnection con = new NpgsqlConnection(connString))
                 {
                     con.Open();
-
+                    
                     con.Close();
                 }
             } 
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }

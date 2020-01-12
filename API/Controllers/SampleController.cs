@@ -46,6 +46,7 @@ namespace API.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                VolunteerId = user.VolunteerId,
                 Roles = await userManager.GetRolesAsync(user)
             });
         }
@@ -62,6 +63,7 @@ namespace API.Controllers
                 Email = "test@occ.com",
                 FirstName = "test",
                 LastName = "test",
+                VolunteerId = 0,
                 Roles = roles
             }); ;
         }
