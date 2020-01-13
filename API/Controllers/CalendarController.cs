@@ -64,7 +64,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/signup/single")]
         [HttpPost]
-        public async Task<IActionResult> signupSingle(DateTime date)
+        public async Task<IActionResult> SignupSingle(DateTime date)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -75,7 +75,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/cancellation/single")]
         [HttpPost]
-        public async Task<IActionResult> cancelSingle(DateTime date)
+        public async Task<IActionResult> CancelSingle(DateTime date)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -86,7 +86,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/signup/group")]
         [HttpPost]
-        public async Task<IActionResult> signupGroup(DateTime date, GroupModel group)
+        public async Task<IActionResult> SignupGroup(DateTime date, GroupModel group)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -97,7 +97,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/cancellation/group")]
         [HttpPost]
-        public async Task<IActionResult> cancelGroup(DateTime date, int groupId)
+        public async Task<IActionResult> CancelGroup(DateTime date, int groupId)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -108,7 +108,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/event-creation")]
         [HttpPost]
-        public async Task<IActionResult> eventCreation(DateTime date, string name, string description)
+        public async Task<IActionResult> EventCreation(DateTime date, string name, string description)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -119,7 +119,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/event-edit")]
         [HttpPost]
-        public async Task<IActionResult> eventEdit(int Id, DateTime date, string name, string description)
+        public async Task<IActionResult> EventEdit(int Id, DateTime date, string name, string description)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -130,7 +130,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/signup/event")]
         [HttpPost]
-        public async Task<IActionResult> signupEvent(int eventId)
+        public async Task<IActionResult> SignupEvent(int eventId)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -141,7 +141,7 @@ namespace API.Controllers
 
         [Route("~/api/calendar/cancellation/event")]
         [HttpPost]
-        public async Task<IActionResult> cancelEvent(int eventId)
+        public async Task<IActionResult> CancelEvent(int eventId)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
