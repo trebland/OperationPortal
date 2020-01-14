@@ -26,6 +26,7 @@ namespace API.Controllers
         private readonly OpenIddictApplicationManager<OpenIddictApplication> applicationManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly ConfigurationModel configModel;
 
         // This constructor ensures that the controller can access the user accounts, roles, and configuration values
@@ -33,17 +34,42 @@ namespace API.Controllers
             OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IOptions<ConfigurationModel> configModel)
         {
             this.applicationManager = applicationManager;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.configModel = configModel.Value;
         }
 
         [Route("~/api/volunteer-list")]
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> VolunteerList()
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerModel> volunteers;
+
+            //if (!await userManager.IsInRoleAsync(user, "staff"))
+            //{
+            //    return new UnauthorizedResult();
+            //}
+
+            volunteers = repo.GetVolunteers();
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Volunteers = volunteers
+            });
+        }
+
+        [Route("~/api/volunteer-profile-edit")]
+        [HttpPost]
+        public async Task<IActionResult> VolunteerProfileEdit(VolunteerModel volunteer) 
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -52,11 +78,30 @@ namespace API.Controllers
             });
         }
 
-        [Route("~/api/volunteer-profile-edit")]
+        [Route("~/api/volunteer-create-temp")]
         [HttpPost]
-        public async Task<IActionResult> VolunteerProfileEdit() // TODO: put in parameter list
+        public async Task<IActionResult> VolunteerCreateTemp()
         {
             var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+
+            try
+            {
+                repo.CreateVolunteer(new VolunteerModel
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.UserName
+                });
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(new
+                {
+                    Error = e.Message
+                });
+            }
+
             return new JsonResult(new
             {
                 Error = ""
