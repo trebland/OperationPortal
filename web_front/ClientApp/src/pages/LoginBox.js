@@ -8,7 +8,9 @@ export class LoginBox extends Component {
     this.state = {};
   }
 
-  submitLogin(e) {}
+  submitLogin(e) {
+    // redirect to logged in dashboard
+  }
 
   render() {
     return (

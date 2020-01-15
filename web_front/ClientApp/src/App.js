@@ -4,7 +4,7 @@ import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { LoginBox } from './pages/LoginBox';
-// import { RegisterBox } from '.pages/RegisterBox';
+import { RegisterBox } from './pages/RegisterBox';
 
 import './custom.css'
 
@@ -17,18 +17,10 @@ export default class App extends Component {
         <Layout>
           <Route exact path='/' component={Home} />
           <Route exact path='/login' component={LoginBox} />
-          {/* <Route exact path='/register' component={RegisterBox} /> */}
+          <Route exact path='/register' component={RegisterBox} />
         </Layout>
-
-        {/* <div className="box-container">
-          {this.state.isLoginOpen && <LoginBox/>}
-          {this.state.isRegisterOpen && <RegisterBox/>}
-        </div> */}
       </div>
     );
   }
-
-  
-  // reactDOM.render(<App />, document.getElementById("root"));
   
 }
