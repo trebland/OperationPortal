@@ -104,14 +104,16 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
-                    Orientation = (bool)dr["orientation"],
+                    Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
                     Referral = dr["Referral"].ToString(),
-                    Newsletter = (bool)dr["newsletter"],
-                    ContactWhenShort = (bool)dr["contactWhenShort"],
+                    Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                    ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                     Phone = dr["phone"].ToString(),
-                    Email = dr["email"].ToString()
-                });
+                    Email = dr["email"].ToString(),
+                    Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                    Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
+                }) ;
             }
 
             return volunteers;
@@ -127,7 +129,10 @@ namespace API.Data
             List<string> trainings = new List<string>();
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da;
-            string sql = "SELECT Name FROM Trainings"; // TODO: Finish writing query
+            string sql = @"SELECT name FROM Training AS T 
+                           INNER JOIN Trainings_Completed AS TC ON T.id = TC.trainingID 
+                           INNER JOIN Volunteers AS V ON V.id = TC.volunteerID 
+                           WHERE V.id = @id";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -151,12 +156,46 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Gets the list of languages a volunteer reports knowing
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer whose languages are being queried</param>
+        /// <returns>A list of language names</returns>
+        public List<string> GetVolunteerLanguages(int volunteerId)
+        {
+            List<string> languages = new List<string>();
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT languagename FROM Languages_Known WHERE volunteerID = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                languages.Add(dr["languagename"].ToString());
+            }
+
+            return languages;
+        }
+
+        /// <summary>
         /// Creates a volunteer's profile in the database
         /// </summary>
         /// <param name="volunteer">A VolunteerModel object with the basic info to be inserted into the database</param>
         public void CreateVolunteer(VolunteerModel volunteer)
         {
-            string sql = "INSERT INTO Volunteers (firstName, lastName, email) VALUES (@firstName, @lastName, @email)";
+            string sql = @"INSERT INTO Volunteers (firstName, lastName, email, weeksAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone) 
+                           VALUES (@firstName, @lastName, @email, 0, false, '', '', false, false, '')";
 
             // Connect to DB
             using(NpgsqlConnection con = new NpgsqlConnection(connString))
