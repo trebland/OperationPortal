@@ -46,16 +46,23 @@ namespace API.Controllers
         [AllowAnonymous]
         public IActionResult Roster(int busId, int classId, DateTime date)
         {
-            ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-            List<ChildModel> busRoster = repo.GetChildren("busid", busId);
-            List<ChildModel> classRoster = repo.GetChildren("classid", classId);
-
-            return new JsonResult(new
+            try
             {
-                Error = "",
-                BusRoster = busRoster,
-                ClassRoster = classRoster
-            });
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    Error = "",
+                    BusRoster = repo.GetChildrenBus(busId),
+                    ClassRoster = repo.GetChildrenClass(classId)
+                });
+            }
+            catch (Exception exc) 
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
         }
     }
 }
