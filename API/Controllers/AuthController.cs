@@ -134,6 +134,7 @@ namespace OCCTest.Controllers
                 UserName = newUser.Email,
                 FirstName = newUser.FirstName,
                 LastName = newUser.LastName,
+                VolunteerId = 0,
                 Email = newUser.Email
             };
 

@@ -13,6 +13,7 @@ using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
 using API.Data;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
@@ -24,15 +25,18 @@ namespace API.Controllers
         private readonly OpenIddictApplicationManager<OpenIddictApplication> applicationManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ConfigurationModel configModel;
 
         public SampleController(
             OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IOptions<ConfigurationModel> configModel)
         {
             this.applicationManager = applicationManager;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.configModel = configModel.Value;
         }
 
         [HttpGet]
@@ -46,6 +50,7 @@ namespace API.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                VolunteerId = user.VolunteerId,
                 Roles = await userManager.GetRolesAsync(user)
             });
         }
@@ -62,6 +67,7 @@ namespace API.Controllers
                 Email = "test@occ.com",
                 FirstName = "test",
                 LastName = "test",
+                VolunteerId = 0,
                 Roles = roles
             }); ;
         }
@@ -70,7 +76,10 @@ namespace API.Controllers
         [AllowAnonymous]
         public IActionResult TestCon()
         {
-            if (SampleRepository.PostgresTest())
+            string connString = configModel.ConnectionString;
+            SampleRepository sampleRepo = new SampleRepository(connString);
+
+            if (sampleRepo.PostgresTest())
             {
                 return new JsonResult (new { error = "" });
             }

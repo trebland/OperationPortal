@@ -13,6 +13,8 @@ using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
 using API.Data;
+using System;
+using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
@@ -24,15 +26,36 @@ namespace API.Controllers
         private readonly OpenIddictApplicationManager<OpenIddictApplication> applicationManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ConfigurationModel configModel;
 
         public ChildController(
             OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IOptions<ConfigurationModel> configModel)
         {
             this.applicationManager = applicationManager;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.configModel = configModel.Value;
+        }
+
+
+        [Route("~/api/roster")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Roster(int busId, int classId, DateTime date)
+        {
+            ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+            List<ChildModel> busRoster = repo.GetChildren("busid", busId);
+            List<ChildModel> classRoster = repo.GetChildren("classid", classId);
+
+            return new JsonResult(new
+            {
+                Error = "",
+                BusRoster = busRoster,
+                ClassRoster = classRoster
+            });
         }
     }
 }
