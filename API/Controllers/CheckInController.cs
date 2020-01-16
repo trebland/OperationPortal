@@ -13,6 +13,8 @@ using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
 using API.Data;
+using Microsoft.Extensions.Options;
+using System;
 
 namespace API.Controllers
 {
@@ -24,15 +26,43 @@ namespace API.Controllers
         private readonly OpenIddictApplicationManager<OpenIddictApplication> applicationManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ConfigurationModel configModel;
 
         public CheckInController(
             OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
             SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IOptions<ConfigurationModel> configModel)
         {
             this.applicationManager = applicationManager;
             this.signInManager = signInManager;
             this.userManager = userManager;
+            this.roleManager = roleManager;
+            this.configModel = configModel.Value;
+        }
+
+        [Route("~/api/check-in/child")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult CheckInChild(int childId)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    numVisits = repo.CheckInChild(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
         }
     }
 }

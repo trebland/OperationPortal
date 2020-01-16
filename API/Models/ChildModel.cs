@@ -15,11 +15,12 @@ namespace API.Models
         public int Bus { get; set; }
         public string Birthday { get; set; }
         public string PictureUrl { get; set; }
-        public DateTime SuspendedStart { get; set; }
-        public DateTime SuspendedEnd { get; set; }
-        public Note[] Notes { get; set; }
-        public int[] Relatives { get; set; } // IDs of relatives
         public bool WaiverReceived { get; set; }
+        public DateTime? SuspendedStart { get; set; }
+        public DateTime? SuspendedEnd { get; set; }
+        public List<int> Relatives { get; set; } // IDs of relatives
+        public List<DateTime> DatesAttended { get; set; }
+        public List<Note> Notes { get; set; }
     }
 
     public class Note
