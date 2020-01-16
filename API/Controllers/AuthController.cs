@@ -1,16 +1,21 @@
-﻿using AspNet.Security.OpenIdConnect.Extensions;
+﻿using System;
+using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Models;
+using API.Data;
+using API.Helpers;
+using System.Collections.Generic;
 
 namespace OCCTest.Controllers
 {
@@ -22,17 +27,20 @@ namespace OCCTest.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ConfigurationModel configModel;
 
         public AuthController(
             OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IOptions<ConfigurationModel> configModel)
         {
             this.applicationManager = applicationManager;
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.configModel = configModel.Value;
         }
 
         [HttpPost]
@@ -60,8 +68,6 @@ namespace OCCTest.Controllers
                     ErrorDescription = "Invalid username or password"
                 });
             }
-
-            await userManager.AddToRoleAsync(user, "Volunteer");
 
             // Check that the user can sign in and is not locked out.
             // If two-factor authentication is supported, it would also be appropriate to check that 2FA is enabled for the user
@@ -129,18 +135,76 @@ namespace OCCTest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel newUser)
         {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+            List<string> PasswordErrors = new List<string>();
+            IdentityResult passResult;
+            bool passwordFailed = false;
+
+            // Validate that the username and password are valid and no account exists with the username.  We do this here to prevent 
+            // having to create and then delete a volunteer profile in the database in the event that one is invalid
+            if (!UserHelpers.IsValidEmail(newUser.Email))
+            {
+                ModelState.AddModelError(String.Empty, "You must use an email address to sign up.");
+                return BadRequest(ModelState);
+            }
+            foreach (var validator in userManager.PasswordValidators)
+            {
+                passResult = await validator.ValidateAsync(userManager, null, newUser.Password);
+
+                if (!passResult.Succeeded)
+                {
+                    passwordFailed = true;
+                    foreach (var error in passResult.Errors)
+                    {
+                        ModelState.AddModelError(String.Empty, error.Description);
+                    }
+                }
+            }
+            if (passwordFailed)
+            {
+                return BadRequest(ModelState);
+            }
+            var existingUser = await userManager.FindByNameAsync(newUser.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(String.Empty, "That email is already in use.");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                profile = repo.CreateVolunteer(new VolunteerModel
+                {
+                    Email = newUser.Email,
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName
+                });
+
+                if (profile == null)
+                {
+                    throw new Exception("Unable to create profile in database");
+                }
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(String.Empty, e.Message);
+
+                return BadRequest(ModelState);
+            }
+
             ApplicationUser user = new ApplicationUser
             {
-                UserName = newUser.Email,
-                FirstName = newUser.FirstName,
-                LastName = newUser.LastName,
-                VolunteerId = 0,
-                Email = newUser.Email
+                UserName = profile.Email,
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                VolunteerId = profile.Id,
+                Email = profile.Email
             };
 
-            if (!await roleManager.RoleExistsAsync("Volunteer"))
+            if (!await roleManager.RoleExistsAsync(UserHelpers.UserRoles.Volunteer.ToString()))
             {
-                await roleManager.CreateAsync(new IdentityRole { Name = "Volunteer" });
+                await roleManager.CreateAsync(new IdentityRole { Name = UserHelpers.UserRoles.Volunteer.ToString() });
             }
 
             IdentityResult result = await userManager.CreateAsync(user, newUser.Password);
@@ -148,11 +212,14 @@ namespace OCCTest.Controllers
             if (result.Succeeded)
             {
                 user = await userManager.FindByNameAsync(user.UserName);
-
                 await userManager.AddToRoleAsync(user, "Volunteer");
             }
             else
             {
+                // If an error occurred and the user account could not be created for whatever reason, we want to delete the volunteer profile
+                repo.DeleteVolunteer(profile.Id);
+
+                // Then we want to return an error message
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

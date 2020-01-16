@@ -8,5 +8,6 @@ namespace API.Models
     public class ConfigurationModel
     {
         public string ConnectionString { get; set; }
+        public bool DebugMode { get; set; }
     }
 }

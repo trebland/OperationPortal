@@ -59,6 +59,7 @@ namespace API
             services.Configure<ConfigurationModel>(options =>
             {
                 options.ConnectionString = Configuration.GetConnectionString("DevConnection");
+                options.DebugMode = true;
             });
 
             services.AddOpenIddict()

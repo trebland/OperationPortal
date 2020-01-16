@@ -29,7 +29,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             DataRow dr;
             NpgsqlDataAdapter da;
-            string sql = "SELECT TOP 1 * FROM Volunteers WHERE id = @id";
+            string sql = "SELECT * FROM Volunteers WHERE id = @id";
 
             // Connect to the database
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -60,13 +60,15 @@ namespace API.Data
                 Id = (int)dr["id"],
                 FirstName = dr["firstName"].ToString(),
                 LastName = dr["lastName"].ToString(),
-                Orientation = (bool)dr["orientation"],
+                Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                 Affiliation = dr["affiliation"].ToString(),
                 Referral = dr["Referral"].ToString(),
-                Newsletter = (bool)dr["newsletter"],
-                ContactWhenShort = (bool)dr["contactWhenShort"],
+                Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                 Phone = dr["phone"].ToString(),
-                Email = dr["email"].ToString()
+                Email = dr["email"].ToString(),
+                Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
             };
 
             return volunteer;
@@ -192,10 +194,15 @@ namespace API.Data
         /// Creates a volunteer's profile in the database
         /// </summary>
         /// <param name="volunteer">A VolunteerModel object with the basic info to be inserted into the database</param>
-        public void CreateVolunteer(VolunteerModel volunteer)
+        /// <returns>A VolunteerModel representing the volunteer inserted into the database</returns>
+        public VolunteerModel CreateVolunteer(VolunteerModel volunteer)
         {
-            string sql = @"INSERT INTO Volunteers (firstName, lastName, email, weeksAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone) 
-                           VALUES (@firstName, @lastName, @email, 0, false, '', '', false, false, '')";
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            DataRow dr;
+            string sql = @"INSERT INTO Volunteers (firstName, lastName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone) 
+                           VALUES (@firstName, @lastName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '') 
+                           RETURNING id";
 
             // Connect to DB
             using(NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -206,6 +213,66 @@ namespace API.Data
                     cmd.Parameters.Add("@firstName", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.FirstName;
                     cmd.Parameters.Add("@lastName", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.LastName;
                     cmd.Parameters.Add("@email", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.Email;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count != 1)
+            {
+                return null;
+            }
+
+            dr = dt.Rows[0];
+            return GetVolunteer((int)dr["id"]);
+        }
+
+        /// <summary>
+        /// Deletes a volunteer's profile from the database
+        /// </summary>
+        /// <param name="id">The id of the volunteer profile to be deleted</param>
+        public void DeleteVolunteer(int id)
+        {
+            string sql = "DELETE FROM Volunteers WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the role a user is recorded as having in the database.
+        /// Note that this WILL NOT grant increased permissions, as permissions are handled through ASP.NET identity roles.
+        /// This is merely for viewing.
+        /// </summary>
+        /// <param name="id">The id of the users whose role should be updated</param>
+        /// <param name="role">The number associated with the role.  Can be found in UserHelpers.UserRoles.  This is NOT validated, because it doesn't actually affect anything.</param>
+        public void UpdateUserRole(int id, int role)
+        {
+            string sql = "UPDATE Volunteers SET role = @role WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+                    cmd.Parameters.Add("@role", NpgsqlTypes.NpgsqlDbType.Integer).Value = role;
 
                     con.Open();
                     cmd.ExecuteNonQuery();

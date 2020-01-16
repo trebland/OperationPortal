@@ -28,7 +28,7 @@ namespace API.Data
                     con.Close();
                 }
             } 
-            catch (Exception e)
+            catch
             {
                 return false;
             }

@@ -57,7 +57,7 @@ namespace API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAnon()
+        public ActionResult GetAnon()
         {
             List<string> roles = new List<string>();
             roles.Add("Volunteer");

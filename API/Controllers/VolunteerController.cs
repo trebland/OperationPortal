@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
+using Newtonsoft.Json.Linq;
 using API.Models;
 using API.Data;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -44,6 +46,10 @@ namespace API.Controllers
             this.configModel = configModel.Value;
         }
 
+        /// <summary>
+        /// Gets a list of all registered volunteers
+        /// </summary>
+        /// <returns>All registered volunteers</returns>
         [Route("~/api/volunteer-list")]
         [HttpGet]
         [AllowAnonymous]
@@ -53,12 +59,20 @@ namespace API.Controllers
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
             List<VolunteerModel> volunteers;
 
-            //if (!await userManager.IsInRoleAsync(user, "staff"))
-            //{
-            //    return new UnauthorizedResult();
-            //}
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
 
-            volunteers = repo.GetVolunteers();
+            try
+            {
+                volunteers = repo.GetVolunteers();
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(configModel.DebugMode ? e.Message : "An error occurred while accessing the database.");
+            }
 
             return new JsonResult(new
             {
@@ -67,45 +81,148 @@ namespace API.Controllers
             });
         }
 
+        // TODO: Work out exactly what will and will not be editable
+        /// <summary>
+        /// Allows for editing a volunteer's profile
+        /// </summary>
+        /// <param name="volunteer">A VolunteerModel object containing the updated information.  Will be rejected if this is not the current user</param>
+        /// <returns>An indication of any errors that occurred</returns>
         [Route("~/api/volunteer-profile-edit")]
         [HttpPost]
         public async Task<IActionResult> VolunteerProfileEdit(VolunteerModel volunteer) 
         {
-            var user = await userManager.GetUserAsync(User);
-            return new JsonResult(new
-            {
-                Error = ""
-            });
-        }
-
-        [Route("~/api/volunteer-create-temp")]
-        [HttpPost]
-        public async Task<IActionResult> VolunteerCreateTemp()
-        {
+            //TODO: discuss making email immutable
             var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel currentModel = repo.GetVolunteer(volunteer.Id);
+            
+            // Return with an error if there is no volunteer model to update or if the profile being updated is not that of the logged-in user
+            if (currentModel == null)
+            {
+                return Utilities.ErrorJson("Profile does not exist");
+            }
+            if (currentModel.Email != user.UserName)
+            {
+                return Utilities.ErrorJson("Not authorized to edit this profile");
+            }
+
+            return Utilities.ErrorJson("");
+        }
+
+        /// <summary>
+        /// Allows for updating the role a user has on the site.  Accessible only to staff.
+        /// </summary>
+        /// <param name="data">
+        /// Must be a JSON object consisting of "id" and "role".  This form is used because it isn't possible to have multiple simple type (e.g. an int
+        /// and a string) parameters for a POST action in ASP.NET.
+        /// id is the id of the volunteer whose role is being updated
+        /// role is the name of the role they are being given.  This is validated against a list of valid roles, maintained here in the code.
+        /// </param>
+        /// <returns></returns>
+        [Route("~/api/role-edit")]
+        [HttpPost]
+        public async Task<IActionResult> RoleEdit( [FromBody]JObject data)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel volunteer;
+            UserHelpers.UserRoles userRole;
+            int id;
+            string role;
 
             try
             {
-                repo.CreateVolunteer(new VolunteerModel
-                {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.UserName
-                });
+                id = data["id"].ToObject<int>();
+                role = data["role"].ToString();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return new JsonResult(new
-                {
-                    Error = e.Message
-                });
+                return Utilities.ErrorJson("Invalid input");
             }
 
-            return new JsonResult(new
+            volunteer = repo.GetVolunteer(id);
+
+            if (id == 0 || String.IsNullOrEmpty(role))
             {
-                Error = ""
-            });
+                return Utilities.ErrorJson("Required parameter missing");
+            }
+
+            var user = await userManager.GetUserAsync(User);
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Ensure the role passed in is valid
+            try
+            {
+                userRole = (UserHelpers.UserRoles)Enum.Parse(typeof(UserHelpers.UserRoles), Utilities.NormalizeString(role));
+            }
+            catch(ArgumentException)
+            {
+                return Utilities.ErrorJson("Not a valid role");
+            }
+
+            // Get the user account of the person whose role is being updated
+            var volunteerAccount = await userManager.FindByNameAsync(volunteer.Email);
+            if (volunteerAccount == null)
+            {
+                return Utilities.ErrorJson("Error updating user account, please try again.");
+            }
+
+            if (await userManager.IsInRoleAsync(volunteerAccount, userRole.ToString()))
+            {
+                //return Utilities.ErrorJson("User is already in role " + userRole.ToString());
+            }
+
+            // If the role does not yet exist (e.g. no users with it have been added to the database), create it
+            // The only reason I am comfortable doing this is because I check the input against the enum up above, 
+            // so people cannot create arbitrary roles
+            if (!(await roleManager.RoleExistsAsync(userRole.ToString())))
+            {
+                await roleManager.CreateAsync(new IdentityRole { Name = userRole.ToString() });
+            }
+
+            // Remove the user account's other roles and add the new one
+            await userManager.RemoveFromRolesAsync(volunteerAccount, await userManager.GetRolesAsync(volunteerAccount));
+            await userManager.AddToRoleAsync(volunteerAccount, userRole.ToString());
+            // Update the role in the user's volunteer profile in the DB.  This one isn't as important, since it doesn't affect permissions
+            repo.UpdateUserRole(volunteer.Id, (int)userRole);
+
+            return Utilities.ErrorJson("");
         }
+
+        // I was using this temporarily while I hadn't finished updating the register action to work with the DB.  It's no longer necessary,
+        // so I'll remove it once I've had the chance to test the register action a bit more heavily.
+        //[Route("~/api/volunteer-create-temp")]
+        //[HttpPost]
+        //public async Task<IActionResult> VolunteerCreateTemp()
+        //{
+        //    var user = await userManager.GetUserAsync(User);
+        //    VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+
+        //    try
+        //    {
+        //        repo.CreateVolunteer(new VolunteerModel
+        //        {
+        //            FirstName = user.FirstName,
+        //            LastName = user.LastName,
+        //            Email = user.UserName
+        //        });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return new JsonResult(new
+        //        {
+        //            Error = e.Message
+        //        });
+        //    }
+
+        //    return new JsonResult(new
+        //    {
+        //        Error = ""
+        //    });
+        //}
     }
 }
