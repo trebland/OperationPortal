@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import BigCalendar from 'react-big-calendar'
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
+import events from './events'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 // https://www.npmjs.com/package/react-big-calendar
 // http://intljusticemission.github.io/react-big-calendar/examples/index.html#intro
 
-const localizer = BigCalendar.momentLocalizer(moment) // or globalizeLocalizer
+const localizer = momentLocalizer(moment)
 
 export class Home extends Component {
   
@@ -14,10 +15,11 @@ export class Home extends Component {
 
   render () {
     return (
-      <div>
-        <BigCalendar 
-          localizer={localizer}
-          events={myEventsList}
+      <div style={{height: "500px"}}>
+        <h1>calendar</h1>
+        <Calendar
+          localizer = {localizer}
+          events={events}
           startAccessor="start"
           endAccessor="end"
         />
