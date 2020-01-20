@@ -40,7 +40,6 @@ namespace API.Controllers
             this.configModel = configModel.Value;
         }
 
-
         [Route("~/api/roster")]
         [HttpGet]
         [AllowAnonymous]
@@ -51,12 +50,33 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    Error = "",
                     BusRoster = repo.GetChildrenBus(busId),
                     ClassRoster = repo.GetChildrenClass(classId)
                 });
             }
             catch (Exception exc) 
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child-creation")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult CreateChild()
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    nextId = repo.CreateChildId()
+                });
+            }
+            catch (Exception exc)
             {
                 return new JsonResult(new
                 {

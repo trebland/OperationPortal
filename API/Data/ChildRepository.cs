@@ -165,11 +165,51 @@ namespace API.Data
                     // Add today's visit to the total
                     numVisits++;
                 }
-                
+
                 con.Close();
             }
 
             return numVisits;
+        }
+
+        public int CreateChildId()
+        {
+            // Start IDs at 1
+            int nextId = 1;
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                con.Open();
+                string sql = @"SELECT * FROM Child
+                             ORDER BY id DESC
+                             LIMIT 1";
+
+                DataTable dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                // If there is a previous ID, make the next ID 1 higher than the previous highest
+                if (dt.Rows.Count > 0)
+                {
+                    nextId += (int)dt.Rows[0]["id"];
+                }
+
+                // Default bus and class to 1 to fulfill non-null constraint
+                sql = @"INSERT INTO Child (id, busid, classid)
+                        VALUES (@nextId, 1, 1)";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@nextId", NpgsqlTypes.NpgsqlDbType.Integer).Value = nextId;
+                    cmd.ExecuteNonQuery();
+                }
+
+                con.Close();
+            }
+
+            return nextId;
         }
     }
 }
