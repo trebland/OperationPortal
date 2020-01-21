@@ -82,6 +82,7 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
                     Grade = (int)dr["grade"],
+                    Gender = dr["gender"].ToString(),
                     Class = (int)dr["classid"],
                     Bus = (int)dr["busid"],
                     Birthday = dr["birthday"].ToString(),
@@ -283,13 +284,6 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.WaiverReceived)
-                {
-                    parameters.Append($"waiver = @p{parm},");
-                    updated[parm] = true;
-                }
-                parm++;
-
                 if (child.Bus != null)
                 {
                     parameters.Append($"busid = @p{parm},");
@@ -341,11 +335,6 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.WaiverReceived;
-                    }
-
-                    if (updated[++parm])
-                    {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus;
                     }
 
@@ -373,6 +362,28 @@ namespace API.Data
                 con.Close();
 
                 return GetChildModels(dt)[0];
+            }
+        }
+
+        /// <summary>
+        /// Given a child id and a boolean, updates whether or not the child's waiver has been received
+        /// </summary>
+        public void UpdateWaiver(int childId, bool received)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"UPDATE Child SET waiver = @received
+                             WHERE id = @childId";
+
+                DataTable dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    cmd.Parameters.Add("@received", NpgsqlTypes.NpgsqlDbType.Bit).Value = received;
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
             }
         }
     }

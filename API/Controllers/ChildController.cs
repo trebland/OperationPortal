@@ -104,9 +104,31 @@ namespace API.Controllers
                     Gender = updatedChild.Gender,
                     Grade = updatedChild.Grade,
                     Birthday = updatedChild.Birthday,
-                    WaiverReceived = updatedChild.WaiverReceived,
                     Bus = updatedChild.Bus,
                     Class = updatedChild.Class
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/waiver")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult UpdateWaiver(int childId, bool received)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                repo.UpdateWaiver(childId, received);
+                
+                return new JsonResult(new
+                {
                 });
             }
             catch (Exception exc)
