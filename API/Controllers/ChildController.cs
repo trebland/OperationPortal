@@ -139,5 +139,28 @@ namespace API.Controllers
                 });
             }
         }
+
+        [Route("~/api/child-attendance-check")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckAttendance(int childId)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                
+                return new JsonResult(new
+                {
+                    DaysAttended = repo.GetAttendanceDates(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
     }
 }

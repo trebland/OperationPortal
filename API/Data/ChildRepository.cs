@@ -99,12 +99,12 @@ namespace API.Data
             return children;
         }
 
-    /// <summary>
-    /// Given a child id, retrieves a list of DateTimes the child has been marked for attendance
-    /// </summary>
-    /// <param name="childid"></param>
-    /// <returns>List of DateTimes associated with the child's attendance</returns>
-        private List<DateTime> GetAttendanceDates(int childid)
+        /// <summary>
+        /// Given a child id, retrieves a list of DateTimes the child has been marked for attendance
+        /// </summary>
+        /// <param name="childid"></param>
+        /// <returns>List of DateTimes associated with the child's attendance</returns>
+        public List<DateTime> GetAttendanceDates(int childid)
         {
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -119,6 +119,7 @@ namespace API.Data
                     con.Close();
                 }
             }
+
             List<DateTime> dates = new List<DateTime>();
             foreach (DataRow dr in dt.Rows)
             {
@@ -127,6 +128,7 @@ namespace API.Data
 
             return dates;
         }
+
         /// <summary>
         /// Marks a child as present for the day
         /// </summary>

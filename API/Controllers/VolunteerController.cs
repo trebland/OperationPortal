@@ -193,6 +193,29 @@ namespace API.Controllers
             return Utilities.ErrorJson("");
         }
 
+        [Route("~/api/volunteer-attendance-check")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckAttendance(int volunteerId)
+        {
+            try
+            {
+                VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    DaysAttended = repo.GetAttendanceDates(volunteerId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         // I was using this temporarily while I hadn't finished updating the register action to work with the DB.  It's no longer necessary,
         // so I'll remove it once I've had the chance to test the register action a bit more heavily.
         //[Route("~/api/volunteer-create-temp")]

@@ -280,5 +280,36 @@ namespace API.Data
                 }
             }
         }
+
+        /// <summary>
+        /// Given a volunteer id, retrieves a list of DateTimes the volunteer has been marked for attendance
+        /// </summary>
+        /// <returns>List of DateTimes associated with the volunteer's attendance</returns>
+        public List<DateTime> GetAttendanceDates(int volunteerId)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT * FROM Volunteer_Attendance
+                              WHERE volunteerid = @volunteerId 
+                              AND attended = CAST(1 as bit)";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<DateTime> dates = new List<DateTime>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                dates.Add((DateTime)dr["dayattended"]);
+            }
+
+            return dates;
+        }
     }
 }
