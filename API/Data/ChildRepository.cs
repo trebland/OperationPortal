@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Npgsql;
 using API.Models;
 using System.Data;
+using System.Text;
 
 namespace API.Data
 {
@@ -172,6 +173,10 @@ namespace API.Data
             return numVisits;
         }
 
+        /// <summary>
+        /// Creates a new child ID
+        /// </summary>
+        /// <returns>int of the new child ID</returns>
         public int CreateChildId()
         {
             // Start IDs at 1
@@ -210,6 +215,165 @@ namespace API.Data
             }
 
             return nextId;
+        }
+
+        /// <summary>
+        /// Updates information corresponding to child.Id in the database
+        /// </summary>
+        /// <param name="child">ChildModel with fields to be updated in the database</param>
+        /// <returns>ChildModel of the merged information</returns>
+        public ChildModel EditChild(ChildModel child)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                con.Open();
+                string sql = @"SELECT * FROM Child
+                             WHERE id = @childid";
+
+                DataTable dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                // This ID does not exist
+                if (dt.Rows.Count == 0)
+                {
+                    return new ChildModel();
+                }
+
+                // Update parameters that are not null
+                StringBuilder parameters = new StringBuilder();
+                bool[] updated = new bool[dt.Columns.Count];
+                int parm = 0;
+                if (child.FirstName != null)
+                {
+                    parameters.Append($"firstname = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+                
+                if (child.LastName != null)
+                {
+                    parameters.Append($"lastname = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Gender != null)
+                {
+                    parameters.Append($"gender = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Grade != null)
+                {
+                    parameters.Append($"grade = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Birthday != null)
+                {
+                    parameters.Append($"birthday = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.WaiverReceived)
+                {
+                    parameters.Append($"waiver = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Bus != null)
+                {
+                    parameters.Append($"busid = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Class != null)
+                {
+                    parameters.Append($"classid = @p{parm},");
+                    updated[parm] = true;
+                }
+
+                if (parameters.Length == 0) // All fields null - no changes made
+                {
+                    return GetChildModels(dt)[0];
+                }
+
+                parameters.Length = parameters.Length - 1; // Remove last comma
+
+                sql = "UPDATE Child SET " + parameters.ToString() + " WHERE id = @childId";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    parm = -1;
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = child.FirstName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = child.LastName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = child.Gender;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Grade;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.WaiverReceived;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class;
+                    }
+
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Retrieve row that has been updated
+                sql = @"SELECT * FROM Child
+                        WHERE id = @childid";
+
+                dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                con.Close();
+
+                return GetChildModels(dt)[0];
+            }
         }
     }
 }

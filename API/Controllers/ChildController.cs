@@ -73,7 +73,40 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    nextId = repo.CreateChildId()
+                    NextId = repo.CreateChildId()
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child-edit")]
+        [HttpPost]
+        [AllowAnonymous]
+        // Pass in JSON object
+        public IActionResult EditChild(ChildModel child)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                ChildModel updatedChild = repo.EditChild(child);
+                return new JsonResult(new ChildModel
+                {
+                    Id = updatedChild.Id,
+                    // Fields that can be updated:
+                    FirstName = updatedChild.FirstName,
+                    LastName = updatedChild.LastName,
+                    Gender = updatedChild.Gender,
+                    Grade = updatedChild.Grade,
+                    Birthday = updatedChild.Birthday,
+                    WaiverReceived = updatedChild.WaiverReceived,
+                    Bus = updatedChild.Bus,
+                    Class = updatedChild.Class
                 });
             }
             catch (Exception exc)

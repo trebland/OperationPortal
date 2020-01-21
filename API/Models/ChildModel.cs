@@ -10,9 +10,10 @@ namespace API.Models
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int Grade { get; set; }
-        public int Class { get; set; }
-        public int Bus { get; set; }
+        public string Gender { get; set; }
+        public int? Grade { get; set; }
+        public int? Class { get; set; }
+        public int? Bus { get; set; }
         public string Birthday { get; set; }
         public string PictureUrl { get; set; }
         public bool WaiverReceived { get; set; }
