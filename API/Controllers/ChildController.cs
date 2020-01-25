@@ -208,5 +208,28 @@ namespace API.Controllers
                 });
             }
         }
+
+        [Route("~/api/notes-edit")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Notes(int childId, string notes)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Notes = repo.EditNotes(childId, notes)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
     }
 }

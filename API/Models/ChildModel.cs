@@ -21,13 +21,6 @@ namespace API.Models
         public DateTime? SuspendedEnd { get; set; }
         public List<int> Relatives { get; set; } // IDs of relatives
         public List<DateTime> DatesAttended { get; set; }
-        public List<Note> Notes { get; set; }
-    }
-
-    public class Note
-    {
-        public string Comments { get; set; }
-        public DateTime Date { get; set; }
-        public string Author { get; set; }
+        public string Notes { get; set; }
     }
 }

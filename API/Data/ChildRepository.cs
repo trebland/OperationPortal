@@ -304,6 +304,27 @@ namespace API.Data
             }
         }
 
+        public String EditNotes(int childId, String editedNotes)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"UPDATE Child SET notes = @editedNotes
+                             WHERE id = @childId";
+
+                DataTable dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    cmd.Parameters.Add("@editedNotes", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = editedNotes;
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return editedNotes;
+        }
+
         /// <summary>
         /// Given a child id and a boolean, updates whether or not the child's waiver has been received
         /// </summary>
@@ -458,12 +479,12 @@ namespace API.Data
                     Bus = (int)dr["busid"],
                     Birthday = dr["birthday"].ToString(),
                     WaiverReceived = (bool)dr["waiver"],
-                    DatesAttended = GetAttendanceDates((int)dr["id"])
+                    DatesAttended = GetAttendanceDates((int)dr["id"]),
+                    Notes = dr["notes"].ToString()
                     //TODO:
                     //PictureUrl
                     //suspensions
                     //relatives
-                    //notes
                 });
             }
 
