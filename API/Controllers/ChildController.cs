@@ -148,10 +148,56 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                
+
                 return new JsonResult(new
                 {
                     DaysAttended = repo.GetAttendanceDates(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/suspend")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Suspend(int childId, DateTime start, DateTime end)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Error = repo.Suspend(childId, start, end)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/suspensions")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Suspensions()
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Suspensions = repo.ViewSuspensions()
                 });
             }
             catch (Exception exc)
