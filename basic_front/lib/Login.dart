@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
+import 'Staff/Staff_ActiveDashboard.dart';
 import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
 
 void main() => runApp(MyApp());
@@ -307,7 +308,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Text('Login', style: TextStyle(fontSize: 24)),
                       onPressed: ()
                       {
-                        if (_emailController.text == "bd")
+                        if (_emailController.text == "st")
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
+                        else if (_emailController.text == "bd")
                           Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
                         else if (_emailController.text == "vc")
                           Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
