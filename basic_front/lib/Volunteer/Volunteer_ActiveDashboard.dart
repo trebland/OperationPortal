@@ -37,13 +37,12 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Dashboard'),
-    Tab(text: 'Bus-Route Viewer'),
+    Tab(text: 'Roster'),
     Tab(text: 'Settings'),
   ];
 
   final items = List<String>.generate(50, (i) => "Item $i");
   List<String> names = ["Jacob Pfeiffer", "Marcus O'Real", "Kevin Augustus", "Stella Artois", "Guillaume Fuile", "Ruby Jack", "Lika Telova", "Rika Telova", "Vila Malie", "Marie Goodman"];
-
 
   final List<int> colorCodes = <int>[600, 500];
 
@@ -171,7 +170,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
               ],
             ),
           );
-        else if(tab.text == "Bus-Route Viewer")
+        else if(tab.text == "Roster")
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

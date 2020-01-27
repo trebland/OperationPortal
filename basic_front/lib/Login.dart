@@ -6,6 +6,7 @@ import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
 import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
 
 void main() => runApp(MyApp());
@@ -306,7 +307,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Text('Login', style: TextStyle(fontSize: 24)),
                       onPressed: ()
                       {
-                        if (_emailController.text == "vc")
+                        if (_emailController.text == "bd")
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
+                        else if (_emailController.text == "vc")
                           Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
                         else
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));

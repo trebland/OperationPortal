@@ -1,12 +1,11 @@
 import 'package:basic_front/AddChild.dart';
 import 'package:basic_front/Volunteer/Volunteer_ProfileViewer.dart';
+import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
+import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_VolunteerProfileViewer.dart';
 import 'package:flutter/material.dart';
 
-import 'VolunteerCaptain_ProfileViewer.dart';
-import 'VolunteerCaptain_VolunteerProfileViewer.dart';
-
-class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
-  VolunteerCaptain_ActiveDashboard_Page({Key key, this.title}) : super(key: key);
+class BusDriver_ActiveDashboard_Page extends StatefulWidget {
+  BusDriver_ActiveDashboard_Page({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -20,7 +19,7 @@ class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
   final String title;
 
   @override
-  VolunteerCaptain_ActiveDashboard_State createState() => VolunteerCaptain_ActiveDashboard_State();
+  BusDriver_ActiveDashboard_State createState() => BusDriver_ActiveDashboard_State();
 }
 
 abstract class ListItem {}
@@ -46,17 +45,18 @@ class Volunteer {
   }
 }
 
-class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_ActiveDashboard_Page> with SingleTickerProviderStateMixin
+class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Page> with SingleTickerProviderStateMixin
 {
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Dashboard'),
     Tab(text: 'Roster'),
-    Tab(text: 'Volunteer List'),
+    Tab(text: 'Suspended'),
   ];
 
   final items = List<String>.generate(50, (i) => "Item $i");
   List<String> names = ["Jacob Pfeiffer", "Marcus O'Real", "Kevin Augustus", "Stella Artois", "Guillaume Fuile", "Ruby Jack", "Lika Telova", "Rika Telova", "Vila Malie", "Marie Goodman"];
+  List<String> suspendedNames = ["Mitch Hammock", "Tigger", "Winnie the Pooh", "Thomas Anchor"];
   List<Volunteer> volunteers;
 
   List<Volunteer> generateVolunteers() {
@@ -122,78 +122,100 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
       controller: _tabController,
       children: myTabs.map((Tab tab) {
         if (tab.text == "Dashboard")
-          return Center(
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Invoke "debug painting" (press "p" in the console, choose the
-              // "Toggle Debug Paint" action from the Flutter Inspector in Android
-              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-              // to see the wireframe for each widget.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              mainAxisAlignment: MainAxisAlignment.center,
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-
                 Container(
-                  child: Image(
-                      image: AssetImage('assets/OCC_LOGO_128_128.png')
-                  ),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
+                  child: IntrinsicHeight(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>
+                        [
+                          Container(
+                            child: Text("Recent Child", style: TextStyle(fontSize: 40),),
+                            margin: EdgeInsets.only(right: 20),
+                          ),
+                          Container(
+                            child: FlatButton(
+                              child: Text("Scan QR", style: TextStyle(color: Colors.black),),
+                              onPressed: () => null,
+                            ),
+                            decoration: new BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(20)
+                              ),
+                            ),
+                          ),
+                        ]
                     ),
                   ),
-                  height: 200,
-                  width: 200,
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.only(bottom: 5),
-                ),
-                Container(
-                  child: Text("Mark Hamilton", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.white),),
                   decoration: new BoxDecoration(
                     color: Colors.blue,
                     borderRadius: new BorderRadius.all(
                         new Radius.circular(20)
                     ),
                   ),
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(10),
                 ),
                 Container(
-                  child: Text("Volunteer Captain", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.blue),),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.only(
-                        bottomLeft: new Radius.circular(20), bottomRight: new Radius.circular(20)
+                  child: IntrinsicHeight(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>
+                        [
+                          Container(
+                            child: Image(
+                                image: AssetImage('assets/OCC_LOGO_128_128.png')
+                            ),
+                            decoration: new BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(20)
+                              ),
+                            ),
+                            height: 200,
+                            width: 200,
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.only(right: 10),
+                          ),
+                          Flexible(
+                            child: Text(
+                              "First-Name Last-Name",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 28, color: Colors.white),
+                            ),
+                          ),
+                        ]
                     ),
                   ),
-                  padding: EdgeInsets.all(20),
-                ),
-                Container(
-                  child: Text("Successfully Signed In.", textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 28, color: Colors.blue)),
                   decoration: new BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.blue,
                     borderRadius: new BorderRadius.all(
                         new Radius.circular(20)
                     ),
                   ),
-                  width: 250,
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.only(top: 20, bottom: 5),
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(10),
+                ),
+                Container(
+                  child: FlatButton(
+                    child: Text("Confirm Attendance", style: TextStyle(fontSize: 20),),
+                    onPressed: () => null,
+                  ),
+                  decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: new BorderRadius.all(
+                        new Radius.circular(20)
+                    ),
+                  ),
+                  margin: EdgeInsets.only(top: 20)
                 ),
               ],
-            ),
           );
         else if(tab.text == "Roster")
           return Center(
@@ -218,12 +240,6 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                               ),
                             ),
                             padding: EdgeInsets.all(20),
-                          ),
-                          Flexible(
-                            child: FlatButton (
-                              child: Text("Change Route"),
-                              onPressed: () => null,
-                            )
                           ),
                         ]
                     ),
@@ -361,15 +377,14 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                   ),
                   Expanded(
                     child: new ListView.builder(
-                      itemCount: volunteers.length,
+                      itemCount: suspendedNames.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           child: ListTile(
-                            title: Text('${volunteers[index].name}'),
-                            trailing: Text('${volunteers[index].route}'),
+                            title: Text('${suspendedNames[index]}'),
                             onTap: ()
                             {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_VolunteerProfileViewer_Page(title: '${volunteers[index].name}')));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(title: '${suspendedNames[index]}')));
                             },
                             dense: false,
                           ),
