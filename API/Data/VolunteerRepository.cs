@@ -311,5 +311,83 @@ namespace API.Data
 
             return dates;
         }
+
+        /// <summary>
+        /// For a given day, retrieves a list of volunteers who have checked in or signed up (or both)
+        /// </summary>
+        /// <param name="checkedIn">A volunteer was marked in attendance for this day</param>
+        /// <param name="signedUp"> A volunteer was on the schedule for this day</param>
+        /// <returns>List of volunteer models with the following fields retrieved:
+        ///  First name, last name, list of trainings completed, class id and name, bus id and name</returns>
+        public List<VolunteerModel> GetDaysVolunteers(DateTime day, bool checkedIn, bool signedUp)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT va.volunteerid,
+                                      v.firstname, v.lastname,
+                                      cl.id as classid, cl.description,
+                                      b.id as busid, b.name as busname
+                               FROM Volunteer_Attendance va
+                               LEFT JOIN Volunteers v
+                               ON va.volunteerid = v.id
+                               LEFT JOIN Class_List cl
+                               ON va.volunteerid = cl.teacherid
+                               LEFT JOIN Bus b
+                               ON va.volunteerid = b.driverid
+
+                               WHERE dayattended = @day
+                               AND attended = @checkedIn
+                               AND scheduled = @signedUp";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@checkedIn", NpgsqlTypes.NpgsqlDbType.Bit).Value = checkedIn;
+                    cmd.Parameters.Add("@signedUp", NpgsqlTypes.NpgsqlDbType.Bit).Value = signedUp;
+                    cmd.Parameters.Add("@day", NpgsqlTypes.NpgsqlDbType.Date).Value = day;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<VolunteerModel> volunteers = new List<VolunteerModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                // Not all volunteers have a class and bus id, so check if the DB values are null
+                int? classId = null;
+                if (!DBNull.Value.Equals(dr["classid"]))
+                {
+                    classId = (int)dr["classid"];
+                }
+
+                int? busId = null;
+                if (!DBNull.Value.Equals(dr["busid"]))
+                {
+                    busId = (int)dr["busid"];
+                }
+
+                volunteers.Add(new VolunteerModel
+                {
+                    //Id = (int)dr["volunteerid"],
+                    FirstName = dr["firstName"].ToString(),
+                    LastName = dr["lastName"].ToString(),
+                    Class = new Pair
+                    {
+                        Id = classId,
+                        Name = dr["description"].ToString()
+                    },
+                    Bus = new Pair
+                    {
+                        Id = busId,
+                        Name = dr["busname"].ToString()
+                    },
+                    Trainings = GetVolunteerTrainings((int)dr["volunteerid"]).ToArray(),
+                });
+            }
+
+            return volunteers;
+        }
     }
 }
