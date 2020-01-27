@@ -19,9 +19,9 @@ export class Home extends Component {
         <h1>calendar</h1>
         <Calendar
           localizer = {localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
+          events = {events}
+          startAccessor = "start"
+          endAccessor = "end"
         />
       </div>
     );
