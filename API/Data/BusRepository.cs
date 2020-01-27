@@ -61,7 +61,6 @@ namespace API.Data
         public BusModel GetBus(int id)
         {
             NpgsqlDataAdapter da;
-            BusModel bus;
             DataTable dt = new DataTable();
             DataRow dr;
             string sql = "SELECT * FROM Bus WHERE id = @id LIMIT 1";
