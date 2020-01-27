@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:basic_front/DashboardInactive.dart';
+import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
@@ -305,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Text('Login', style: TextStyle(fontSize: 24)),
                       onPressed: ()
                       {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardInactivePage(title: 'Dashboard')));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(18.0),

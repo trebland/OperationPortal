@@ -40,7 +40,6 @@ namespace API.Controllers
             this.configModel = configModel.Value;
         }
 
-
         [Route("~/api/roster")]
         [HttpGet]
         [AllowAnonymous]
@@ -51,12 +50,180 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    Error = "",
                     BusRoster = repo.GetChildrenBus(busId),
                     ClassRoster = repo.GetChildrenClass(classId)
                 });
             }
             catch (Exception exc) 
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child-creation")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult CreateChild()
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    NextId = repo.CreateChildId()
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child-edit")]
+        [HttpPost]
+        [AllowAnonymous]
+        // Pass in JSON object
+        public IActionResult EditChild(ChildModel child)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                ChildModel updatedChild = repo.EditChild(child);
+                return new JsonResult(new ChildModel
+                {
+                    Id = updatedChild.Id,
+                    // Fields that can be updated:
+                    FirstName = updatedChild.FirstName,
+                    LastName = updatedChild.LastName,
+                    Gender = updatedChild.Gender,
+                    Grade = updatedChild.Grade,
+                    Birthday = updatedChild.Birthday,
+                    Bus = updatedChild.Bus,
+                    Class = updatedChild.Class
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/waiver")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult UpdateWaiver(int childId, bool received)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                repo.UpdateWaiver(childId, received);
+                
+                return new JsonResult(new
+                {
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child-attendance-check")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckAttendance(int childId)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    DaysAttended = repo.GetAttendanceDates(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/suspend")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Suspend(int childId, DateTime start, DateTime end)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Error = repo.Suspend(childId, start, end)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/suspensions")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Suspensions()
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Suspensions = repo.ViewSuspensions()
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/notes-edit")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Notes(int childId, string notes)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Notes = repo.EditNotes(childId, notes)
+                });
+            }
+            catch (Exception exc)
             {
                 return new JsonResult(new
                 {

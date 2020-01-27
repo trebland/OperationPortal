@@ -15,6 +15,7 @@ using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
 using API.Data;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -53,7 +54,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Details(DateTime date)
+        public async Task<IActionResult> Details(DateModel date)
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new
@@ -62,22 +63,96 @@ namespace API.Controllers
             });
         }
 
+        /// <summary>
+        /// Allows a user to sign up to indicate they will be at OCC on a specified date
+        /// </summary>
+        /// <param name="date">The day the user is attending</param>
+        /// <returns>An error message, if an error occurs.  Otherwise, a blank string.</returns>
         [Route("~/api/calendar/signup/single")]
         [HttpPost]
-        public async Task<IActionResult> SignupSingle(DateTime date)
+        public async Task<IActionResult> SignupSingle(DateModel date)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            AttendanceModel attendance = repo.GetSingleAttendance(user.VolunteerId, date.Date);
+
+            if (date.Date.DayOfWeek != DayOfWeek.Saturday)
+            {
+                return Utilities.ErrorJson("Provided date was not a Saturday");
+            }
+
+            if (attendance != null && attendance.Scheduled)
+            {
+                return Utilities.ErrorJson("You are already scheduled on this date");
+            }
+
+            if (attendance == null)
+            {
+                try
+                {
+                    repo.InsertAttendance(new AttendanceModel
+                    {
+                        VolunteerId = user.VolunteerId,
+                        DayAttended = date.Date,
+                        Scheduled = true,
+                        Attended = false,
+                    });
+                }
+                catch (Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    repo.UpdateScheduled(attendance.Id, true);
+                }
+                catch (Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
+            }
+
             return new JsonResult(new
             {
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Allows a user to indicate they will not be present on a day they had previously signed up for.
+        /// </summary>
+        /// <param name="date">The date the user will not be present</param>
+        /// <returns>An error message, if one occurred.  Otherwise, a blank string.</returns>
         [Route("~/api/calendar/cancellation/single")]
         [HttpPost]
-        public async Task<IActionResult> CancelSingle(DateTime date)
+        public async Task<IActionResult> CancelSingle(DateModel date)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            AttendanceModel attendance = repo.GetSingleAttendance(user.VolunteerId, date.Date);
+
+            if (date.Date.DayOfWeek != DayOfWeek.Saturday)
+            {
+                return Utilities.ErrorJson("Provided date was not a Saturday");
+            }
+
+            if ((attendance != null && !attendance.Scheduled) || attendance == null)
+            {
+                return Utilities.ErrorJson("You are not currently scheduled on this date");
+            }
+
+            try
+            {
+                repo.UpdateScheduled(attendance.Id, false);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = ""
