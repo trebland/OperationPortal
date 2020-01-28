@@ -25,12 +25,18 @@ namespace API.Data
         /// <returns>A List of ChildModels belonging to busid</returns>
         public List<ChildModel> GetChildrenBus(int busid)
         {
-            // Connect to DB
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                // Create and run Postgres command.
-                string sql = "SELECT * FROM Child WHERE busid = @busid";
+                string sql = @"SELECT c.*,
+                                      cl.description,
+                                      b.name AS busname
+                              FROM Child c
+                              LEFT JOIN Class_List cl
+                              ON c.classid = cl.id
+                              LEFT JOIN Bus b
+                              ON c.busid = b.id
+                              WHERE c.busid = @busid";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@busid", NpgsqlTypes.NpgsqlDbType.Integer).Value = busid;
@@ -40,7 +46,14 @@ namespace API.Data
                     con.Close();
                 }
             }
-            return GetChildModels(dt);
+
+            List<ChildModel> children = new List<ChildModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                children.Add(GetBasicChildModel(new ChildModel(), dr));
+            }
+
+            return children;
         }
 
         /// <summary>
@@ -53,7 +66,15 @@ namespace API.Data
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = "SELECT * FROM Child WHERE classid = @classid";
+                string sql = @"SELECT c.*,
+                                      cl.description,
+                                      b.name AS busname
+                              FROM Child c
+                              LEFT JOIN Class_List cl
+                              ON c.classid = cl.id
+                              LEFT JOIN Bus b
+                              ON c.busid = b.id
+                              WHERE c.classid = @classid";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@classid", NpgsqlTypes.NpgsqlDbType.Integer).Value = classid;
@@ -63,7 +84,14 @@ namespace API.Data
                     con.Close();
                 }
             }
-            return GetChildModels(dt);
+
+            List<ChildModel> children = new List<ChildModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                children.Add(GetBasicChildModel(new ChildModel(), dr));
+            }
+
+            return children;
         }
 
         /// <summary>
@@ -167,8 +195,15 @@ namespace API.Data
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
-                string sql = @"SELECT * FROM Child
-                             WHERE id = @childid";
+                string sql = @"SELECT c.*,
+                               cl.description,
+                               b.name AS busname
+                        FROM Child c
+                        LEFT JOIN Class_List cl
+                        ON c.classid = cl.id
+                        LEFT JOIN Bus b
+                        ON c.busid = b.id
+                        WHERE c.busid = @busid";
 
                 DataTable dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -223,14 +258,14 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.Bus != null)
+                if (child.Bus != null && child.Bus.Id != null)
                 {
                     parameters.Append($"busid = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.Class != null)
+                if (child.Class != null && child.Class.Id != null)
                 {
                     parameters.Append($"classid = @p{parm},");
                     updated[parm] = true;
@@ -238,7 +273,7 @@ namespace API.Data
 
                 if (parameters.Length == 0) // All fields null - no changes made
                 {
-                    return GetChildModels(dt)[0];
+                    return GetFullChildModel(dt.Rows[0]);
                 }
 
                 parameters.Length = parameters.Length - 1; // Remove last comma
@@ -274,21 +309,28 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus.Id;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
                     }
 
                     cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
                     cmd.ExecuteNonQuery();
                 }
 
-                // Retrieve row that has been updated
-                sql = @"SELECT * FROM Child
-                        WHERE id = @childid";
+                // Retrieve row that has been updated and bus/class name
+                sql = @"SELECT c.*,
+                               cl.description,
+                               b.name AS busname
+                        FROM Child c
+                        LEFT JOIN Class_List cl
+                        ON c.classid = cl.id
+                        LEFT JOIN Bus b
+                        ON c.busid = b.id
+                        WHERE c.busid = @busid";
 
                 dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -300,7 +342,7 @@ namespace API.Data
 
                 con.Close();
 
-                return GetChildModels(dt)[0];
+                return GetFullChildModel(dt.Rows[0]);
             }
         }
 
@@ -433,6 +475,36 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Given a child ID, check if the child is currently suspended
+        /// </summary>
+        public bool IsSuspended(int childId)
+        {
+            DateTime now = DateTime.UtcNow;
+            DataTable dt = new DataTable();
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT startdate, enddate, childId
+                               FROM Child_Suspensions
+                               WHERE startdate <= @now
+                               AND enddate >= @now
+                               AND childid = @childId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            return dt.Rows.Count != 0 ? true : false;
+        }
+
+        /// <summary>
         /// Create child models from a given data table
         /// </summary>
         /// <param name="dt">Data table matching specific criteria</param>
@@ -458,37 +530,61 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Create child models from a given data table
+        /// Fills out all the information from a row retrieved from the Child table to the 
+        /// given child model
         /// </summary>
-        /// <param name="dt">Data table matching specific criteria</param>
-        /// <returns>List of ChildModels formed from the given data table</returns>
-        private List<ChildModel> GetChildModels(DataTable dt)
+        private ChildModel GetFullChildModel(DataRow dr)
         {
-            // For each resulting row, create a ChildModel object and then add it to the list.
-            List<ChildModel> children = new List<ChildModel>();
-            foreach (DataRow dr in dt.Rows)
+            ChildModel child = GetBasicChildModel(new ChildModel(), dr);
+            child.Notes = dr["notes"].ToString();
+            child.WaiverReceived = (bool)dr["waiver"];
+
+            return child;
+        }
+
+        /// <summary>
+        /// Fills out basic information from a given data row to a given child model
+        /// </summary>
+        private ChildModel GetBasicChildModel(ChildModel child, DataRow dr)
+        {
+            int? classId = null;
+            if (!DBNull.Value.Equals(dr["classid"]))
             {
-                children.Add(new ChildModel
-                {
-                    Id = (int)dr["id"],
-                    FirstName = dr["firstName"].ToString(),
-                    LastName = dr["lastName"].ToString(),
-                    Grade = (int)dr["grade"],
-                    Gender = dr["gender"].ToString(),
-                    Class = (int)dr["classid"],
-                    Bus = (int)dr["busid"],
-                    Birthday = dr["birthday"].ToString(),
-                    WaiverReceived = (bool)dr["waiver"],
-                    DatesAttended = GetAttendanceDates((int)dr["id"]),
-                    Notes = dr["notes"].ToString()
-                    //TODO:
-                    //PictureUrl
-                    //suspensions
-                    //relatives
-                });
+                classId = (int)dr["classid"];
             }
 
-            return children;
+            int? busId = null;
+            if (!DBNull.Value.Equals(dr["busid"]))
+            {
+                busId = (int)dr["busid"];
+            }
+
+            int? grade = null;
+            if (!DBNull.Value.Equals(dr["grade"]))
+            {
+                grade = (int)dr["grade"];
+            }
+            child.Id = (int)dr["id"];
+            child.FirstName = dr["firstname"].ToString();
+            child.LastName = dr["lastname"].ToString();
+            child.Gender = dr["gender"].ToString();
+            child.Grade = grade;
+            child.Class = new Pair
+            {
+                Id = classId,
+                Name = dr["description"].ToString()
+            };
+            child.Bus = new Pair
+            {
+                Id = busId,
+                Name = dr["busname"].ToString()
+            };
+            child.Birthday = dr["birthday"].ToString();
+            child.IsSuspended = IsSuspended((int)dr["id"]);
+            //TODO:
+            //PictureUrl
+
+            return child;
         }
 
         /// <summary>
@@ -519,6 +615,41 @@ namespace API.Data
             }
 
             return dates;
+        }
+
+        /// <summary>
+        /// Gets the list of all classes in the database
+        /// </summary>
+        /// <returns>A list of ClassModel objects representing classes, each containing the name and id of a class</returns>
+        public List<ClassModel> GetClasses()
+        {
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = "SELECT * FROM class_list";
+            List<ClassModel> classes = new List<ClassModel>();
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {   
+                    da = new NpgsqlDataAdapter(cmd);
+                    
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                classes.Add(new ClassModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["description"].ToString()
+                });
+            }
+
+            return classes;
         }
     }
 }

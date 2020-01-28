@@ -181,44 +181,235 @@ namespace API.Controllers
             });
         }
 
+        /// <summary>
+        /// Allows OCC staff to create a new event, which users can sign up to attend
+        /// </summary>
+        /// <param name="newEvent">An EventModel object containing the information about the new event.  MUST include name and date, description is optional</param>
+        /// <returns>An error message if an error occured, or an empty string otherwise.</returns>
         [Route("~/api/calendar/event-creation")]
         [HttpPost]
-        public async Task<IActionResult> EventCreation(DateTime date, string name, string description)
+        public async Task<IActionResult> EventCreation(EventModel newEvent)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate that the required fields (name and date) are filled out.
+            // Note that in C#, DateTimes are never null, so instead of checking for null, we check for DateTime.MinValue, which is the 
+            // default value that ASP.NET's model binding will provide if the date is not included in the API call.
+            if (newEvent.Date == DateTime.MinValue || String.IsNullOrEmpty(newEvent.Name))
+            {
+                return Utilities.ErrorJson("The event must have both a name and a date");
+            }
+
+
+            // Insert the new event into the database
+            try
+            {
+                repo.CreateEvent(newEvent.Name, newEvent.Date, String.IsNullOrEmpty(newEvent.Description) ? "" : newEvent.Description);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Allows OCC staff to edit the details (date, description, and/or name) of an event
+        /// </summary>
+        /// <param name="eventModel">An EventModel object.  MUST contain a valid event id, a name, and a date.  Description is optional.</param>
+        /// <returns>An error message, or if no error occurred, a blank string.</returns>
         [Route("~/api/calendar/event-edit")]
         [HttpPost]
-        public async Task<IActionResult> EventEdit(int Id, DateTime date, string name, string description)
+        public async Task<IActionResult> EventEdit(EventModel eventModel)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            EventModel dbEvent;
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate that the required fields (name and date) are filled out.
+            // Note that in C#, DateTimes are never null, so instead of checking for null, we check for DateTime.MinValue, which is the 
+            // default value that ASP.NET's model binding will provide if the date is not included in the API call.
+            if (eventModel.Date == DateTime.MinValue || String.IsNullOrEmpty(eventModel.Name))
+            {
+                return Utilities.ErrorJson("The event must have both a name and a date");
+            }
+            if (eventModel.Id == 0)
+            {
+                return Utilities.ErrorJson("Must specify an event to edit");
+            }
+
+            // If the description is null, set it to an empty string instead just to avoid nulls in the database
+            if (String.IsNullOrEmpty(eventModel.Description))
+            {
+                eventModel.Description = "";
+            }
+
+            // Get the existing event in the database
+            dbEvent = repo.GetEvent(eventModel.Id);
+
+            // Check that the event to be edited actually exists
+            if (dbEvent == null)
+            {
+                return Utilities.ErrorJson("Specified event does not exist");
+            }
+
+            // Update the event in the database
+            try
+            {
+                repo.UpdateEvent(eventModel);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Allows volunteers, volunteer captains, and bus drivers to sign up for events
+        /// </summary>
+        /// <param name="eventId">The id of the event being signed up for</param>
+        /// <returns></returns>
         [Route("~/api/calendar/signup/event")]
         [HttpPost]
-        public async Task<IActionResult> SignupEvent(int eventId)
+        public async Task<IActionResult> SignupEvent(EventViewModel eventViewModel)
         {
+            int eventId = eventViewModel.eventId;
             var user = await userManager.GetUserAsync(User);
+            VolunteerRepository volRepo = new VolunteerRepository(configModel.ConnectionString);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            VolunteerModel volunteer;
+            EventModel eventModel;
+            EventSignupModel signup;
+
+            // Ensure that ONLY volunteer, volunteer captain, and bus driver accounts have access to this API endpoint
+            if (user == null || 
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString()) || 
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString())))
+            {
+                return Utilities.ErrorJson("Event signup is available only to volunteers, volunteer captains, and bus drivers");
+            }
+
+            volunteer = volRepo.GetVolunteer(user.VolunteerId);
+
+            if (volunteer == null)
+            {
+                return Utilities.ErrorJson("Unable to find volunteer profile");
+            }
+
+            eventModel = repo.GetEvent(eventId);
+
+            // Verify that the specified event exists
+            if (eventModel == null)
+            {
+                return Utilities.ErrorJson("Specified event does not exist.");
+            }
+
+            // Check if there is already a record of this user having signed up 
+            signup = repo.GetEventSignup(eventId, volunteer.Id);
+
+            if (signup == null)
+            {
+                // If there is no record of the user signing up, insert a new record into the database
+                try
+                {
+                    repo.CreateEventSignup(eventId, volunteer.Id);
+                }
+                catch(Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
+            }
+            else
+            {
+                // Otherwise the user is already signed up, so we want to tell them
+                return Utilities.ErrorJson("You are already signed up for this event");
+            }
+
             return new JsonResult(new
             {
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Allows volunteers, volunteer captains, and bus drivers to indicate they will not be attending an event they had 
+        /// previously signed up for.
+        /// </summary>
+        /// <param name="eventId">The id of the event the user is no longer attending</param>
+        /// <returns></returns>
         [Route("~/api/calendar/cancellation/event")]
         [HttpPost]
-        public async Task<IActionResult> CancelEvent(int eventId)
+        public async Task<IActionResult> CancelEvent(EventViewModel eventViewModel)
         {
+            int eventId = eventViewModel.eventId;
             var user = await userManager.GetUserAsync(User);
+            VolunteerRepository volRepo = new VolunteerRepository(configModel.ConnectionString);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            VolunteerModel volunteer;
+            EventModel eventModel;
+            EventSignupModel signup;
+
+            // Ensure that ONLY volunteer, volunteer captain, and bus driver accounts have access to this API endpoint
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString())))
+            {
+                return Utilities.ErrorJson("Event signup is available only to volunteers, volunteer captains, and bus drivers");
+            }
+
+            volunteer = volRepo.GetVolunteer(user.VolunteerId);
+
+            if (volunteer == null)
+            {
+                return Utilities.ErrorJson("Unable to find volunteer profile");
+            }
+
+            eventModel = repo.GetEvent(eventId);
+
+            // Verify that the specified event exists
+            if (eventModel == null)
+            {
+                return Utilities.ErrorJson("Specified event does not exist.");
+            }
+
+            // Check if there is already a record of this user having signed up 
+            signup = repo.GetEventSignup(eventId, volunteer.Id);
+
+            if (signup == null)
+            {
+                // If no record exists of the user signing up, or they have already cancelled, then let them know
+                return Utilities.ErrorJson("You are not signed up for this event");
+            }
+            else
+            {
+                // Otherwise, update the record to indicate non-attendance
+                repo.DeleteEventSignup(eventId, volunteer.Id);
+            }
+
             return new JsonResult(new
             {
                 Error = ""

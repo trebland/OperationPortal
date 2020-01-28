@@ -13,6 +13,7 @@ using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
 using API.Models;
 using API.Data;
+using API.Helpers;
 using System;
 using Microsoft.Extensions.Options;
 
@@ -209,6 +210,29 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/child-current-suspension")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckChildSuspension(int childId)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    IsSuspended = repo.IsSuspended(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         [Route("~/api/notes-edit")]
         [HttpPost]
         [AllowAnonymous]
@@ -230,6 +254,40 @@ namespace API.Controllers
                     Error = exc.Message,
                 });
             }
+        }
+
+        /// <summary>
+        /// Lists all classes stored in the system
+        /// </summary>
+        /// <returns>If an error occurred, an error message.  Otherwise, a blank error message and a JSON-formatted array of classes.</returns>
+        [Route("~/api/class-list")]
+        [HttpGet]
+        public async Task<IActionResult> ClassList()
+        {
+            var user = await userManager.GetUserAsync(User);
+            ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+            List<ClassModel> classes;
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            try
+            {
+                classes = repo.GetClasses();
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                classes = classes
+            });
         }
     }
 }

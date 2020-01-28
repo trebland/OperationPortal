@@ -60,6 +60,9 @@ namespace API.Controllers
             // Get the current user's volunteer profile so we can get their name
             volunteer = volunteerRepo.GetVolunteer(user.VolunteerId);
 
+            // Validate the inputs
+            // Note that in C#, DateTimes are never null, so instead of checking for null, we check for DateTime.MinValue, which is the 
+            // default value that ASP.NET's model binding will provide if the date is not included in the API call.
             if (String.IsNullOrEmpty(announcement.Title))
             {
                 return Utilities.ErrorJson("Title field cannot be empty");

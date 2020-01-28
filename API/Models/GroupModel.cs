@@ -14,4 +14,10 @@ namespace API.Models
         public string Phone { get; set; }
         public string Email { get; set; }
     }
+
+    public class GroupSignupViewModel
+    {
+        public DateTime date { get; set; }
+        public GroupModel group { get; set; }
+    }
 }

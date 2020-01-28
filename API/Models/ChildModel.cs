@@ -12,8 +12,8 @@ namespace API.Models
         public string LastName { get; set; }
         public string Gender { get; set; }
         public int? Grade { get; set; }
-        public int? Class { get; set; }
-        public int? Bus { get; set; }
+        public Pair Class { get; set; }
+        public Pair Bus { get; set; }
         public string Birthday { get; set; }
         public string PictureUrl { get; set; }
         public bool WaiverReceived { get; set; }
@@ -22,5 +22,6 @@ namespace API.Models
         public List<int> Relatives { get; set; } // IDs of relatives
         public List<DateTime> DatesAttended { get; set; }
         public string Notes { get; set; }
+        public bool IsSuspended { get; set; }
     }
 }
