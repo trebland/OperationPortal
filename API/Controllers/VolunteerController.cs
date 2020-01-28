@@ -216,6 +216,29 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/volunteers-for-day")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult VolunteersForDay(DateTime day, bool checkedIn, bool signedUp)
+        {
+            try
+            {
+                VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Volunteers = repo.GetDaysVolunteers(day, checkedIn, signedUp)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         // I was using this temporarily while I hadn't finished updating the register action to work with the DB.  It's no longer necessary,
         // so I'll remove it once I've had the chance to test the register action a bit more heavily.
         //[Route("~/api/volunteer-create-temp")]

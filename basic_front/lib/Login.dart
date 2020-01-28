@@ -6,6 +6,10 @@ import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
+import 'Staff/Staff_ActiveDashboard.dart';
+import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -104,6 +108,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  FocusNode usernameNode = new FocusNode();
+  FocusNode passwordNode = new FocusNode();
+  FocusNode confirmPasswordNode = new FocusNode();
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -119,24 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       resizeToAvoidBottomPadding: true,
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -186,7 +183,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Flexible(
                               child: TextField(
+                                onSubmitted: (String value) {
+                                  FocusScope.of(context).requestFocus(passwordNode);
+                                },
                                 textAlign: TextAlign.left,
+                                controller: _emailController,
                                 decoration: new InputDecoration(
                                   hintText: 'Email',
                                   border: new OutlineInputBorder(
@@ -233,6 +234,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             Flexible(
                               child: TextField(
                                 textAlign: TextAlign.left,
+                                focusNode: passwordNode,
+                                controller: _passwordController,
                                 decoration: new InputDecoration(
                                   hintText: 'Password',
                                   border: new OutlineInputBorder(
@@ -296,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             /// We use [Builder] here to use a [context] that is a descendant of [Scaffold]
             /// or else [Scaffold.of] will return null
-            Expanded (
+            Container (
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: new SizedBox(
@@ -305,7 +308,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Text('Login', style: TextStyle(fontSize: 24)),
                       onPressed: ()
                       {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
+                        if (_emailController.text == "st")
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
+                        else if (_emailController.text == "bd")
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
+                        else if (_emailController.text == "vc")
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
+                        else
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(18.0),

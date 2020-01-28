@@ -3,8 +3,8 @@ import reactDOM from "react-dom";
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
-import { LoginBox } from './pages/LoginBox';
-import { RegisterBox } from './pages/RegisterBox';
+import { LoginBox } from './components/LoginBox';
+import { RegisterBox } from './components/RegisterBox';
 
 import './custom.css'
 

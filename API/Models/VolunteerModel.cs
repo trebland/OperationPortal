@@ -22,5 +22,12 @@ namespace API.Models
         public string[] AgesInterested { get; set; }
         public bool Newsletter { get; set; }
         public bool ContactWhenShort { get; set; }
+        public Pair Bus { get; set; }
+        public Pair Class { get; set; }
+    }
+    public class Pair
+    {
+        public int? Id { get; set; }
+        public string Name { get; set; }
     }
 }
