@@ -119,5 +119,185 @@ namespace API.Data
                 }
             }
         }
+
+        /// <summary>
+        /// Inserts a new event into the database
+        /// </summary>
+        /// <param name="name">The name of the new event</param>
+        /// <param name="date">The date the new event is being held</param>
+        /// <param name="desc">The description of the new event</param>
+        public void CreateEvent(string name, DateTime date, string desc)
+        {
+            string sql = @"INSERT INTO events (name, dayheld, description) 
+                           VALUES (@name, @date, @desc)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    cmd.Parameters.Add("@desc", NpgsqlTypes.NpgsqlDbType.Varchar).Value = desc;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a specific event from the database by id
+        /// </summary>
+        /// <param name="id">The id of the event to be retrieved</param>
+        /// <returns>An EventModel object representing the event</returns>
+        public EventModel GetEvent(int id)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            DataRow dr;
+            string sql = "SELECT * FROM events WHERE id = @id LIMIT 1";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // Check to make sure a row was returned.  Because of the LIMIT 1 there 
+            // will never be more than one result - only 1 or 0.
+            if (dt.Rows.Count != 1)
+            {
+                return null;
+            }
+
+            // We want to use the one remaining row to create the EventModel object, then return it.
+            dr = dt.Rows[0];
+            return new EventModel
+            {
+                Id = (int)dr["id"],
+                Date = Convert.ToDateTime(dr["dayheld"]),
+                Name = dr["name"].ToString(),
+                Description = dr["description"].ToString()
+            };
+        }
+
+        /// <summary>
+        /// Updates an existing event in the database.
+        /// </summary>
+        /// <param name="eventModel">The EventModel representation of the new state of the event.  Should include id, name, date, and description</param>
+        public void UpdateEvent(EventModel eventModel)
+        {
+            string sql = @"UPDATE events SET name = @name, dayheld = @date, description = @desc WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = eventModel.Id;
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = eventModel.Name;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = eventModel.Date;
+                    cmd.Parameters.Add("@desc", NpgsqlTypes.NpgsqlDbType.Varchar).Value = eventModel.Description;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        public EventSignupModel GetEventSignup(int eventId, int VolunteerId)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            DataRow dr;
+            string sql = "SELECT * FROM event_signup WHERE eventid = @eid AND volunteerid = @vid LIMIT 1";
+
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@eid", NpgsqlTypes.NpgsqlDbType.Integer).Value = eventId;
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = VolunteerId;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // Check to make sure a row was returned.  Because of the LIMIT 1 there 
+            // will never be more than one result - only 1 or 0.
+            if (dt.Rows.Count != 1)
+            {
+                return null;
+            }
+
+            // We want to use the one remaining row to create the EventModel object, then return it.
+            dr = dt.Rows[0];
+            return new EventSignupModel
+            {
+                EventId = (int)dr["eventid"],
+                VolunteerId = (int)dr["volunteerid"]
+            };
+        }
+
+        public void CreateEventSignup(int eventId, int VolunteerId)
+        {
+            string sql = @"INSERT INTO event_signup (eventid, volunteerid) 
+                           VALUES (@eid, @vid)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@eid", NpgsqlTypes.NpgsqlDbType.Integer).Value = eventId;
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = VolunteerId;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        public void DeleteEventSignup (int eventId, int VolunteerId)
+        {
+            string sql = @"DELETE FROM event_signup WHERE eventid = @eid AND volunteerid = @vid";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@eid", NpgsqlTypes.NpgsqlDbType.Integer).Value = eventId;
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = VolunteerId;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
     }
 }

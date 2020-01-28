@@ -12,4 +12,16 @@ namespace API.Models
         public DateTime Date { get; set; }
         public String Description { get; set; }
     }
+
+    public class EventViewModel
+    {
+        public int eventId { get; set; }
+    }
+
+    public class EventSignupModel
+    {
+        public int VolunteerId { get; set; }
+        public int EventId { get; set; }
+        public bool SignUp { get; set; }
+    }
 }
