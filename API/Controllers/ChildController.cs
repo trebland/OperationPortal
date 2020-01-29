@@ -210,6 +210,29 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/child-current-suspension")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult CheckChildSuspension(int childId)
+        {
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    IsSuspended = repo.IsSuspended(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         [Route("~/api/notes-edit")]
         [HttpPost]
         [AllowAnonymous]
