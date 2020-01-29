@@ -121,6 +121,95 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Inserts a new group record into the database
+        /// </summary>
+        /// <param name="date">The date the group is signed up to volunteer</param>
+        /// <param name="group">A GroupModel object representing the group</param>
+        public void CreateGroup (DateTime date, GroupModel group)
+        {
+            string sql = @"INSERT INTO volunteer_groups (name, count, phone, email, date, leadername) 
+                           VALUES (@name, @count, @phone, @email, @date, @leader)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = group.Name;
+                    cmd.Parameters.Add("@count", NpgsqlTypes.NpgsqlDbType.Integer).Value = group.Count;
+                    cmd.Parameters.Add("@phone", NpgsqlTypes.NpgsqlDbType.Varchar).Value = group.Phone;
+                    cmd.Parameters.Add("@email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = group.Email;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    cmd.Parameters.Add("@leader", NpgsqlTypes.NpgsqlDbType.Varchar).Value = group.LeaderName;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if a group is signed up to volunteer on a specific date
+        /// </summary>
+        /// <param name="date">The date to be checked</param>
+        /// <param name="groupId">The id of the group in question</param>
+        /// <returns>True if the group is signed up, false otherwise</returns>
+        public bool CheckGroupSignup (DateTime date, int groupId)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            string sql = "SELECT * FROM volunteer_groups WHERE Date = @date AND id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = groupId;
+
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Deletes the record of a group having been signed up on a particular day
+        /// </summary>
+        /// <param name="date">The Date to delete the record from</param>
+        /// <param name="groupId">The id of the group that is no longer signed up</param>
+        public void DeleteGroupSignup(DateTime date, int groupId)
+        {
+            string sql = "DELETE FROM volunteer_groups WHERE Date = @date AND id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = groupId;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
         /// Inserts a new event into the database
         /// </summary>
         /// <param name="name">The name of the new event</param>
@@ -219,6 +308,16 @@ namespace API.Data
             }
         }
 
+
+        /// <summary>
+        /// Gets the record (if one exists) of a user having signed up for a particular event
+        /// </summary>
+        /// <param name="eventId">The id of the event</param>
+        /// <param name="VolunteerId">The id of the volunteer in question</param>
+        /// <returns>
+        /// An EventSignupModel with the ids of the volunteer and event.  Since both of those are known prior to calling, 
+        /// the primary value here is in whether or not it returns null.
+        /// </returns>
         public EventSignupModel GetEventSignup(int eventId, int VolunteerId)
         {
             NpgsqlDataAdapter da;
@@ -259,6 +358,11 @@ namespace API.Data
             };
         }
 
+        /// <summary>
+        /// Adds a record indicating a volunteer will be attending an event
+        /// </summary>
+        /// <param name="eventId">The id of the event</param>
+        /// <param name="VolunteerId">The id of the volunteer</param>
         public void CreateEventSignup(int eventId, int VolunteerId)
         {
             string sql = @"INSERT INTO event_signup (eventid, volunteerid) 
@@ -280,6 +384,11 @@ namespace API.Data
             }
         }
 
+        /// <summary>
+        /// Deletes the record that a specific volunteer will be attending a specific event
+        /// </summary>
+        /// <param name="eventId">The id of the event</param>
+        /// <param name="VolunteerId">The id of the volunteer</param>
         public void DeleteEventSignup (int eventId, int VolunteerId)
         {
             string sql = @"DELETE FROM event_signup WHERE eventid = @eid AND volunteerid = @vid";
