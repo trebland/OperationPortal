@@ -45,6 +45,7 @@ namespace API.Controllers
         [Route("~/api/calendar")]
         [HttpGet]
         public async Task<IActionResult> Get()
+
         {
             var user = await userManager.GetUserAsync(User);
             return new JsonResult(new {
@@ -159,22 +160,111 @@ namespace API.Controllers
             });
         }
 
+        /// <summary>
+        /// Allows staff to sign up a group (a youth group, school group, etc.) up to volunteer on a Saturday
+        /// </summary>
+        /// <param name="vm">
+        /// A viewmodel consisting of two main parts: a DateTime (called date) and a GroupModel object.
+        /// The GroupModel must have a name, count, leadername, email, and phone.
+        /// The DateTime cannot be DateTime.MinValue (the default if one is not provided)
+        /// </param>
+        /// <returns>An error message, or a blank string if no error occurred</returns>
         [Route("~/api/calendar/signup/group")]
         [HttpPost]
-        public async Task<IActionResult> SignupGroup(DateTime date, GroupModel group)
+        public async Task<IActionResult> SignupGroup(GroupSignupViewModel vm)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Verify that all of the inputs are valid
+            // Note that I check if the date is equal to DateTime.MinValue, not null, as DateTime cannot be null in C#
+            if (String.IsNullOrEmpty(vm.Group.Name) || String.IsNullOrEmpty(vm.Group.LeaderName) || String.IsNullOrEmpty(vm.Group.Email)
+                || String.IsNullOrEmpty(vm.Group.Phone) || vm.Date == DateTime.MinValue)
+            {
+                return Utilities.ErrorJson("Name, Leader Name, Email, Phone, and Date are all required.");
+            }
+
+            // Check that there are not 0 (or fewer, in the case of fake inputs) volunteers in the group
+            if (vm.Group.Count <= 0)
+            {
+                return Utilities.ErrorJson("Groups must not have no volunteers");
+            }
+
+            // Verify that the specified date is a saturday
+            if (vm.Date.DayOfWeek != DayOfWeek.Saturday)
+            {
+                return Utilities.ErrorJson("Date provided should be for a Saturday");
+            }
+
+            // Insert the group into the database
+            try
+            {
+                repo.CreateGroup(vm.Date, vm.Group);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Allows staff to delete the record of a group (a youth group, school group, etc.) having signed up to volunteer on a Saturday
+        /// </summary>
+        /// <param name="vm">
+        /// A viewmodel consisting of two main parts: a DateTime (called date) and a group id.
+        /// The DateTime cannot be DateTime.MinValue (the default if one is not provided)
+        /// </param>
+        /// <returns>An error message, or a blank string if no error occurred</returns>
         [Route("~/api/calendar/cancellation/group")]
         [HttpPost]
-        public async Task<IActionResult> CancelGroup(DateTime date, int groupId)
+        public async Task<IActionResult> CancelGroup(GroupCancelViewModel vm)
         {
             var user = await userManager.GetUserAsync(User);
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Check that all inputs were provided
+            if (vm.Date == DateTime.MinValue)
+            {
+                return Utilities.ErrorJson("Must provide a date");
+            }
+            if (vm.GroupId == 0)
+            {
+                return Utilities.ErrorJson("Must provide a group ID");
+            }
+
+            // Check if the group is actually signed up on this date
+            if (!repo.CheckGroupSignup(vm.Date, vm.GroupId))
+            {
+                return Utilities.ErrorJson("This group is not signed up on this date.");
+            }
+
+            // Delete the record of having signed up from the database
+            try
+            {
+                repo.DeleteGroupSignup(vm.Date, vm.GroupId);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = ""
