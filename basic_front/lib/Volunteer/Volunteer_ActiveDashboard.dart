@@ -36,9 +36,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
 {
 
   final List<Tab> myTabs = <Tab>[
-    Tab(text: 'Dashboard'),
-    Tab(text: 'Roster'),
-    Tab(text: 'Settings'),
+    Tab(text: 'Roster')
   ];
 
   final items = List<String>.generate(50, (i) => "Item $i");
@@ -96,81 +94,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
       body: TabBarView(
       controller: _tabController,
       children: myTabs.map((Tab tab) {
-        if (tab.text == "Dashboard")
-          return Center(
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Invoke "debug painting" (press "p" in the console, choose the
-              // "Toggle Debug Paint" action from the Flutter Inspector in Android
-              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-              // to see the wireframe for each widget.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-
-                Container(
-                  child: Image(
-                      image: AssetImage('assets/OCC_LOGO_128_128.png')
-                  ),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
-                    ),
-                  ),
-                  height: 200,
-                  width: 200,
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.only(bottom: 5),
-                ),
-                Container(
-                  child: Text("Mark Hamilton", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.white),),
-                  decoration: new BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
-                    ),
-                  ),
-                  padding: EdgeInsets.all(20),
-                ),
-                Container(
-                  child: Text("Volunteer", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.blue),),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.only(
-                        bottomLeft: new Radius.circular(20), bottomRight: new Radius.circular(20)
-                    ),
-                  ),
-                  padding: EdgeInsets.all(20),
-                ),
-                Container(
-                  child: Text("Successfully Signed In.", textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 28, color: Colors.blue)),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
-                    ),
-                  ),
-                  width: 250,
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.only(top: 20, bottom: 5),
-                ),
-              ],
-            ),
-          );
-        else if(tab.text == "Roster")
+        if(tab.text == "Roster")
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

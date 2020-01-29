@@ -161,46 +161,55 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                   padding: EdgeInsets.all(10),
                   margin: EdgeInsets.all(10),
                 ),
-                Container(
-                  child: IntrinsicHeight(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>
-                        [
-                          Container(
-                            child: Image(
-                                image: AssetImage('assets/OCC_LOGO_128_128.png')
+                Expanded(
+                  child: new ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: names.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return
+                        Container(
+                          child: IntrinsicHeight(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>
+                                [
+                                  Container(
+                                    child: Image(
+                                        image: AssetImage('assets/OCC_LOGO_128_128.png')
+                                    ),
+                                    decoration: new BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: new BorderRadius.all(
+                                          new Radius.circular(20)
+                                      ),
+                                    ),
+                                    height: 200,
+                                    width: 200,
+                                    padding: EdgeInsets.all(5),
+                                    margin: EdgeInsets.only(bottom: 10),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      "First-Name\nLast-Name",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 40, color: Colors.white),
+                                    ),
+                                  ),
+                                ]
                             ),
-                            decoration: new BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: new BorderRadius.all(
-                                  new Radius.circular(20)
-                              ),
-                            ),
-                            height: 200,
-                            width: 200,
-                            padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 10),
                           ),
-                          Flexible(
-                            child: Text(
-                              "First-Name Last-Name",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 28, color: Colors.white),
+                          decoration: new BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: new BorderRadius.all(
+                                new Radius.circular(20)
                             ),
                           ),
-                        ]
-                    ),
+                          padding: EdgeInsets.all(10),
+                          margin: EdgeInsets.all(10),
+                        );
+                    },
                   ),
-                  decoration: new BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
-                    ),
-                  ),
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
                 ),
                 Container(
                   child: FlatButton(
