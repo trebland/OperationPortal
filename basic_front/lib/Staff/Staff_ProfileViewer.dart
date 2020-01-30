@@ -88,7 +88,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                         child: Text(
                           widget.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28),
                         ),
                       ),
                     ]
@@ -99,39 +99,14 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
             Container(
               child: IntrinsicHeight(
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: FlatButton(
-                          child: Text("QR Code"),
-                          onPressed: () => null,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.only(left: 10),
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.only(top: 10, left: 10),
-            ),
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>
                     [
                       Container(
                         child: FlatButton(
-                          child: Text("Manage Suspension"),
+                          child: Text("Manage Suspension",
+                          style: TextStyle(color: Colors.white)),
                           onPressed: () => null,
                         ),
                         decoration: new BoxDecoration(
@@ -145,7 +120,8 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       ),
                       Container(
                         child: FlatButton(
-                          child: Text("Suspended"),
+                          child: Text("Suspended",
+                              style: TextStyle(color: Colors.white)),
                           onPressed: widget.isSuspended ? () {} : null,
                         ),
                         decoration: new BoxDecoration(
@@ -178,14 +154,14 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                               child: Text(
                                 "Birthday",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             Container(
                               child: Text(
                                 "September 5th, 2010",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
@@ -193,26 +169,26 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                         margin: EdgeInsets.only(right: 20),
                       ),
                       Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              child: Text(
-                                "Grade",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Text(
+                                  "Grade",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
-                            ),
-                            Container(
-                              child: Text(
-                                "4th",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              Container(
+                                child: Text(
+                                  "4th",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
+                            ],
+                          )
                       ),
                     ]
                 ),
@@ -242,7 +218,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       ),
                       Container(
                         child: FlatButton(
-                          child: Text("Add Note"),
+                          child: Text("Add Note", style: TextStyle(color: Colors.white)),
                           onPressed: () => null,
                         ),
                         decoration: new BoxDecoration(
@@ -265,7 +241,8 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       child: ListTile(
-                        title: Text('${notes[index]}'),
+                        title: Text('${notes[index]}',
+                            style: TextStyle(color: Colors.white)),
                         trailing: PopupMenuButton<Choice>(
                           onSelected: _select,
                           itemBuilder: (BuildContext context) {

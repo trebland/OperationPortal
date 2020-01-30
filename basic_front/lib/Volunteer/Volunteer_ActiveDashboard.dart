@@ -101,16 +101,27 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  child: Text("Bus Route #3", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.white),),
-                  decoration: new BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: new BorderRadius.all(
-                        new Radius.circular(20)
+                  child: IntrinsicHeight(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>
+                        [
+                          Container(
+                            child: Text("Bus Route #3", textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 28, color: Colors.white),),
+                            decoration: new BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(20)
+                              ),
+                            ),
+                            padding: EdgeInsets.all(20),
+                          ),
+                        ]
                     ),
                   ),
-                  padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+                  margin: EdgeInsets.all(10),
                 ),
                 Container(
                   child: IntrinsicHeight(
@@ -149,14 +160,14 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
                                   ),
                                 ),
                               ),
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(fontSize: 16, color: Colors.black),
                             ),
                           ),
                           Container(
-                            child: FlatButton(
-                              child: Text("Add Child"),
-                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
-                            )
+                              child: FlatButton(
+                                  child: Text("Add Child"),
+                                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                              )
                           )
                         ]
                     ),
@@ -169,7 +180,8 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
                         child: ListTile(
-                          title: Text('${names[index]}'),
+                          title: Text('${names[index]}',
+                          style: TextStyle(color: Colors.white)),
                           trailing: PopupMenuButton<Choice>(
                             onSelected: _select,
                             itemBuilder: (BuildContext context) {
@@ -189,7 +201,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
                 ),
               ],
             )
-          );
+        );
         else
           return Center(
           );

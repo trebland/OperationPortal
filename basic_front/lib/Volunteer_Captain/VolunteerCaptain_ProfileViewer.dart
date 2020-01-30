@@ -84,27 +84,13 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
                         child: Text(
                           widget.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28),
                         ),
                       ),
                     ]
                 ),
               ),
               margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-            ),
-            Container(
-              child: FlatButton(
-                child: Text("QR Code"),
-                onPressed: () => null,
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.blue,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.only(left: 10),
             ),
             Container(
               child: IntrinsicHeight(
@@ -122,14 +108,14 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
                               child: Text(
                                 "Birthday",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             Container(
                               child: Text(
                                 "September 5th, 2010",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
@@ -145,14 +131,14 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
                               child: Text(
                                 "Grade",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             Container(
                               child: Text(
                                 "4th",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
@@ -186,7 +172,7 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
                       ),
                       Container(
                         child: FlatButton(
-                          child: Text("Add Note"),
+                          child: Text("Add Note", style: TextStyle(color: Colors.white)),
                           onPressed: () => null,
                         ),
                         decoration: new BoxDecoration(
@@ -209,7 +195,8 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       child: ListTile(
-                        title: Text('${notes[index]}'),
+                        title: Text('${notes[index]}',
+                        style: TextStyle(color: Colors.white)),
                         trailing: PopupMenuButton<Choice>(
                           onSelected: _select,
                           itemBuilder: (BuildContext context) {

@@ -84,27 +84,13 @@ class VolunteerCaptain_VolunteerProfileViewer_State extends State<VolunteerCapta
                       child: Text(
                         widget.title,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 28, color: Colors.white),
+                        style: TextStyle(fontSize: 28),
                       ),
                     ),
                   ]
               ),
             ),
             margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-          ),
-          Container(
-            child: FlatButton(
-              child: Text("QR Code"),
-              onPressed: () => null,
-            ),
-            decoration: new BoxDecoration(
-              color: Colors.blue,
-              borderRadius: new BorderRadius.all(
-                  new Radius.circular(20)
-              ),
-            ),
-            padding: EdgeInsets.all(5),
-            margin: EdgeInsets.only(left: 10),
           ),
           Container(
             child: IntrinsicHeight(
@@ -122,14 +108,14 @@ class VolunteerCaptain_VolunteerProfileViewer_State extends State<VolunteerCapta
                             child: Text(
                               "Started Volunteering",
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                           Container(
                             child: Text(
                               "October 7th, 2018",
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ],
@@ -145,14 +131,14 @@ class VolunteerCaptain_VolunteerProfileViewer_State extends State<VolunteerCapta
                               child: Text(
                                 "Verification Forms Filled?",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             Container(
                               child: Text(
                                 "Yes",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ],

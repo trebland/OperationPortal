@@ -70,7 +70,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                       ),
                     ),
                   ),
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ]
@@ -119,7 +119,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                       ),
                     ),
                   ),
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ]
@@ -168,7 +168,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                       ),
                     ),
                   ),
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ]
@@ -217,7 +217,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                       ),
                     ),
                   ),
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ]

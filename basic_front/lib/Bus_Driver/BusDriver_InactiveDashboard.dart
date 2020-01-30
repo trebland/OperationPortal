@@ -58,39 +58,43 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-
             Container(
-              child: Image(
-                  image: AssetImage('assets/OCC_LOGO_128_128.png')
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.white,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Image(
+                            image: AssetImage('assets/OCC_LOGO_128_128.png')
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        height: 200,
+                        width: 200,
+                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      Flexible(
+                        child: Text(
+                          "First-Name\nLast-Name",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 40),
+                        ),
+                      ),
+                    ]
                 ),
               ),
-              height: 200,
-              width: 200,
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.only(bottom: 5),
-            ),
-
-            Container(
-              child: Text("Mark Hamilton", textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, color: Colors.white),),
-              decoration: new BoxDecoration(
-                color: Colors.blue,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
-                ),
-              ),
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.only(top: 20, bottom: 5),
             ),
 
             Container (
               child: FlatButton(
-                child: const Text('Present QR Code', style: TextStyle(fontSize: 24)),
+                child: const Text('Scan QR Code', style: TextStyle(fontSize: 24, color: Colors.white)),
                 onPressed: ()
                 {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(title: 'Dashboard')));
@@ -109,13 +113,6 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
             Container(
               child: Text("Please present your QR code to staff in-order to begin volunteering.", textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 28, color: Colors.blue)),
-              decoration: new BoxDecoration(
-                color: Colors.white,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
-                ),
-              ),
-              width: 250,
               padding: EdgeInsets.all(5),
               margin: EdgeInsets.only(top: 20, bottom: 5),
             ),

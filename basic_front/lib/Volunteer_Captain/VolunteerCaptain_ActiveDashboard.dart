@@ -145,11 +145,11 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                   padding: EdgeInsets.all(20),
                                 ),
                                 Flexible(
-                                    child: FlatButton (
-                                      child: Text("Change Route"),
-                                      onPressed: () => null,
-                                    )
-                                ),
+                                  child: FlatButton(
+                                    child: Text("Change Route"),
+                                    onPressed: () => null,
+                                  )
+                                )
                               ]
                           ),
                         ),
@@ -192,7 +192,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                         ),
                                       ),
                                     ),
-                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                    style: TextStyle(fontSize: 16, color: Colors.black),
                                   ),
                                 ),
                                 Container(
@@ -212,7 +212,8 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
                               child: ListTile(
-                                title: Text('${names[index]}'),
+                                title: Text('${names[index]}',
+                                    style: TextStyle(color: Colors.white)),
                                 trailing: PopupMenuButton<Choice>(
                                   onSelected: _select,
                                   itemBuilder: (BuildContext context) {
@@ -276,7 +277,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                         ),
                                       ),
                                     ),
-                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                    style: TextStyle(fontSize: 16, color: Colors.black),
                                   ),
                                 ),
                               ]
@@ -290,8 +291,10 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
                               child: ListTile(
-                                title: Text('${volunteers[index].name}'),
-                                trailing: Text('${volunteers[index].route}'),
+                                title: Text('${volunteers[index].name}',
+                                style: TextStyle(color: Colors.white)),
+                                trailing: Text('${volunteers[index].route}',
+                                    style: TextStyle(color: Colors.white)),
                                 onTap: ()
                                 {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_VolunteerProfileViewer_Page(title: '${volunteers[index].name}')));

@@ -5,6 +5,7 @@ import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_VolunteerProfileV
 import 'package:flutter/material.dart';
 
 import 'Staff_ProfileViewer.dart';
+import 'Staff_VolunteerProfileViewer.dart';
 
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.title}) : super(key: key);
@@ -164,7 +165,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                         children: <Widget>
                         [
                           Flexible(
-                            child: Text("Recent Volunteer", style: TextStyle(fontSize: 30),),
+                            child: Text("Recent Volunteer", style: TextStyle(fontSize: 30, color: Colors.white),),
                           ),
                           Container(
                             child: FlatButton(
@@ -247,32 +248,36 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                             ),
                             margin: EdgeInsets.only(right: 20)
                           ),
-                          DropdownButton<String>(
-                            value: dropdownValue,
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: TextStyle(
-                                color: Colors.white
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              canvasColor: Colors.blue,
                             ),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.amberAccent,
+                            child: DropdownButton<String>(
+                              value: dropdownValue,
+                              icon: Icon(Icons.arrow_downward),
+                              iconSize: 24,
+                              elevation: 16,
+                              style: TextStyle(
+                                  color: Colors.white
+                              ),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.amberAccent,
+                              ),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  dropdownValue = newValue;
+                                });
+                              },
+                              items: <String>['One', 'Two', 'Three', 'Four']
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                             ),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                dropdownValue = newValue;
-                              });
-                            },
-                            items: <String>['One', 'Two', 'Three', 'Four']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            })
-                                .toList(),
-                          )
+                          ),
                         ]
                     ),
                   ),
@@ -347,7 +352,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                 ),
                 Container(
                   child: FlatButton(
-                    child: Text("Confirm Assignment", style: TextStyle(fontSize: 20),),
+                    child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
                     onPressed: () => null,
                   ),
                   decoration: new BoxDecoration(
@@ -404,7 +409,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     ),
                                   ),
                                 ),
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ),
                           ]
@@ -418,11 +423,13 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           child: ListTile(
-                            title: Text('${volunteers[index].name}'),
-                            trailing: Text('${volunteers[index].route}'),
+                            title: Text('${volunteers[index].name}',
+                                style: TextStyle(color: Colors.white)),
+                            trailing: Text('${volunteers[index].route}',
+                                style: TextStyle(color: Colors.white)),
                             onTap: ()
                             {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_VolunteerProfileViewer_Page(title: '${volunteers[index].name}')));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_VolunteerProfileViewer_Page(title: '${volunteers[index].name}')));
                             },
                             dense: false,
                           ),
@@ -436,110 +443,117 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
           );
         else if(tab.text == "Roster")
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: IntrinsicHeight(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>
-                        [
-                          Container(
-                            child: Text("Bus Route #3", textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 28, color: Colors.white),),
-                            decoration: new BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: new BorderRadius.all(
-                                  new Radius.circular(20)
-                              ),
-                            ),
-                            padding: EdgeInsets.all(20),
-                          ),
-                        ]
-                    ),
-                  ),
-                  margin: EdgeInsets.all(10),
-                ),
-                Container(
-                  child: IntrinsicHeight(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>
-                        [
-                          Container(
-                            child: Icon(
-                              Icons.search,
-                              size: 40,
-                            ),
-                            decoration: new BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: new BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                bottomLeft: Radius.circular(20),
-                              ),
-                            ),
-                            padding: EdgeInsets.only(left: 5),
-                          ),
-                          Flexible(
-                            child: TextField(
-                              textAlign: TextAlign.left,
-                              decoration: new InputDecoration(
-                                hintText: 'Search...',
-                                border: new OutlineInputBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    bottomRight: Radius.circular(20),
-                                  ),
-                                  borderSide: new BorderSide(
-                                    color: Colors.black,
-                                    width: 0.5,
-                                  ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: IntrinsicHeight(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>
+                          [
+                            Container(
+                              child: Text("Bus Route #3", textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 28, color: Colors.white),),
+                              decoration: new BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: new BorderRadius.all(
+                                    new Radius.circular(20)
                                 ),
                               ),
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              padding: EdgeInsets.all(20),
                             ),
-                          ),
-                          Container(
-                            child: FlatButton(
-                              child: Text("Add Child"),
-                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                            Flexible(
+                                child: FlatButton(
+                                  child: Text("Change Route"),
+                                  onPressed: () => null,
+                                )
                             )
-                          )
-                        ]
+                          ]
+                      ),
+                    ),
+                    margin: EdgeInsets.all(10),
+                  ),
+                  Container(
+                    child: IntrinsicHeight(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>
+                          [
+                            Container(
+                              child: Icon(
+                                Icons.search,
+                                size: 40,
+                              ),
+                              decoration: new BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: new BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
+                                ),
+                              ),
+                              padding: EdgeInsets.only(left: 5),
+                            ),
+                            Flexible(
+                              child: TextField(
+                                textAlign: TextAlign.left,
+                                decoration: new InputDecoration(
+                                  hintText: 'Search...',
+                                  border: new OutlineInputBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20),
+                                    ),
+                                    borderSide: new BorderSide(
+                                      color: Colors.black,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                ),
+                                style: TextStyle(fontSize: 16, color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                                child: FlatButton(
+                                    child: Text("Add Child"),
+                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                                )
+                            )
+                          ]
+                      ),
+                    ),
+                    margin: EdgeInsets.only(left: 10, bottom: 10),
+                  ),
+                  Expanded(
+                    child: new ListView.builder(
+                      itemCount: names.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          child: ListTile(
+                            title: Text('${names[index]}',
+                                style: TextStyle(color: Colors.white)),
+                            trailing: PopupMenuButton<Choice>(
+                              onSelected: _select,
+                              itemBuilder: (BuildContext context) {
+                                return ReturnDummyList();
+                              },
+                            ),
+                            onTap: ()
+                            {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}', isSuspended: false,)));
+                            },
+                            dense: false,
+                          ),
+                          color: Colors.blue[colorCodes[index%2]],
+                        );
+                      },
                     ),
                   ),
-                  margin: EdgeInsets.only(left: 10, bottom: 10),
-                ),
-                Expanded(
-                  child: new ListView.builder(
-                    itemCount: names.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        child: ListTile(
-                          title: Text('${names[index]}'),
-                          trailing: PopupMenuButton<Choice>(
-                            onSelected: _select,
-                            itemBuilder: (BuildContext context) {
-                              return ReturnDummyList();
-                            },
-                          ),
-                          onTap: ()
-                          {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}', isSuspended: false,)));
-                          },
-                          dense: false,
-                        ),
-                        color: Colors.blue[colorCodes[index%2]],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            )
+                ],
+              )
           );
         else
           return Center(
@@ -584,7 +598,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     ),
                                   ),
                                 ),
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ]
@@ -598,7 +612,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           child: ListTile(
-                            title: Text('${suspendedNames[index]}'),
+                            title: Text('${suspendedNames[index]}',
+                                style: TextStyle(color: Colors.white)),
                             onTap: ()
                             {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}', isSuspended: true,)));

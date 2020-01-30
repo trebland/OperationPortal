@@ -28,7 +28,14 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        brightness: Brightness.dark
+        primarySwatch: Colors.amber,
+        secondaryHeaderColor: Colors.amberAccent,
+        primaryTextTheme: TextTheme(
+          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+          title: TextStyle(fontSize: 24.0),
+          body1: TextStyle(fontSize: 14.0, color: Colors.black),
+        ),
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: LoginPage(title: 'Operation Portal Login'),
     );
@@ -193,7 +200,6 @@ class LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ]
@@ -241,7 +247,6 @@ class LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ]
@@ -291,7 +296,7 @@ class LoginPageState extends State<LoginPage> {
                 child: RaisedButton(
                   child: Text(
                       "LOGIN",
-                      style: TextStyle(fontSize: 24, color: Colors.black87)
+                      style: TextStyle(fontSize: 24, color: Colors.black)
                   ),
                   onPressed: () {
                     LoginCheck(_emailController.text);

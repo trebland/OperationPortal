@@ -84,27 +84,13 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
                         child: Text(
                           widget.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28, color: Colors.white),
+                          style: TextStyle(fontSize: 28),
                         ),
                       ),
                     ]
                 ),
               ),
               margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-            ),
-            Container(
-              child: FlatButton(
-                child: Text("QR Code"),
-                onPressed: () => null,
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.blue,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.only(left: 10),
             ),
             Container(
               child: IntrinsicHeight(
@@ -122,14 +108,14 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
                               child: Text(
                                 "Birthday",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             Container(
                               child: Text(
                                 "September 5th, 2010",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
@@ -137,26 +123,26 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
                         margin: EdgeInsets.only(right: 20),
                       ),
                       Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              child: Text(
-                                "Grade",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Text(
+                                  "Grade",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
-                            ),
-                            Container(
-                              child: Text(
-                                "4th",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              Container(
+                                child: Text(
+                                  "4th",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
+                            ],
+                          )
                       ),
                     ]
                 ),
@@ -164,18 +150,29 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
               margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
             ),
             Container(
-              child: Text(
-                "Notes",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, color: Colors.white),
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.blue,
-                borderRadius: new BorderRadius.only(
-                    topRight: new Radius.circular(20), topLeft: new Radius.circular(20),
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Text(
+                          "Notes",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 28, color: Colors.white),
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.only(
+                            topRight: new Radius.circular(20), topLeft: new Radius.circular(20),
+                          ),
+                        ),
+                        padding: EdgeInsets.all(20),
+                      ),
+                    ]
                 ),
               ),
-              padding: EdgeInsets.all(20),
               margin: EdgeInsets.only(top: 10, left: 10),
             ),
             Expanded(
@@ -185,7 +182,8 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       child: ListTile(
-                        title: Text('${notes[index]}'),
+                        title: Text('${notes[index]}',
+                            style: TextStyle(color: Colors.white)),
                         trailing: PopupMenuButton<Choice>(
                           onSelected: _select,
                           itemBuilder: (BuildContext context) {

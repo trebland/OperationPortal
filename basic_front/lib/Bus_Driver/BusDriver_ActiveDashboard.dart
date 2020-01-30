@@ -134,7 +134,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                         children: <Widget>
                         [
                           Container(
-                            child: Text("Recent Child", style: TextStyle(fontSize: 40),),
+                            child: Text("Recent Child", style: TextStyle(fontSize: 40, color: Colors.white),),
                             margin: EdgeInsets.only(right: 20),
                           ),
                           Container(
@@ -162,58 +162,52 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                   margin: EdgeInsets.all(10),
                 ),
                 Expanded(
-                  child: new ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: names.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return
-                        Container(
-                          child: IntrinsicHeight(
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>
-                                [
-                                  Container(
-                                    child: Image(
-                                        image: AssetImage('assets/OCC_LOGO_128_128.png')
-                                    ),
-                                    decoration: new BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: new BorderRadius.all(
-                                          new Radius.circular(20)
-                                      ),
-                                    ),
-                                    height: 200,
-                                    width: 200,
-                                    padding: EdgeInsets.all(5),
-                                    margin: EdgeInsets.only(bottom: 10),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      "First-Name\nLast-Name",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 40, color: Colors.white),
-                                    ),
-                                  ),
-                                ]
+                  child:
+                  Container(
+                    child: IntrinsicHeight(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>
+                          [
+                            Container(
+                              child: Image(
+                                  image: AssetImage('assets/OCC_LOGO_128_128.png')
+                              ),
+                              decoration: new BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: new BorderRadius.all(
+                                    new Radius.circular(20)
+                                ),
+                              ),
+                              height: 200,
+                              width: 200,
+                              padding: EdgeInsets.all(5),
+                              margin: EdgeInsets.only(bottom: 10),
                             ),
-                          ),
-                          decoration: new BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: new BorderRadius.all(
-                                new Radius.circular(20)
+                            Flexible(
+                              child: Text(
+                                "First-Name\nLast-Name",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 40, color: Colors.white),
+                              ),
                             ),
-                          ),
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.all(10),
-                        );
-                    },
+                          ]
+                      ),
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.all(
+                          new Radius.circular(20)
+                      ),
+                    ),
+                    padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(10),
                   ),
                 ),
                 Container(
                   child: FlatButton(
-                    child: Text("Confirm Attendance", style: TextStyle(fontSize: 20),),
+                    child: Text("Confirm Attendance", style: TextStyle(fontSize: 20, color: Colors.white),),
                     onPressed: () => null,
                   ),
                   decoration: new BoxDecoration(
@@ -292,7 +286,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                   ),
                                 ),
                               ),
-                              style: TextStyle(fontSize: 16, color: Colors.white),
+                              style: TextStyle(fontSize: 16, color: Colors.black),
                             ),
                           ),
                           Container(
@@ -312,7 +306,8 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
                         child: ListTile(
-                          title: Text('${names[index]}'),
+                          title: Text('${names[index]}',
+                          style: TextStyle(color: Colors.white),),
                           trailing: PopupMenuButton<Choice>(
                             onSelected: _select,
                             itemBuilder: (BuildContext context) {
@@ -376,7 +371,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                     ),
                                   ),
                                 ),
-                                style: TextStyle(fontSize: 16, color: Colors.white),
+                                style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ),
                           ]
@@ -390,7 +385,8 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           child: ListTile(
-                            title: Text('${suspendedNames[index]}'),
+                            title: Text('${suspendedNames[index]}',
+                                style: TextStyle(color: Colors.white)),
                             onTap: ()
                             {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(title: '${suspendedNames[index]}')));
