@@ -28,7 +28,14 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        brightness: Brightness.dark
+        primarySwatch: Colors.amber,
+        secondaryHeaderColor: Colors.amberAccent,
+        primaryTextTheme: TextTheme(
+          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+          title: TextStyle(fontSize: 24.0),
+          body1: TextStyle(fontSize: 14.0, color: Colors.black),
+        ),
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: LoginPage(title: 'Operation Portal Login'),
     );
@@ -108,6 +115,18 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
+  void LoginCheck (String toCheck)
+  {
+    if (toCheck == "st")
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
+    else if (toCheck == "bd")
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
+    else if (toCheck == "vc")
+      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
+    else
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
+  }
+
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -126,204 +145,170 @@ class LoginPageState extends State<LoginPage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       resizeToAvoidBottomPadding: true,
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
-              child: Column(
-                children: <Widget>
-                [
-                  Container(
-                    child: Image(
-                        image: AssetImage('assets/OCC_LOGO_128_128.png')
-                    ),
-                    decoration: new BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: new BorderRadius.all(
-                          new Radius.circular(20)
-                      ),
-                    ),
-                    margin: EdgeInsets.only(top: 20, left: 20, bottom: 5),
-                  ),
-                  Container(
-                    child: Text(
-                      "Login",
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    margin: EdgeInsets.only(top: 20, left: 20, bottom: 15),
-                  ),
-                  Container(
-                    child: IntrinsicHeight(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>
-                          [
-                            Container(
-                              child: Icon(
-                                Icons.email,
-                                size: 40,
-                              ),
-                              decoration: new BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: new BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                ),
-                              ),
-                              padding: EdgeInsets.only(left: 5),
-                            ),
-                            Flexible(
-                              child: TextField(
-                                onSubmitted: (String value) {
-                                  FocusScope.of(context).requestFocus(passwordNode);
-                                },
-                                textAlign: TextAlign.left,
-                                controller: _emailController,
-                                decoration: new InputDecoration(
-                                  hintText: 'Email',
-                                  border: new OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      bottomRight: Radius.circular(20),
-                                    ),
-                                    borderSide: new BorderSide(
-                                      color: Colors.black,
-                                      width: 0.5,
-                                    ),
-                                  ),
-                                ),
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                            ),
-                          ]
-                      ),
-                    ),
-                    margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
-                  ),
-
-                  Container(
-                    child: IntrinsicHeight(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>
-                          [
-                            Container(
-                              child: Icon(
-                                Icons.lock,
-                                size: 40,
-                              ),
-                              decoration: new BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: new BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                ),
-                              ),
-                              padding: EdgeInsets.only(left: 5),
-                            ),
-                            Flexible(
-                              child: TextField(
-                                textAlign: TextAlign.left,
-                                focusNode: passwordNode,
-                                controller: _passwordController,
-                                decoration: new InputDecoration(
-                                  hintText: 'Password',
-                                  border: new OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      bottomRight: Radius.circular(20),
-                                    ),
-                                    borderSide: new BorderSide(
-                                      color: Colors.black,
-                                      width: 0.5,
-                                    ),
-                                  ),
-                                ),
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                            ),
-                          ]
-                      ),
-                    ),
-                    margin: EdgeInsets.only(left: 25, right: 25, bottom: 35),
-                  ),
-                  Container(
-                    child: Column(
-                      children: <Widget>[
-                        Builder(
-                            builder: (context) => Center(
-                                child: FlatButton(
-                                  child: const Text('Forgot Password?'),
-                                  onPressed: ()
-                                  {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                                    );
-                                  },
-                                )
-                            )
-                        ),
-                        Text(
-                          "OR"
-                        ),
-                        Builder(
-                            builder: (context) => Center(
-                                child: FlatButton(
-                                  child: const Text('Register Account'),
-                                  onPressed: ()
-                                  {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => RegisterAccountPage()),
-                                    );
-                                  },
-                                )
-                            )
-                        )
-                      ],
-                    ),
-                  ),
-                ]
-              )
+              child: Text(
+                "Orlando Children's Church",
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              margin: EdgeInsets.only(top: 120, bottom: 50),
             ),
-            /// We use [Builder] here to use a [context] that is a descendant of [Scaffold]
-            /// or else [Scaffold.of] will return null
-            Container (
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: new SizedBox(
-                    width: 200,
-                    child: RaisedButton(
-                      child: const Text('Login', style: TextStyle(fontSize: 24)),
-                      onPressed: ()
-                      {
-                        if (_emailController.text == "st")
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
-                        else if (_emailController.text == "bd")
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
-                        else if (_emailController.text == "vc")
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
-                        else
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(18.0),
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Icon(
+                          Icons.email,
+                          size: 40,
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
+                        ),
+                        padding: EdgeInsets.only(left: 5),
                       ),
-                    ),
+                      Flexible(
+                        child: TextField(
+                          onSubmitted: (String value) {
+                            FocusScope.of(context).requestFocus(passwordNode);
+                          },
+                          textAlign: TextAlign.left,
+                          controller: _emailController,
+                          decoration: new InputDecoration(
+                            hintText: 'Email',
+                            border: new OutlineInputBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
+                              ),
+                              borderSide: new BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+            ),
+
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Icon(
+                          Icons.lock,
+                          size: 40,
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
+                        ),
+                        padding: EdgeInsets.only(left: 5),
+                      ),
+                      Flexible(
+                        child: TextField(
+                          textAlign: TextAlign.left,
+                          focusNode: passwordNode,
+                          controller: _passwordController,
+                          decoration: new InputDecoration(
+                            hintText: 'Password',
+                            border: new OutlineInputBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
+                              ),
+                              borderSide: new BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.only(left: 25, right: 25, bottom: 35),
+            ),
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Builder(
+                      builder: (context) => Center(
+                          child: FlatButton(
+                            child: const Text('Forgot Password?'),
+                            onPressed: ()
+                            {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                              );
+                            },
+                          )
+                      )
                   ),
-                )
-            )
+                  Text(
+                      "OR"
+                  ),
+                  Builder(
+                      builder: (context) => Center(
+                          child: FlatButton(
+                            child: const Text('Register Account'),
+                            onPressed: ()
+                            {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => RegisterAccountPage()),
+                              );
+                            },
+                          )
+                      )
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: SizedBox(
+                child: RaisedButton(
+                  child: Text(
+                      "LOGIN",
+                      style: TextStyle(fontSize: 24, color: Colors.black)
+                  ),
+                  onPressed: () {
+                    LoginCheck(_emailController.text);
+                  },
+                  color: Colors.amber,
+                ),
+                height: 50,
+                width: double.infinity,
+              ),
+              margin: EdgeInsets.all(25),
+            ),
+
             /*
             child: Builder(
                       builder: (context) => Center(
