@@ -19,4 +19,11 @@ namespace API.Models
     {
         public DateTime Date { get; set; }
     }
+
+    // This is likewise used to pull in an integer representing a month from JSON, because MVC doesn't like having simple types except as query arguments
+    public class MonthModel
+    {
+        public int Month { get; set; }
+        public int Year { get; set; }
+    }
 }

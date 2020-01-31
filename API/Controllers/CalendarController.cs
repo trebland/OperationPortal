@@ -41,26 +41,175 @@ namespace API.Controllers
             this.configModel = configModel.Value;
         }
 
+        /// <summary>
+        /// Gets the information for the calendar overview for a specific month
+        /// </summary>
+        /// <param name="monthModel">Should contain a month and year.  If either is blank, they will default to the current month or year, respectively</param>
+        /// <returns>A list of groups and a list of events</returns>
         [AllowAnonymous]
         [Route("~/api/calendar")]
         [HttpGet]
-        public async Task<IActionResult> Get()
-
+        public async Task<IActionResult> Get(MonthModel monthModel)
         {
+            List<EventModel> events;
+            List<GroupModel> groups;
+            List<DateTime> scheduledDates = null;
+            CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            int month;
+            int year;
+
             var user = await userManager.GetUserAsync(User);
+
+            // If a month was not specified, use the current month
+            if (monthModel.Month == 0)
+            {
+                month = DateTime.Now.Month;
+            }
+            else
+            {
+                month = monthModel.Month;
+            }
+            if (monthModel.Year == 0)
+            {
+                year = DateTime.Now.Year;
+            }
+            else
+            {
+                year = monthModel.Year;
+            }
+
+            try
+            {
+                events = repo.GetEvents(month, year);
+                groups = repo.GetGroups(month, year);
+                if (user != null && (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()))){
+                    scheduledDates = repo.GetScheduledDates(user.VolunteerId, month, year);
+                }
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new {
+                Groups = groups,
+                Events = events,
+                ScheduledDates = scheduledDates,
                 Error = ""
             });
         }
 
+        /// <summary>
+        /// Gets detailed calendar information for a specific date
+        /// </summary>
+        /// <param name="date">The date to get details for</param>
+        /// <returns>
+        /// A list of events, a list of groups, whether the user is scheduled to volunteer, and a list of scheduled volunteers.
+        /// Depending on the user's level of permissions, some of the above may be null or less detailed
+        /// </returns>
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Details(DateModel date)
         {
+            List<EventModel> events = null;
+            List<GroupModel> groups = null;
+            List<VolunteerModel> volunteers = null;
+            AttendanceModel attendance;
+            DateTime dateTime = date.Date;
+            CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
+            bool staff;
+            bool busDriver;
+            bool scheduled = false;
+            bool isSaturday = (dateTime.DayOfWeek == DayOfWeek.Saturday);
             var user = await userManager.GetUserAsync(User);
+
+            // Check if the user is in the staff or bus driver roles, as those must be treated differently
+            staff = (user != null && User.IsInRole(UserHelpers.UserRoles.Staff.ToString()));
+            busDriver = (user != null && User.IsInRole(UserHelpers.UserRoles.Staff.ToString()));
+
+            // Bus drivers and staff are considered scheduled by default
+            scheduled = staff || busDriver || false;
+
+            // Get the events occurring on this date, if any.  We only want to get the list of attendees if the user is a staff user
+            events = calendarRepo.GetEvents(dateTime, staff);
+            // If it isn't a saturday, events are all we need to check.
+            if (!isSaturday)
+            {
+                return new JsonResult(new
+                {
+                    Error = "",
+                    Events = events,
+                    Groups = groups,
+                    People = volunteers,
+                    Scheduled = scheduled
+                });
+            }
+
+            // Get any groups volunteering on this date.  Again, we only get details if the user is staff.
+            groups = calendarRepo.GetGroups(dateTime, staff);
+
+            //  If the user is not logged in, we have all of the information already and can simply return.
+            if (user == null)
+            {
+                return new JsonResult(new
+                {
+                    Error = "",
+                    Events = events,
+                    Groups = groups,
+                    People = volunteers,
+                    Scheduled = scheduled
+                });
+            }
+
+            // If the user is not a bus driver or staff, check if they are scheduled on this day.  Bus drivers and staff are considered scheduled by default
+            if (!staff && !busDriver)
+            {
+                attendance = calendarRepo.GetSingleAttendance(user.VolunteerId, dateTime);
+                if (attendance != null && attendance.Scheduled)
+                {
+                    scheduled = true;
+                }
+                else
+                {
+                    scheduled = false;
+                }
+            }
+            else
+            {
+                scheduled = true;
+            }
+
+            // If the user is not staff, we now want to return
+            if (!staff)
+            {
+                return new JsonResult(new
+                {
+                    Error = "",
+                    Events = events,
+                    Groups = groups,
+                    People = volunteers,
+                    Scheduled = scheduled
+                });
+            }
+
+            // If the user is staff, get the list of volunteers who will be attending
+            try
+            {
+                volunteers = volunteerRepo.GetScheduledVolunteers(dateTime);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
-                Error = ""
+                Error = "",
+                Events = events,
+                Groups = groups,
+                People = volunteers,
+                Scheduled = scheduled
             });
         }
 
@@ -138,6 +287,12 @@ namespace API.Controllers
             if (date.Date.DayOfWeek != DayOfWeek.Saturday)
             {
                 return Utilities.ErrorJson("Provided date was not a Saturday");
+            }
+
+            if (User.IsInRole(UserHelpers.UserRoles.BusDriver.ToString()))
+            {
+                // TODO: Add in code to email staff if a bus driver cancels
+                return Utilities.ErrorJson("");
             }
 
             if ((attendance != null && !attendance.Scheduled) || attendance == null)

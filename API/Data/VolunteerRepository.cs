@@ -122,6 +122,60 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Gets the list of volunteers scheduled to volunteer on a specific date
+        /// </summary>
+        /// <param name="date">The date to check signups for</param>
+        /// <returns>A list of VolunteerModel objects</returns>
+        public List<VolunteerModel> GetScheduledVolunteers(DateTime date)
+        {
+            List<VolunteerModel> volunteers = new List<VolunteerModel>();
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT V.* 
+                           FROM Volunteers AS V INNER JOIN 
+                           Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
+                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(1 as bit)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create and run Postgres command.
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // For each resulting row, create a VolunteerModel object and then add it to the list.
+            foreach (DataRow dr in dt.Rows)
+            {
+                volunteers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstName"].ToString(),
+                    LastName = dr["lastName"].ToString(),
+                    Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
+                    Affiliation = dr["affiliation"].ToString(),
+                    Referral = dr["Referral"].ToString(),
+                    Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                    ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
+                    Phone = dr["phone"].ToString(),
+                    Email = dr["email"].ToString(),
+                    Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                    Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
+                });
+            }
+
+            return volunteers;
+        }
+
+        /// <summary>
         /// Gets the list of trainings a given volunteer has completed
         /// </summary>
         /// <param name="volunteerId">The id of the volunteer whose trainings are being queried</param>

@@ -13,6 +13,7 @@ namespace API.Models
         public int Count { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public class GroupSignupViewModel

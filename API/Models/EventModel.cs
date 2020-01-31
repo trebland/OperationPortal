@@ -11,6 +11,7 @@ namespace API.Models
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public String Description { get; set; }
+        public List<AttendeeModel> People { get; set; }
     }
 
     public class EventViewModel
@@ -22,6 +23,12 @@ namespace API.Models
     {
         public int VolunteerId { get; set; }
         public int EventId { get; set; }
-        public bool SignUp { get; set; }
+    }
+
+    public class AttendeeModel
+    {
+        public int VolunteerId { get; set; }
+        public int EventId { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -120,6 +120,137 @@ namespace API.Data
             }
         }
 
+        public List<DateTime> GetScheduledDates (int volunteerId, int month, int year)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<DateTime> dates = new List<DateTime>();
+            string sql = @"SELECT dayattended FROM volunteer_attendance 
+                           WHERE scheduled = CAST(1 as bit) AND volunteerId = @vid 
+                           AND date_part('month', dayattended) = @month AND date_part('year', dayattended) = @year";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month;
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = year;
+
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                dates.Add(Convert.ToDateTime(dr["dayattended"]));
+            }
+
+            return dates;
+        }
+
+        /// <summary>
+        /// Gets the names of groups that are signed up to volunteer in a particular month
+        /// </summary>
+        /// <param name="month">The number of the month (1-12) in question</param>
+        /// <returns>A list of GroupModel objects.  Will only contain the names and dates for each group</returns>
+        public List<GroupModel> GetGroups(int month, int year)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<GroupModel> groups = new List<GroupModel>();
+            string sql = "SELECT v.Name, v.Date FROM volunteer_groups AS V WHERE date_part ('month', v.date) = @month AND date_part ('year', v.date) = @year";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month;
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = year;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach(DataRow dr in dt.Rows)
+            {
+                groups.Add(new GroupModel
+                {
+                    Name = dr["name"].ToString(),
+                    Date = Convert.ToDateTime(dr["date"])
+                });
+            }
+
+            return groups;
+        }
+
+        /// <summary>
+        /// Gets the names of groups that are signed up to volunteer on a particular date
+        /// </summary>
+        /// <param name="date">The date to check</param>
+        /// <param name="details">Whether or not to return details of the group (contact info, etc.)</param>
+        /// <returns>A list of GroupModel objects.  Will only contain the names and dates for each group if details is false</returns>
+        public List<GroupModel> GetGroups(DateTime date, bool details)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            GroupModel group;
+            List<GroupModel> groups = new List<GroupModel>();
+            string sql = "SELECT * FROM volunteer_groups AS V WHERE date = @date";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                if (details)
+                {
+                    group = new GroupModel
+                    {
+                        Id = (int)dr["id"],
+                        Name = dr["name"].ToString(),
+                        Date = Convert.ToDateTime(dr["Date"]),
+                        LeaderName = dr["leadername"].ToString(),
+                        Phone = dr["phone"].ToString(),
+                        Email = dr["email"].ToString(),
+                        Count = (int)dr["count"]
+                    };
+                }
+                else
+                {
+                    group = new GroupModel
+                    {
+                        Name = dr["name"].ToString(),
+                        Date = Convert.ToDateTime(dr["date"])
+                    };
+                }
+
+                groups.Add(group);
+            }
+
+            return groups;
+        }
+
         /// <summary>
         /// Inserts a new group record into the database
         /// </summary>
@@ -238,6 +369,115 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Gets the list of all events in a given month
+        /// </summary>
+        /// <param name="month">The number of the month (1-12) for which events should be retrieved</param>
+        /// <param name="people">A boolean indicating whether the people attending the events should be included</param>
+        /// <returns>A list of EventModel objects</returns>
+        public List<EventModel> GetEvents(int month, int year, bool people = false)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<EventModel> events = new List<EventModel>();
+            EventModel eventModel;
+            string sql = "SELECT * FROM events WHERE date_part ('month', dayheld) = @month AND date_part ('year', dayheld) = @year";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month; 
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = year;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach(DataRow dr in dt.Rows)
+            {
+                eventModel = new EventModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["name"].ToString(),
+                    Description = dr["description"].ToString(),
+                    Date = Convert.ToDateTime(dr["dayheld"]),
+                    People = null
+                };
+
+                // Get the people who have attended each event, if necessary
+                // By default, skip this for speed's sake
+                if (people)
+                {
+                    eventModel.People = GetEventAttendees(eventModel.Id);
+                }
+
+                events.Add(eventModel);
+            }
+
+            return events;
+        }
+
+        /// <summary>
+        /// Gets the list of all events on a given date
+        /// </summary>
+        /// <param name="date">The date to get the events that occur on</param>
+        /// <param name="people">A boolean indicating whether the people attending the events should be included</param>
+        /// <returns>A list of EventModel objects</returns>
+        public List<EventModel> GetEvents(DateTime date, bool people = false)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<EventModel> events = new List<EventModel>();
+            EventModel eventModel;
+            string sql = "SELECT * FROM events WHERE dayheld = @date";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                eventModel = new EventModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["name"].ToString(),
+                    Description = dr["description"].ToString(),
+                    Date = Convert.ToDateTime(dr["dayheld"]),
+                    People = null
+                };
+
+                // Get the people who have attended each event, if necessary
+                // By default, skip this for speed's sake
+                if (people)
+                {
+                    eventModel.People = GetEventAttendees(eventModel.Id);
+                }
+
+                events.Add(eventModel);
+            }
+
+            return events;
+        }
+
+        /// <summary>
         /// Gets a specific event from the database by id
         /// </summary>
         /// <param name="id">The id of the event to be retrieved</param>
@@ -280,6 +520,49 @@ namespace API.Data
                 Name = dr["name"].ToString(),
                 Description = dr["description"].ToString()
             };
+        }
+
+        /// <summary>
+        /// Gets the list of people attending a specific event
+        /// </summary>
+        /// <param name="eventId">The id of the event</param>
+        /// <returns>A list of AttendeeModel objects, each with an EventId, VolunteerId, and Name</returns>
+        public List<AttendeeModel> GetEventAttendees (int eventId)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<AttendeeModel> attendees = new List<AttendeeModel>();
+            string sql = @"SELECT v.id, v.firstname, v.lastname 
+                           FROM event_signup AS e INNER JOIN 
+                           volunteers AS v ON v.id = e.volunteerid 
+                           WHERE e.eventId = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = eventId;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                attendees.Add(new AttendeeModel
+                {
+                    EventId = eventId,
+                    VolunteerId = (int)dr["id"],
+                    Name = dr["firstname"].ToString() + " " + dr["lastname"].ToString()
+                });
+            }
+
+            return attendees;
         }
 
         /// <summary>
