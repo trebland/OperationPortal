@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
+import { Redirect } from 'react-router-dom'
 
 export class LoginBox extends Component {
 
@@ -7,7 +8,10 @@ export class LoginBox extends Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      result: "",
+      redirect: false,
+      jwt: ""
     };
     this.handleUserNameChange = this.handleUserNameChange.bind(this)
     this.handlePasswordChange = this.handlePasswordChange.bind(this)
@@ -24,11 +28,71 @@ export class LoginBox extends Component {
     this.setState ({
       password: e.target.value
     })
-    console.log(this.state.username)
+    console.log(this.state.password)
   }
 
-  submitLogin(e) {
-    // redirect to logged in dashboard
+  postAndFetchData = (path) => {
+    fetch('http://operation-portal.com' + path , {
+      method: "POST",
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(this.state)
+      })
+      .then((response) => {
+        console.log(response.status)
+        if(response.status === 200 || response.status === 201) {
+          return response.text()
+        } else if (response.status === 401 || response.status === 400 || response.status === 500 && this.mounted === true) {
+          this.setState({
+            redirect: false,
+            result: 'Username or password incorrect.'
+          })
+          return
+        }
+      })
+      .then((data) => {
+        let res = JSON.parse(data)
+        res = res.token
+        if(this.mounted == true) {
+          this.setState({
+            jwt: res
+          })
+        }
+        console.log(this.state.jwt)
+      })
+      .then(() => {this.setRedirect()})
+      .catch(() => {
+        console.log('didnt post')
+      })
+  }
+
+  onSubmit = (e) => {
+    this.postAndFetchData('api/auth/token')
+  }
+
+  setRedirect = () => {
+    this.setState({
+      redirect: true
+    })
+  }
+
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      return <Redirect to={{
+        pathname: '/',
+        state: { jwt: this.state.jwt }
+      }}/>
+    }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false
+  }
+
+  // Sets variable to false when ready to leave page
+  componentWillUnmount() {
+    this.mounted = false
   }
 
   render() {
@@ -50,9 +114,9 @@ export class LoginBox extends Component {
             </FormGroup>
             <p>{this.state.result}</p>
             <div>
-              {/* {this.renderRedirect()} */}
-              <Button variant="link" onClick={(e) => this.onSubmit()} >
-                {/* <img src={submitbutton} width = "200"/> */}
+              {this.renderRedirect()}
+              <Button type="submit" size="lg" onClick={this.onSubmit} >
+                Submit
               </Button>
               <p>{this.state.result}</p>
             </div>
