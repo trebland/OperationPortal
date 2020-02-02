@@ -286,6 +286,78 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Allows for updating a volunteer's profile information.  DOES NOT update email
+        /// </summary>
+        /// <param name="v">A VolunteerModel object.  Should contain id, first name, last name, affiliation, referral, newsletter, phone, and contactwhenshort</param>
+        public void UpdateVolunteer(VolunteerModel v)
+        {
+            string sql = @"UPDATE Volunteers 
+                           SET FirstName = @fname, LastName = @lname, Phone = @phone, Referral = @referral, Newsletter = @newsletter, ContactWhenShort = @contact 
+                           WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
+                    cmd.Parameters.Add("@fname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.FirstName;
+                    cmd.Parameters.Add("@lname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.LastName;
+                    cmd.Parameters.Add("@phone", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Phone;
+                    cmd.Parameters.Add("@referral", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Referral;
+                    cmd.Parameters.Add("@newsletter", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Newsletter;
+                    cmd.Parameters.Add("@contact", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.ContactWhenShort;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return;
+        }
+
+        /// <summary>
+        /// Kill-and-Fills the list of languages a volunteer knows
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer whose languages are being updated</param>
+        /// <param name="Languages">The list of languages the volunteer has identified themselves as speaking</param>
+        public void UpdateLanguages(int volunteerId, IEnumerable<string> languages)
+        {
+            string deleteSql = "DELETE FROM languages_known WHERE volunteerid = @vid";
+            string insertSql = "INSERT INTO languages_known (volunteerid, languagename) VALUES (@vid, @lang)";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Delete previously existing data
+                using (NpgsqlCommand deleteCmd = new NpgsqlCommand(deleteSql, con))
+                {
+                    deleteCmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+
+                    con.Open();
+                    deleteCmd.ExecuteNonQuery();
+                    con.Close();
+                }
+
+                // Add new ones
+                using (NpgsqlCommand insertCmd = new NpgsqlCommand(insertSql, con))
+                {
+                    insertCmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    insertCmd.Parameters.Add("@lang", NpgsqlTypes.NpgsqlDbType.Varchar);
+
+                    con.Open();
+                    foreach(string lang in languages)
+                    {
+                        insertCmd.Parameters["@lang"].Value = lang;
+                        insertCmd.ExecuteNonQuery();
+                    }
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
         /// Deletes a volunteer's profile from the database
         /// </summary>
         /// <param name="id">The id of the volunteer profile to be deleted</param>

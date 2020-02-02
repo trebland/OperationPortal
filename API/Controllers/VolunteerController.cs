@@ -83,7 +83,7 @@ namespace API.Controllers
 
         // TODO: Work out exactly what will and will not be editable
         /// <summary>
-        /// Allows for editing a volunteer's profile
+        /// Allows for editing a volunteer's profile.  DOES NOT edit email.
         /// </summary>
         /// <param name="volunteer">A VolunteerModel object containing the updated information.  Will be rejected if this is not the current user</param>
         /// <returns>An indication of any errors that occurred</returns>
@@ -106,7 +106,35 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized to edit this profile");
             }
 
-            return Utilities.ErrorJson("");
+            // Update the volunteer's languages, if any were provided
+            if (volunteer.Languages != null && volunteer.Languages.Length != 0)
+            {
+                try
+                {
+                    repo.UpdateLanguages(volunteer.Id, volunteer.Languages);
+                }
+                catch(Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
+            }
+
+            // Update the volunteer's profile
+            try
+            {
+                repo.UpdateVolunteer(volunteer);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            // We want to make sure we return the most up-to-date information
+            return new JsonResult(new
+            {
+                Volunteer = repo.GetVolunteer(volunteer.Id),
+                Error = ""
+            });
         }
 
         /// <summary>
@@ -238,37 +266,5 @@ namespace API.Controllers
                 });
             }
         }
-
-        // I was using this temporarily while I hadn't finished updating the register action to work with the DB.  It's no longer necessary,
-        // so I'll remove it once I've had the chance to test the register action a bit more heavily.
-        //[Route("~/api/volunteer-create-temp")]
-        //[HttpPost]
-        //public async Task<IActionResult> VolunteerCreateTemp()
-        //{
-        //    var user = await userManager.GetUserAsync(User);
-        //    VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
-
-        //    try
-        //    {
-        //        repo.CreateVolunteer(new VolunteerModel
-        //        {
-        //            FirstName = user.FirstName,
-        //            LastName = user.LastName,
-        //            Email = user.UserName
-        //        });
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return new JsonResult(new
-        //        {
-        //            Error = e.Message
-        //        });
-        //    }
-
-        //    return new JsonResult(new
-        //    {
-        //        Error = ""
-        //    });
-        //}
     }
 }
