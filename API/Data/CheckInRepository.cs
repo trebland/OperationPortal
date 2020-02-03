@@ -66,10 +66,9 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Marks a volunteer as present for the day, assigns roster/child notes permissions, and assigns bus/class
+        /// Marks a volunteer as present for the day, assigns roster/child notes permissions, and assigns bus/class as needed
         /// </summary>
         /// <returns>Total number of times the volunteer has been in attendance</returns>
-        /// TODO: assign permissions & bus/class
         public int CheckInVolunteer(int volunteerId, int? classId, int? busId, bool viewNotes, bool viewRoster)
         {
             int numVisits = 0;
@@ -96,29 +95,35 @@ namespace API.Data
                 // Volunteer wasn't scheduled for this day, add to table as checked in and unscheduled
                 if (dt.Rows.Count == 0)
                 {
-                    sql = @"INSERT INTO Volunteer_Attendance (volunteerid, dayattended, scheduled, attended)
-                            VALUES (@volunteerId, @now, CAST(0 as bit), CAST(1 as bit))";
+                    sql = @"INSERT INTO Volunteer_Attendance (volunteerid, dayattended, scheduled, attended, busid, viewnotes, viewroster)
+                            VALUES (@volunteerId, @now, CAST(0 as bit), CAST(1 as bit), (CASE WHEN @busId = -1 THEN NULL ELSE @busId END), @viewNotes, @viewRoster)";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                     {
                         cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
                         cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
+                        cmd.Parameters.Add("@busId", NpgsqlTypes.NpgsqlDbType.Integer).Value = busId == null ? -1 : busId;
+                        cmd.Parameters.Add("@viewNotes", NpgsqlTypes.NpgsqlDbType.Bit).Value = viewNotes;
+                        cmd.Parameters.Add("@viewRoster", NpgsqlTypes.NpgsqlDbType.Bit).Value = viewRoster;
                         cmd.ExecuteNonQuery();
                     }
 
                     justCheckedIn = true;
-                } 
-                
+                }
+
                 // Volunteer was scheduled and is checking in now
-                else if (!(bool)dt.Rows[0]["attended"])
+                else if (dt.Rows[0]["attended"] == null || !(bool)dt.Rows[0]["attended"])
                 {
                     sql = @"UPDATE Volunteer_Attendance 
-                            SET attended = CAST(1 as bit)
+                            SET attended = CAST(1 as bit), busid = (CASE WHEN @busId = -1 THEN NULL ELSE @busId END), viewnotes = @viewNotes, viewroster = @viewRoster
                             WHERE volunteerid = @volunteerId
                             AND dayattended = @now";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                     {
                         cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
                         cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
+                        cmd.Parameters.Add("@busId", NpgsqlTypes.NpgsqlDbType.Integer).Value = busId == null ? -1 : busId;
+                        cmd.Parameters.Add("@viewNotes", NpgsqlTypes.NpgsqlDbType.Bit).Value = viewNotes;
+                        cmd.Parameters.Add("@viewRoster", NpgsqlTypes.NpgsqlDbType.Bit).Value = viewRoster;
                         cmd.ExecuteNonQuery();
                     }
 
@@ -127,6 +132,21 @@ namespace API.Data
 
                 if (justCheckedIn)
                 {
+                    // Add teacher assignment if present
+                    if (classId != null)
+                    {
+                        sql = @"INSERT INTO Teacher_Assignments (teacherid, classid, classdate)
+                                VALUES (@volunteerId, @classId, @now)";
+
+                        using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                        {
+                            cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                            cmd.Parameters.Add("@classId", NpgsqlTypes.NpgsqlDbType.Integer).Value = classId;
+                            cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
                     // Increment # weekends attended on Volunteers table
                     sql = @"UPDATE Volunteers
                             SET weekendsattended = weekendsattended + 1
