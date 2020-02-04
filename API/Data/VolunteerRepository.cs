@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using API.Models;
+using API.Helpers;
 using System.Data;
 
 namespace API.Data
@@ -60,6 +61,7 @@ namespace API.Data
                 Id = (int)dr["id"],
                 FirstName = dr["firstName"].ToString(),
                 LastName = dr["lastName"].ToString(),
+                Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                 Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                 Affiliation = dr["affiliation"].ToString(),
                 Referral = dr["Referral"].ToString(),
@@ -106,6 +108,7 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
                     Referral = dr["Referral"].ToString(),
@@ -160,6 +163,7 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
                     Referral = dr["Referral"].ToString(),

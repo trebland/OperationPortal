@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
+using OpenIddict.Validation;
 using OpenIddict.EntityFrameworkCore.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -238,6 +239,34 @@ namespace OCCTest.Controllers
             }
 
             return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Returns the current user's profile
+        /// </summary>
+        /// <returns>An error string, or if no error occurred, a blank error string and the current user's profile encoded in JSON</returns>
+        [HttpGet]
+        [Route("~/api/auth/user")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> userInfo()
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+            var user = await userManager.GetUserAsync(User);
+
+            profile = repo.GetVolunteer(user.VolunteerId);
+
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Could not find user profile");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Profile = profile
+            });
+
         }
     }
 }
