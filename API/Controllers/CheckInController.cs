@@ -50,10 +50,32 @@ namespace API.Controllers
         {
             try
             {
-                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
                     numVisits = repo.CheckInChild(childId)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/check-in/volunteer")]
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult CheckInVolunteer(int volunteerId, int? classId, int? busId, bool viewRoster, bool viewNotes)
+        {
+            try
+            {
+                CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    numVisits = repo.CheckInVolunteer(volunteerId, classId, busId, viewRoster, viewNotes)
                 });
             }
             catch (Exception exc)
