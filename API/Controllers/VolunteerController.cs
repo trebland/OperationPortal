@@ -218,7 +218,7 @@ namespace API.Controllers
             // Update the role in the user's volunteer profile in the DB.  This one isn't as important, since it doesn't affect permissions
             repo.UpdateUserRole(volunteer.Id, (int)userRole);
 
-            return Utilities.ErrorJson("");
+            return Utilities.NoErrorJson();
         }
 
         [Route("~/api/volunteer-attendance-check")]

@@ -292,7 +292,7 @@ namespace API.Controllers
             if (User.IsInRole(UserHelpers.UserRoles.BusDriver.ToString()))
             {
                 // TODO: Add in code to email staff if a bus driver cancels
-                return Utilities.ErrorJson("");
+                return Utilities.NoErrorJson();
             }
 
             if ((attendance != null && !attendance.Scheduled) || attendance == null)
