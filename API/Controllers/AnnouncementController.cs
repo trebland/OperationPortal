@@ -175,7 +175,8 @@ namespace API.Controllers
 
             return new JsonResult(new
             {
-                Error = ""
+                Error = "",
+                Announcement = repo.GetAnnouncement(announcement.Id)
             });
         }
     }

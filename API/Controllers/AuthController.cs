@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OpenIddict.Core;
+using OpenIddict.Validation;
 using OpenIddict.EntityFrameworkCore.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -137,16 +138,32 @@ namespace OCCTest.Controllers
         {
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
             VolunteerModel profile;
-            List<string> PasswordErrors = new List<string>();
+            List<string> errors = new List<string>();
             IdentityResult passResult;
             bool passwordFailed = false;
+
+            // Validate that the first and last name were provided
+            if (String.IsNullOrEmpty(newUser.FirstName))
+            {
+                return Utilities.ErrorJson("You must provide a first name");
+            }
+            if (String.IsNullOrEmpty(newUser.LastName))
+            {
+                return Utilities.ErrorJson("You must provide a last name");
+            }
+
+            // Check if a user with that email address already exists
+            var existingUser = await userManager.FindByNameAsync(newUser.Email);
+            if (existingUser != null)
+            {
+                return Utilities.ErrorJson("That email is already in use.");
+            }
 
             // Validate that the username and password are valid and no account exists with the username.  We do this here to prevent 
             // having to create and then delete a volunteer profile in the database in the event that one is invalid
             if (!UserHelpers.IsValidEmail(newUser.Email))
             {
-                ModelState.AddModelError(String.Empty, "You must use an email address to sign up.");
-                return BadRequest(ModelState);
+                return Utilities.ErrorJson("You must use an email address to sign up.");
             }
             foreach (var validator in userManager.PasswordValidators)
             {
@@ -157,21 +174,16 @@ namespace OCCTest.Controllers
                     passwordFailed = true;
                     foreach (var error in passResult.Errors)
                     {
-                        ModelState.AddModelError(String.Empty, error.Description);
+                        errors.Add(error.Description);
                     }
                 }
             }
             if (passwordFailed)
             {
-                return BadRequest(ModelState);
-            }
-            var existingUser = await userManager.FindByNameAsync(newUser.Email);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError(String.Empty, "That email is already in use.");
-                return BadRequest(ModelState);
+                return Utilities.ErrorJson(String.Join(" ", errors));
             }
 
+            // Create the profile in the database
             try
             {
                 profile = repo.CreateVolunteer(new VolunteerModel
@@ -188,9 +200,7 @@ namespace OCCTest.Controllers
             }
             catch (Exception e)
             {
-                ModelState.AddModelError(String.Empty, e.Message);
-
-                return BadRequest(ModelState);
+                return Utilities.ErrorJson(e.Message);
             }
 
             ApplicationUser user = new ApplicationUser
@@ -222,13 +232,41 @@ namespace OCCTest.Controllers
                 // Then we want to return an error message
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    errors.Add(error.Description);
                 }
 
-                return BadRequest(ModelState);
+                return Utilities.ErrorJson(String.Join(" ", errors));
             }
 
-            return Ok();
+            return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Returns the current user's profile
+        /// </summary>
+        /// <returns>An error string, or if no error occurred, a blank error string and the current user's profile encoded in JSON</returns>
+        [HttpGet]
+        [Route("~/api/auth/user")]
+        [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> userInfo()
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+            var user = await userManager.GetUserAsync(User);
+
+            profile = repo.GetVolunteer(user.VolunteerId);
+
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Could not find user profile");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Profile = profile
+            });
+
         }
     }
 }

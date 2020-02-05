@@ -9,15 +9,27 @@ namespace API.Helpers
     public class Utilities
     {
         /// <summary>
-        /// Generates a JSON message returning an error and nothing else
+        /// Generates a JSON message returning an error with a BAD REQUEST code and nothing else
         /// </summary>
         /// <param name="ErrorMessage">The error message to be sent in the JSON</param>
         /// <returns>JSON-encoded error message</returns>
-        public static JsonResult ErrorJson(string ErrorMessage)
+        public static ActionResult ErrorJson(string ErrorMessage)
+        {
+            return new BadRequestObjectResult(new
+            {
+                Error = ErrorMessage
+            });
+        }
+
+        /// <summary>
+        /// Generates a JSON message with an empty error message and nothing else
+        /// </summary>
+        /// <returns>JSON-encoded error message</returns>
+        public static JsonResult NoErrorJson()
         {
             return new JsonResult(new
             {
-                Error = ErrorMessage
+                Error = ""
             });
         }
 
