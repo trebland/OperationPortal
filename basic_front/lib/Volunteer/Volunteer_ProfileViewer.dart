@@ -26,6 +26,104 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
 
   final List<int> colorCodes = <int>[600, 500];
 
+  Widget buildPictureAndNameRow() {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Image(
+                    image: AssetImage('assets/OCC_LOGO_128_128.png')
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                height: 200,
+                width: 200,
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(right: 10),
+              ),
+              Flexible(
+                child: Text(
+                  widget.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 28),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
+  Widget buildBirthdayAndGradeRow ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Birthday",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        "September 5th, 2010",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Grade",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          "4th",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -58,97 +156,10 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Image(
-                            image: AssetImage('assets/OCC_LOGO_128_128.png')
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        height: 200,
-                        width: 200,
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.only(right: 10),
-                      ),
-                      Flexible(
-                        child: Text(
-                          widget.title,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28),
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-            ),
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              child: Text(
-                                "Birthday",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            Container(
-                              child: Text(
-                                "September 5th, 2010",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                        margin: EdgeInsets.only(right: 20),
-                      ),
-                      Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                child: Text(
-                                  "Grade",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              Container(
-                                child: Text(
-                                  "4th",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          )
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-            ),
+
+            buildPictureAndNameRow(),
+            buildBirthdayAndGradeRow(),
+
             Container(
               child: IntrinsicHeight(
                 child: Row(

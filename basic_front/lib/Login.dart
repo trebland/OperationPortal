@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
 import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
@@ -43,33 +45,71 @@ class MyApp extends StatelessWidget {
 }
 
 
-Future<Post> fetchPost() async {
-  final response =
-  await http.get('');
+class Profile {
+  int id;
+  String firstName;
+  String lastName;
+  String role;
 
-  if (response.statusCode == 200) {
-    // If the call to the server was successful, parse the JSON.
-    return Post.fromJson(json.decode(response.body));
-  } else {
-    // If that call was not successful, throw an error.
-    throw Exception('Failed to load post');
+  Profile ({this.id, this.firstName, this.lastName, this.role});
+
+  factory Profile.fromJson (Map<String, dynamic> json)
+  {
+    return Profile(
+      id: json['id'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      role: json['role'],
+    );
   }
 }
 
-class Post {
-  final String email;
-  final String firstName;
-  final String lastName;
-  final List<String> roles;
+class RetrieveUser_Success {
+  Profile profile;
 
-  Post({this.email, this.firstName, this.lastName, this.roles});
+  RetrieveUser_Success({this.profile});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      email: json[''],
-      firstName: json[''],
-      lastName: json[''],
-      roles: json[''].cast<String>(),
+  factory RetrieveUser_Success.fromJson(Map<String, dynamic> json) {
+    return RetrieveUser_Success(
+        profile: json['profile'] != null ? Profile.fromJson(json['profile']) : null,
+    );
+  }
+}
+
+class RetrieveUser_Failure {
+  String error;
+
+  RetrieveUser_Failure({this.error});
+
+  factory RetrieveUser_Failure.fromJson(Map<String, dynamic> json) {
+    return RetrieveUser_Failure(
+      error: json['error'],
+    );
+  }
+}
+
+class InitialLogin_Success {
+  final String accessToken;
+  final String errorDescription;
+
+  InitialLogin_Success({this.accessToken, this.errorDescription});
+
+  factory InitialLogin_Success.fromJson(Map<String, dynamic> json) {
+    return InitialLogin_Success(
+      accessToken: json['access_token'],
+      errorDescription: json['error_description'],
+    );
+  }
+}
+
+class InitialLogin_Failure {
+  final String errorDescription;
+
+  InitialLogin_Failure({this.errorDescription});
+
+  factory InitialLogin_Failure.fromJson(Map<String, dynamic> json) {
+    return InitialLogin_Failure(
+      errorDescription: json['error_description'],
     );
   }
 }
@@ -94,13 +134,89 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   int _counter = 0;
-  Future<Post> post;
+
+
+
+  Future<void> POST_InitialLogin(String username, String passwordText) async {
+    var mUrl = "https://www.operation-portal.com/api/auth/token";
+
+    Map<String, String> body = {
+      'grant_type': 'password',
+      'username': '$username',
+      'password': '$passwordText',
+    };
+
+    var response = await http.post(mUrl,
+        body: body,
+        headers: {'Content-type': 'application/x-www-form-urlencoded'});
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON.
+      InitialLogin_Success mPost = InitialLogin_Success.fromJson(json.decode(response.body));
+
+      GET_RetrieveUser(mPost.accessToken);
+    } else {
+      // If that call was not successful, throw an error.
+      InitialLogin_Failure mPost = InitialLogin_Failure.fromJson(json.decode(response.body));
+
+      Fluttertoast.showToast(
+          msg: "Email or password is incorrect",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<void> GET_RetrieveUser (String token) async {
+    var mUrl = "https://www.operation-portal.com/api/auth/user";
+
+    var response = await http.get(mUrl,
+        headers: {'Content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token});
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON.
+      RetrieveUser_Success mPost = RetrieveUser_Success.fromJson(json.decode(response.body));
+
+      Fluttertoast.showToast(
+          msg: mPost.profile.role,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(title: 'Dashboard')));
+      return mPost;
+    } else {
+      // If that call was not successful, throw an error.
+      RetrieveUser_Failure mPost = RetrieveUser_Failure.fromJson(json.decode(response.body));
+
+      Fluttertoast.showToast(
+          msg: mPost.error,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      throw Exception('Failed to load post');
+    }
+  }
 
   @override
   void initState()
   {
     super.initState();
-    post = fetchPost();
   }
 
   void _callApi(BuildContext context)
@@ -118,13 +234,13 @@ class LoginPageState extends State<LoginPage> {
   void LoginCheck (String toCheck)
   {
     if (toCheck == "st")
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
     else if (toCheck == "bd")
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
     else if (toCheck == "vc")
-      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
     else
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
   }
 
   final _emailController = TextEditingController();
@@ -136,6 +252,183 @@ class LoginPageState extends State<LoginPage> {
   FocusNode passwordNode = new FocusNode();
   FocusNode confirmPasswordNode = new FocusNode();
 
+  Widget buildHeader ()
+  {
+    return Container(
+      child: Text(
+        "Orlando Children's Church",
+        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+      margin: EdgeInsets.only(top: 120, bottom: 50),
+    );
+  }
+
+  Widget buildEmailRow ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.email,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  onSubmitted: (String value) {
+                    FocusScope.of(context).requestFocus(passwordNode);
+                  },
+                  textAlign: TextAlign.left,
+                  controller: _emailController,
+                  decoration: new InputDecoration(
+                    hintText: 'Email',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
+
+  Widget buildPasswordRow ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.lock,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  focusNode: passwordNode,
+                  controller: _passwordController,
+                  decoration: new InputDecoration(
+                    hintText: 'Password',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 35),
+    );
+  }
+
+  Widget buildForgotOrRegister ()
+  {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Builder(
+              builder: (context) => Center(
+                  child: FlatButton(
+                    child: const Text('Forgot Password?'),
+                    onPressed: ()
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                      );
+                    },
+                  )
+              )
+          ),
+          Text(
+              "OR"
+          ),
+          Builder(
+              builder: (context) => Center(
+                  child: FlatButton(
+                    child: const Text('Register Account'),
+                    onPressed: ()
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RegisterAccountPage()),
+                      );
+                    },
+                  )
+              )
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildLoginButton ()
+  {
+    return Container(
+      child: SizedBox(
+        child: RaisedButton(
+          child: Text(
+              "Login",
+              style: TextStyle(fontSize: 24, color: Colors.black)
+          ),
+          onPressed: () {
+            // POST_InitialLogin(_emailController.text, _passwordController.text);
+            LoginCheck(_emailController.text);
+          },
+          color: Colors.amber,
+        ),
+        height: 50,
+        width: double.infinity,
+      ),
+      margin: EdgeInsets.all(25),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -144,170 +437,36 @@ class LoginPageState extends State<LoginPage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      resizeToAvoidBottomPadding: true,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              child: Text(
-                "Orlando Children's Church",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        return Scaffold (
+          body: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
               ),
-              margin: EdgeInsets.only(top: 120, bottom: 50),
-            ),
-            Container(
               child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Icon(
-                          Icons.email,
-                          size: 40,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                        ),
-                        padding: EdgeInsets.only(left: 5),
-                      ),
-                      Flexible(
-                        child: TextField(
-                          onSubmitted: (String value) {
-                            FocusScope.of(context).requestFocus(passwordNode);
-                          },
-                          textAlign: TextAlign.left,
-                          controller: _emailController,
-                          decoration: new InputDecoration(
-                            hintText: 'Email',
-                            border: new OutlineInputBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                              borderSide: new BorderSide(
-                                color: Colors.black,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                        child: Column(
+                          children: <Widget>[
+                            buildHeader(),
+                            buildEmailRow(),
+                            buildPasswordRow(),
+                            buildForgotOrRegister(),
+                          ],
+                        )
+                    ),
+                    buildLoginButton(),
+                  ],
                 ),
               ),
-              margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
             ),
-
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Icon(
-                          Icons.lock,
-                          size: 40,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                        ),
-                        padding: EdgeInsets.only(left: 5),
-                      ),
-                      Flexible(
-                        child: TextField(
-                          textAlign: TextAlign.left,
-                          focusNode: passwordNode,
-                          controller: _passwordController,
-                          decoration: new InputDecoration(
-                            hintText: 'Password',
-                            border: new OutlineInputBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                              borderSide: new BorderSide(
-                                color: Colors.black,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.only(left: 25, right: 25, bottom: 35),
-            ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  Builder(
-                      builder: (context) => Center(
-                          child: FlatButton(
-                            child: const Text('Forgot Password?'),
-                            onPressed: ()
-                            {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                              );
-                            },
-                          )
-                      )
-                  ),
-                  Text(
-                      "OR"
-                  ),
-                  Builder(
-                      builder: (context) => Center(
-                          child: FlatButton(
-                            child: const Text('Register Account'),
-                            onPressed: ()
-                            {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => RegisterAccountPage()),
-                              );
-                            },
-                          )
-                      )
-                  )
-                ],
-              ),
-            ),
-            Container(
-              child: SizedBox(
-                child: RaisedButton(
-                  child: Text(
-                      "LOGIN",
-                      style: TextStyle(fontSize: 24, color: Colors.black)
-                  ),
-                  onPressed: () {
-                    LoginCheck(_emailController.text);
-                  },
-                  color: Colors.amber,
-                ),
-                height: 50,
-                width: double.infinity,
-              ),
-              margin: EdgeInsets.all(25),
-            ),
+          ),
+        );
+      },
+    );
 
             /*
             child: Builder(
@@ -340,10 +499,6 @@ class LoginPageState extends State<LoginPage> {
                 return CircularProgressIndicator();
               },
             ), */
-          ],
-        ),
-      ),
-    );
   }
 }
 

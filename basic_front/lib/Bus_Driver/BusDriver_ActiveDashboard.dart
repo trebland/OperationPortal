@@ -1,4 +1,5 @@
 import 'package:basic_front/AddChild.dart';
+import 'package:basic_front/Login.dart';
 import 'package:basic_front/Volunteer/Volunteer_ProfileViewer.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_VolunteerProfileViewer.dart';
@@ -112,6 +113,17 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(title: 'Login')));
+            },
+          )
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: myTabs,

@@ -220,9 +220,6 @@ class AddChildState extends State<AddChildPage>
         {
           Navigator.pop(context);
         },
-        shape: RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(18.0),
-        ),
         color: Colors.amber,
       ),
     );

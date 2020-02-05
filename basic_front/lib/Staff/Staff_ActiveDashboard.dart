@@ -1,4 +1,5 @@
 import 'package:basic_front/AddChild.dart';
+import 'package:basic_front/Login.dart';
 import 'package:basic_front/Volunteer/Volunteer_ProfileViewer.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_VolunteerProfileViewer.dart';
@@ -142,6 +143,17 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(title: 'Login')));
+            },
+          )
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: myTabs,
@@ -241,12 +253,69 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                         children: <Widget>
                         [
                           Container(
-                            child: Text(
-                              "Bus-Route",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20, color: Colors.white),
+                              child: Text(
+                                "Bus-Route",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, color: Colors.white),
+                              ),
+                              margin: EdgeInsets.only(right: 20)
+                          ),
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              canvasColor: Colors.blue,
                             ),
-                            margin: EdgeInsets.only(right: 20)
+                            child: DropdownButton<String>(
+                              value: dropdownValue,
+                              icon: Icon(Icons.arrow_downward),
+                              iconSize: 24,
+                              elevation: 16,
+                              style: TextStyle(
+                                  color: Colors.white
+                              ),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.amberAccent,
+                              ),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  dropdownValue = newValue;
+                                });
+                              },
+                              items: <String>['One', 'Two', 'Three', 'Four']
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ]
+                    ),
+                  ),
+                  decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: new BorderRadius.all(
+                        new Radius.circular(20)
+                    ),
+                  ),
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(10),
+                ),
+                Container(
+                  child: IntrinsicHeight(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>
+                        [
+                          Container(
+                              child: Text(
+                                "Class Number",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, color: Colors.white),
+                              ),
+                              margin: EdgeInsets.only(right: 20)
                           ),
                           Theme(
                             data: Theme.of(context).copyWith(

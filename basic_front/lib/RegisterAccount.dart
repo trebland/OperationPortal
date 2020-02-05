@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:basic_front/Login.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);
@@ -24,10 +27,61 @@ class RegisterAccountPage extends StatefulWidget {
   RegisterAccountState createState() => RegisterAccountState();
 }
 
+class Post {
+  final String error;
+  final String name;
+
+  Post({this.error, this.name});
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      error: json['error'],
+      name: json['name'],
+    );
+  }
+}
+
 class RegisterAccountState extends State<RegisterAccountPage> {
 
+  Future<void> fetchPost(BuildContext context, String email, String password, String firstName, String lastName) async {
+    var mUrl = "https://www.operation-portal.com/api/auth/register";
+
+    var body = json.encode({
+      "Email": '$email',
+      "Password": '$password',
+      "FirstName": '$firstName',
+      "LastName": '$lastName',
+    });
+
+    var response = await http.post(mUrl,
+        body: body,
+        headers: {'Content-type': 'application/json'});
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON.
+
+      Navigator.pop(context);
+    } else {
+      // If that call was not successful, throw an error.
+      Post mPost = Post.fromJson(json.decode(response.body));
+
+      Fluttertoast.showToast(
+          msg: mPost.error,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      throw Exception('Failed to load post');
+    }
+  }
+
   TextEditingController _emailController = new TextEditingController();
-  TextEditingController _nameController = new TextEditingController();
+  TextEditingController _firstNameController = new TextEditingController();
+  TextEditingController _lastNameController = new TextEditingController();
   TextEditingController _passwordController = new TextEditingController();
   TextEditingController _confirmPasswordController = new TextEditingController();
 
@@ -80,7 +134,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
     );
   }
 
-  Widget buildNameRow () {
+  Widget buildFirstNameRow () {
     return Container(
       child: IntrinsicHeight(
         child: Row(
@@ -105,9 +159,58 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
-                  controller: _nameController,
+                  controller: _firstNameController,
                   decoration: new InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'First Name',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
+
+  Widget buildLastNameRow () {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.more_horiz,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  controller: _lastNameController,
+                  decoration: new InputDecoration(
+                    hintText: 'Last Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -270,26 +373,35 @@ class RegisterAccountState extends State<RegisterAccountPage> {
     );
   }
 
-  Widget buildButtonBar (BuildContext context) {
-    return ButtonBar(
-      children: <Widget>[
-        FlatButton(
-          child: Text("Previous"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        RaisedButton(
+  Widget buildRegisterButton (BuildContext context)
+  {
+    return Container(
+      child: SizedBox(
+        child: RaisedButton(
           child: Text(
               "Register",
-              style: TextStyle(color: Colors.black87)
+              style: TextStyle(fontSize: 24, color: Colors.black)
           ),
-          color: Colors.amber,
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage(title: 'Dashboard')), (Route<dynamic> route) => false);
+            if (_passwordController.text == _confirmPasswordController.text)
+              fetchPost(context, _emailController.text, _passwordController.text, _firstNameController.text, _lastNameController.text);
+            else
+              Fluttertoast.showToast(
+                  msg: "Passwords don't match",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIos: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
           },
+          color: Colors.amber,
         ),
-      ],
+        height: 50,
+        width: double.infinity,
+      ),
+      margin: EdgeInsets.all(25),
     );
   }
 
@@ -297,25 +409,35 @@ class RegisterAccountState extends State<RegisterAccountPage> {
   Widget build (BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        AppBar appBar = AppBar(
+          title: Text("Register Account"),
+        );
         return Scaffold (
-          appBar: new AppBar(
-            title: new Text("Account Registration"),
-          ),
+          appBar: appBar,
           body: SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: 200,
+                minHeight: viewportConstraints.maxHeight - appBar.preferredSize.height*2,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  buildEmailRow(),
-                  buildNameRow(),
-                  buildPasswordRow(),
-                  buildConfirmPasswordRow(),
-                  buildPictureButton(),
-                  buildButtonBar(context),
-                ],
+              child: IntrinsicHeight(
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          buildEmailRow(),
+                          buildFirstNameRow(),
+                          buildLastNameRow(),
+                          buildPasswordRow(),
+                          buildConfirmPasswordRow(),
+                          buildPictureButton(),
+                        ],
+                      )
+                    ),
+                    buildRegisterButton(context)
+                  ],
+                ),
               ),
             ),
           ),

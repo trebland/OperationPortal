@@ -1,3 +1,5 @@
+import 'package:basic_front/BuildPresets/InactiveDashboard.dart';
+import 'package:basic_front/Login.dart';
 import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
 import 'package:flutter/material.dart';
 
@@ -36,12 +38,20 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(title: 'Login')));
+            },
+          )
+        ],
       ),
       resizeToAvoidBottomPadding: false,
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
+      body: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -56,70 +66,14 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Image(
-                            image: AssetImage('assets/OCC_LOGO_128_128.png')
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        height: 200,
-                        width: 200,
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.only(bottom: 10),
-                      ),
-                      Flexible(
-                        child: Text(
-                          "First-Name\nLast-Name",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 40),
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-            ),
-
-            Container (
-              child: FlatButton(
-                child: const Text('Scan QR Code', style: TextStyle(fontSize: 24, color: Colors.white)),
-                onPressed: ()
-                {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(title: 'Dashboard')));
-                },
-              ),
-              decoration: new BoxDecoration(
-                color: Colors.blue,
-                borderRadius: new BorderRadius.all(
-                    new Radius.circular(20)
-                ),
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(top: 20, bottom: 5),
-            ),
-
-            Container(
-              child: Text("Please present your QR code to staff in-order to begin volunteering.", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28, color: Colors.blue)),
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.only(top: 20, bottom: 5),
-            ),
+            buildPictureNameRow(),
+            buildQRButton(context, "vc"),
+            buildNotice(),
           ],
         ),
-      ),
     );
   }
 }
