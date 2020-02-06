@@ -28,7 +28,7 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            buildPictureNameRow(),
+            buildPictureNameRow("Fake", "Profile"),
             buildQRButton(context, "vc"),
             buildNotice(),
           ],

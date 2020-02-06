@@ -4,6 +4,7 @@ import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 
 import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
+import 'REST/LoginCalls.dart';
 import 'Staff/Staff_ActiveDashboard.dart';
 import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
 
@@ -52,18 +53,6 @@ class LoginPageState extends State<LoginPage> {
   void initState()
   {
     super.initState();
-  }
-
-  void LoginCheck (String toCheck)
-  {
-    if (toCheck == "st")
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
-    else if (toCheck == "bd")
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(title: 'Dashboard')));
-    else if (toCheck == "vc")
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(title: 'Dashboard')));
-    else
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(title: 'Dashboard')));
   }
 
   final _emailController = TextEditingController();
@@ -237,8 +226,8 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 24, color: Colors.black)
           ),
           onPressed: () {
-            // POST_InitialLogin(_emailController.text, _passwordController.text);
-            LoginCheck(_emailController.text);
+            POST_InitialLogin(_emailController.text, _passwordController.text, context);
+            // LoginCheck(_emailController.text);
           },
           color: Colors.amber,
         ),

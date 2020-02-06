@@ -29,7 +29,7 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            buildPictureNameRow(),
+            buildPictureNameRow("Fake", "Profile"),
             buildQRButton(context, "bd"),
             buildNotice(),
           ],

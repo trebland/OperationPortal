@@ -40,7 +40,7 @@ class ProfileState extends State<ProfilePage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  buildPictureNameRow(),
+                  buildPictureNameRow("Fake", "Profile"),
                 ],
               ),
             ),

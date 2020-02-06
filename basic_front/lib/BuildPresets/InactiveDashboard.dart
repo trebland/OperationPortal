@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../GenerateQR.dart';
 
-Widget buildPictureNameRow ()
+Widget buildPictureNameRow (String firstName, String lastName)
 {
   return Container(
     child: IntrinsicHeight(
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>
           [
@@ -20,11 +20,11 @@ Widget buildPictureNameRow ()
                 ),
                 height: 200,
                 width: 200,
-              margin: EdgeInsets.only(top: 10)
+              margin: EdgeInsets.only(top: 10, right: 20)
             ),
             Flexible(
               child: Text(
-                "First-Name\nLast-Name",
+                firstName + "\n" + lastName,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 40),
               ),
@@ -44,11 +44,11 @@ Widget buildQRButton (BuildContext context, String role)
       onPressed: ()
       {
         if (role == "bd")
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Bus-Driver')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
         else if (role == "vc")
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Volunteer-Captain')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
         else
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Volunteer')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
       },
     ),
     decoration: new BoxDecoration(
