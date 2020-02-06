@@ -1,12 +1,7 @@
-import 'dart:convert';
-
-import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
 import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 
 import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
 import 'Staff/Staff_ActiveDashboard.dart';
@@ -19,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Operation Portal Login',
+      title: 'Operation Portal',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -39,196 +34,24 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: LoginPage(title: 'Operation Portal Login'),
-    );
-  }
-}
-
-
-class Profile {
-  int id;
-  String firstName;
-  String lastName;
-  String role;
-
-  Profile ({this.id, this.firstName, this.lastName, this.role});
-
-  factory Profile.fromJson (Map<String, dynamic> json)
-  {
-    return Profile(
-      id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      role: json['role'],
-    );
-  }
-}
-
-class RetrieveUser_Success {
-  Profile profile;
-
-  RetrieveUser_Success({this.profile});
-
-  factory RetrieveUser_Success.fromJson(Map<String, dynamic> json) {
-    return RetrieveUser_Success(
-        profile: json['profile'] != null ? Profile.fromJson(json['profile']) : null,
-    );
-  }
-}
-
-class RetrieveUser_Failure {
-  String error;
-
-  RetrieveUser_Failure({this.error});
-
-  factory RetrieveUser_Failure.fromJson(Map<String, dynamic> json) {
-    return RetrieveUser_Failure(
-      error: json['error'],
-    );
-  }
-}
-
-class InitialLogin_Success {
-  final String accessToken;
-  final String errorDescription;
-
-  InitialLogin_Success({this.accessToken, this.errorDescription});
-
-  factory InitialLogin_Success.fromJson(Map<String, dynamic> json) {
-    return InitialLogin_Success(
-      accessToken: json['access_token'],
-      errorDescription: json['error_description'],
-    );
-  }
-}
-
-class InitialLogin_Failure {
-  final String errorDescription;
-
-  InitialLogin_Failure({this.errorDescription});
-
-  factory InitialLogin_Failure.fromJson(Map<String, dynamic> json) {
-    return InitialLogin_Failure(
-      errorDescription: json['error_description'],
+      home: LoginPage(),
     );
   }
 }
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  LoginPage({Key key}) : super(key: key);
 
   @override
   LoginPageState createState() => LoginPageState();
 }
 
 class LoginPageState extends State<LoginPage> {
-  int _counter = 0;
-
-
-
-  Future<void> POST_InitialLogin(String username, String passwordText) async {
-    var mUrl = "https://www.operation-portal.com/api/auth/token";
-
-    Map<String, String> body = {
-      'grant_type': 'password',
-      'username': '$username',
-      'password': '$passwordText',
-    };
-
-    var response = await http.post(mUrl,
-        body: body,
-        headers: {'Content-type': 'application/x-www-form-urlencoded'});
-
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON.
-      InitialLogin_Success mPost = InitialLogin_Success.fromJson(json.decode(response.body));
-
-      GET_RetrieveUser(mPost.accessToken);
-    } else {
-      // If that call was not successful, throw an error.
-      InitialLogin_Failure mPost = InitialLogin_Failure.fromJson(json.decode(response.body));
-
-      Fluttertoast.showToast(
-          msg: "Email or password is incorrect",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-
-      throw Exception('Failed to load post');
-    }
-  }
-
-  Future<void> GET_RetrieveUser (String token) async {
-    var mUrl = "https://www.operation-portal.com/api/auth/user";
-
-    var response = await http.get(mUrl,
-        headers: {'Content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token});
-
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON.
-      RetrieveUser_Success mPost = RetrieveUser_Success.fromJson(json.decode(response.body));
-
-      Fluttertoast.showToast(
-          msg: mPost.profile.role,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(title: 'Dashboard')));
-      return mPost;
-    } else {
-      // If that call was not successful, throw an error.
-      RetrieveUser_Failure mPost = RetrieveUser_Failure.fromJson(json.decode(response.body));
-
-      Fluttertoast.showToast(
-          msg: mPost.error,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-
-      throw Exception('Failed to load post');
-    }
-  }
 
   @override
   void initState()
   {
     super.initState();
-  }
-
-  void _callApi(BuildContext context)
-  {
-    final scaffold = Scaffold.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: const Text('Login Failed'),
-        action: SnackBarAction(
-            label: 'CLEAR', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
   }
 
   void LoginCheck (String toCheck)
@@ -244,13 +67,10 @@ class LoginPageState extends State<LoginPage> {
   }
 
   final _emailController = TextEditingController();
-  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   FocusNode usernameNode = new FocusNode();
   FocusNode passwordNode = new FocusNode();
-  FocusNode confirmPasswordNode = new FocusNode();
 
   Widget buildHeader ()
   {
@@ -430,13 +250,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+  Widget build(BuildContext context)
+  {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         return Scaffold (
@@ -467,38 +282,6 @@ class LoginPageState extends State<LoginPage> {
         );
       },
     );
-
-            /*
-            child: Builder(
-                      builder: (context) => Center(
-                        child: new SizedBox(
-                          child: RaisedButton(
-                            child: const Text('Login', style: TextStyle(fontSize: 24)),
-                            onPressed: () => _callApi(context),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(18.0),
-                            ),
-                            padding: EdgeInsets.all(10),
-                          ),
-                        )
-                      ),
-                    ),
-             */
-
-            /*
-            FutureBuilder<Post>(
-              future: post,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data.firstName);
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-
-                // By default, show a loading spinner.
-                return CircularProgressIndicator();
-              },
-            ), */
   }
 }
 

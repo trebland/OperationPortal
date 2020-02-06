@@ -21,18 +21,6 @@ class ForgotPasswordPage extends StatefulWidget {
 class ForgotPasswordState extends State<ForgotPasswordPage>
 {
 
-  void _showEmailSent(BuildContext context)
-  {
-    final scaffold = Scaffold.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: const Text('Email Sent'),
-        action: SnackBarAction(
-            label: 'CLEAR', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
-  }
-
   Widget buildEmailRow () {
     return Container(
       child: IntrinsicHeight(

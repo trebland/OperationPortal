@@ -667,7 +667,7 @@ class PictureScreen extends StatelessWidget {
           ),
           color: Colors.amber,
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage(title: 'Dashboard')), (Route<dynamic> route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
           },
         ),
       ],
