@@ -11,17 +11,7 @@ import '../Structs/Volunteer.dart';
 final List<int> colorCodes = <int>[600, 500];
 final items = List<String>.generate(50, (i) => "Item $i");
 List<String> names = ["Jacob Pfeiffer", "Marcus O'Real", "Kevin Augustus", "Stella Artois", "Guillaume Fuile", "Ruby Jack", "Lika Telova", "Rika Telova", "Vila Malie", "Marie Goodman"];
-
-List<Volunteer> volunteers;
-
-List<Volunteer> generateVolunteers() {
-  List<Volunteer> volunteers = new List<Volunteer>();
-  volunteers.add(new Volunteer("Richard Hemsworth", "Route 1"));
-  volunteers.add(new Volunteer("Lexicon Grubert", "Route 3"));
-  volunteers.add(new Volunteer("Tyrell Smith", "Route 2"));
-  volunteers.add(new Volunteer("Alessa Tuford", "Route 3"));
-  return volunteers;
-}
+List<String> volunteerNames = ["Richard Hemsworth", "Lexicon Grubert", "Tyrell Smith", "Alessa Tuford"];
 
 void _select(Choice choice) {
   // Causes the app to rebuild with the new _selectedChoice.
@@ -390,15 +380,15 @@ Widget buildVolunteerList ()
       ),
       Expanded(
         child: new ListView.builder(
-          itemCount: volunteers.length,
+          itemCount: volunteerNames.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               child: ListTile(
-                title: Text('${volunteers[index].name}',
+                title: Text('${volunteerNames[index]}',
                     style: TextStyle(color: Colors.white)),
                 onTap: ()
                 {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_VolunteerProfileViewer_Page(title: '${volunteers[index].name}')));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_VolunteerProfileViewer_Page(title: '${volunteerNames[index]}')));
                 },
                 dense: false,
               ),

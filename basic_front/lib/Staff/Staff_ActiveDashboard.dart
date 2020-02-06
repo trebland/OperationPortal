@@ -1,5 +1,6 @@
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
+import 'package:basic_front/ScanQR.dart';
 import 'package:flutter/material.dart';
 
 
@@ -99,7 +100,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           Container(
                             child: FlatButton(
                               child: Text("Scan QR", style: TextStyle(color: Colors.black),),
-                              onPressed: () => null,
+                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ScanScreen())),
                             ),
                             decoration: new BoxDecoration(
                               color: Colors.white,

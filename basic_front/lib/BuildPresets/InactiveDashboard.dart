@@ -1,7 +1,6 @@
-import 'package:basic_front/Bus_Driver/BusDriver_ActiveDashboard.dart';
-import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
-import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
 import 'package:flutter/material.dart';
+
+import '../GenerateQR.dart';
 
 Widget buildPictureNameRow ()
 {
@@ -45,11 +44,11 @@ Widget buildQRButton (BuildContext context, String role)
       onPressed: ()
       {
         if (role == "bd")
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(title: 'Dashboard')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Bus-Driver')));
         else if (role == "vc")
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(title: 'Dashboard')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Volunteer-Captain')));
         else
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(title: 'Dashboard')));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(title: 'Volunteer')));
       },
     ),
     decoration: new BoxDecoration(

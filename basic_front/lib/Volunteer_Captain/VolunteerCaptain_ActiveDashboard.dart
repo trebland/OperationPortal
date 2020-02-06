@@ -28,7 +28,6 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
     void initState() {
       super.initState();
       _tabController = TabController(vsync: this, length: myTabs.length);
-      volunteers = generateVolunteers();
     }
 
     @override

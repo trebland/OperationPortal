@@ -37,7 +37,6 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
-    volunteers = generateVolunteers();
   }
 
   @override
