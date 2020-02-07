@@ -76,7 +76,7 @@ Future<Profile> RetrieveUserAndPush (String token, BuildContext context) async {
     if (mPost.profile.role == "Staff")
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
     else
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(profile: mPost.profile,)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(title: 'Dashboard',)));
 
 
     return mPost.profile;

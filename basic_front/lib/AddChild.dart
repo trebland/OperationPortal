@@ -20,7 +20,7 @@ class AddChildPage extends StatefulWidget {
 
 class AddChildState extends State<AddChildPage>
 {
-  Widget buildNameRow ()
+  Widget buildFirstNameRow ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -47,7 +47,7 @@ class AddChildState extends State<AddChildPage>
                 child: TextField(
                   textAlign: TextAlign.left,
                   decoration: new InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'First Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -69,6 +69,104 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
+  Widget buildLastNameRow ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.account_circle,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  decoration: new InputDecoration(
+                    hintText: 'Last Name',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
+
+
+  Widget buildGenderRow ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.account_circle,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  decoration: new InputDecoration(
+                    hintText: 'Gender',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
   Widget buildBirthdayRow ()
   {
     return Container(
@@ -242,7 +340,9 @@ class AddChildState extends State<AddChildPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  buildNameRow(),
+                  buildFirstNameRow(),
+                  buildLastNameRow(),
+                  buildGenderRow(),
                   buildBirthdayRow(),
                   buildGradeRow(),
                   buildTakePicture(),
