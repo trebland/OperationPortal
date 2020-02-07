@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace API.Helpers
@@ -32,6 +33,52 @@ namespace API.Helpers
                 Error = ""
             });
         }
+
+        public static JsonResult GenerateMissingInputMessage(List<String> missing)
+        {
+            if (missing.Count == 1)
+            {
+                return GenerateMissingInputMessage(missing[0]);
+            }
+
+            StringBuilder sb = new StringBuilder(missing[0]);
+            if (missing.Count == 2)
+            {
+                sb.Append(" and " + missing[1]);
+            } 
+            
+            else
+            {
+                for (int i = 1; i < missing.Count - 1; i++)
+                {
+                    sb.Append(", " + missing[i]);
+                }
+
+                sb.Append(", and " + missing[missing.Count - 1]);
+            }
+
+            String missingParameters = sb.ToString();
+
+            // Sentence case
+            missingParameters = char.ToUpper(missingParameters[0]) + missingParameters.Substring(1).ToLower();
+
+            return new JsonResult(new
+            {
+                Error = missingParameters + " are required."
+            });
+        }
+
+        public static JsonResult GenerateMissingInputMessage(String missing)
+        {
+            // Sentence case
+            missing = char.ToUpper(missing[0]) + missing.Substring(1).ToLower();
+
+            return new JsonResult(new
+            {
+                Error = missing + " is required."
+            });
+        }
+
 
         /// <summary>
         /// Normalizes a string by ensuring the first letter is capitalized and the rest are lower case

@@ -7,6 +7,8 @@ using Npgsql;
 using API.Models;
 using System.Data;
 using System.Text;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace API.Data
 {
@@ -95,20 +97,18 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Creates a new child ID
+        /// Creates a new child with first name, last name, bus id, class id, and any extra information
         /// </summary>
-        /// <returns>int of the new child ID</returns>
-        public int CreateChildId()
+        /// <returns>Success message</returns>
+        /// TODO: picture
+        public String CreateChild(ChildModel child)
         {
-            // Start IDs at 1
-            int nextId = 1;
-
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
-                string sql = @"SELECT * FROM Child
-                             ORDER BY id DESC
-                             LIMIT 1";
+                String sql = @"SELECT count(*)
+                               FROM information_schema.columns
+                               WHERE table_name = 'child'";
 
                 DataTable dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -117,25 +117,105 @@ namespace API.Data
                     da.Fill(dt);
                 }
 
-                // If there is a previous ID, make the next ID 1 higher than the previous highest
-                if (dt.Rows.Count > 0)
-                {
-                    nextId += (int)dt.Rows[0]["id"];
-                }
+                int numColumns = (int)(long)dt.Rows[0]["count"];
+                // Update parameters that are not null
+                // First name, last name, bus and class ID have been checked in the controller
+                StringBuilder columns = new StringBuilder();
+                StringBuilder vals = new StringBuilder();
+                bool[] updated = new bool[numColumns];
+                int parm = 0;
 
-                // Default bus and class to 1 to fulfill non-null constraint
-                sql = @"INSERT INTO Child (id, busid, classid)
-                        VALUES (@nextId, 1, 1)";
+                columns.Append($"@firstname,");
+                updated[parm] = true;
+                parm++;
+
+                columns.Append($"@lastname,");
+                updated[parm] = true;
+                parm++;
+
+                if (child.Gender != null)
+                {
+                    columns.Append($"@gender,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Grade != null)
+                {
+                    columns.Append($"@grade,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Birthday != null)
+                {
+                    columns.Append($"@birthday,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                columns.Append($"@busid,");
+                updated[parm] = true;
+                parm++;
+
+                columns.Append($"@classid,");
+                updated[parm] = true;
+                parm++;
+
+                columns.Length = columns.Length - 1;
+
+                sql = @"INSERT INTO Child (" + Regex.Replace(columns.ToString(), "@" , "")  + @") 
+                        VALUES (" + columns.ToString() + ")";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
-                    cmd.Parameters.Add("@nextId", NpgsqlTypes.NpgsqlDbType.Integer).Value = nextId;
+                    parm = -1;
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@firstname", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = child.FirstName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@lastname", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = child.LastName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@gender", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = child.Gender;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@grade", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Grade;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@busid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus.Id;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@classid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
+                    }
+                    /*
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                    }
+                    */
                     cmd.ExecuteNonQuery();
                 }
 
                 con.Close();
             }
 
-            return nextId;
+            return "Child has been added.";
         }
 
         /// <summary>
@@ -223,7 +303,25 @@ namespace API.Data
                     parameters.Append($"classid = @p{parm},");
                     updated[parm] = true;
                 }
-
+                parm++;
+                /*
+                if  (child.Picture != null)
+                {
+                    parameters.Append($"picture = @p{parm},");
+                    updated[parm] = true;
+                }*/
+                
+                // For testing with Postman
+                // TODO: Save file extention in DB
+               /* File file = new File("test.jfif");
+                FileInputStream fis = new FileInputStream(file);
+                PreparedStatement ps = con.prepareStatement("INSERT INTO images VALUES (?, ?)");
+                ps.setString(1, file.getName());
+                ps.setBinaryStream(2, fis, file.length());
+                ps.executeUpdate();
+                ps.close();
+                fis.close();
+                */
                 if (parameters.Length == 0) // All fields null - no changes made
                 {
                     return GetFullChildModel(dt.Rows[0]);
@@ -269,7 +367,12 @@ namespace API.Data
                     {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
                     }
-
+                    /*
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                    }
+                    */
                     cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
                     cmd.ExecuteNonQuery();
                 }
@@ -297,6 +400,38 @@ namespace API.Data
 
                 return GetFullChildModel(dt.Rows[0]);
             }
+        }
+
+        public ChildModel GetChild(int? childId)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT c.*,
+                               cl.description,
+                               b.name AS busname
+                        FROM Child c
+                        LEFT JOIN Class_List cl
+                        ON c.classid = cl.id
+                        LEFT JOIN Bus b
+                        ON c.busid = b.id
+                        WHERE c.id = @childId";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return new ChildModel();
+            }
+
+            return GetFullChildModel(dt.Rows[0]);
         }
 
         public String EditNotes(int childId, String editedNotes)
@@ -405,9 +540,8 @@ namespace API.Data
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                // TODO: select pictureUrl
                 string sql = @"SELECT s.childid, s.startdate, s.enddate,
-                                      c.firstname, c.lastname
+                                      c.firstname, c.lastname, c.picture
                                FROM Child_Suspensions s
                                RIGHT JOIN Child c
                                ON s.childid = c.id
@@ -473,9 +607,8 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
                     SuspendedStart = ((DateTime)dr["startdate"]),
-                    SuspendedEnd = ((DateTime)dr["enddate"])
-                    //TODO:
-                    //PictureUrl
+                    SuspendedEnd = ((DateTime)dr["enddate"]),
+                    //Picture = (byte[])dr["picture"]
                 });
             }
 
@@ -486,11 +619,12 @@ namespace API.Data
         /// Fills out all the information from a row retrieved from the Child table to the 
         /// given child model
         /// </summary>
+        /// TODO: picture, relatives
         private ChildModel GetFullChildModel(DataRow dr)
         {
             ChildModel child = GetBasicChildModel(new ChildModel(), dr);
             child.Notes = dr["notes"].ToString();
-            child.WaiverReceived = (bool)dr["waiver"];
+            child.WaiverReceived = dr["waiver"] == System.DBNull.Value ? false : (bool)dr["waiver"];
 
             return child;
         }

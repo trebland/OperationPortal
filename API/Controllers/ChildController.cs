@@ -67,14 +67,41 @@ namespace API.Controllers
         [Route("~/api/child-creation")]
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult CreateChild()
+        // Required input: first name, last name, bus, class
+        public IActionResult CreateChild(ChildModel child)
         {
+            List<String> missingParameters = new List<String>();
+            if (child.FirstName == null)
+            {
+                missingParameters.Add("first name");
+            }
+
+            if (child.LastName == null)
+            {
+                missingParameters.Add("last name");
+            }
+
+            if (child.Bus == null || child.Bus.Id == null)
+            {
+                missingParameters.Add("bus id");
+            }
+
+            if (child.Class == null || child.Class.Id == null)
+            {
+                missingParameters.Add("class id");
+            }
+
+            if (missingParameters.Count != 0)
+            {
+                return Utilities.GenerateMissingInputMessage(missingParameters);
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    NextId = repo.CreateChildId()
+                    Message = repo.CreateChild(child)
                 });
             }
             catch (Exception exc)
@@ -106,7 +133,44 @@ namespace API.Controllers
                     Grade = updatedChild.Grade,
                     Birthday = updatedChild.Birthday,
                     Bus = updatedChild.Bus,
-                    Class = updatedChild.Class
+                    Class = updatedChild.Class,
+                    //Picture = updatedChild.Picture
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Child(IdModel childId)
+        {
+            if (childId == null || childId.Id == null)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                ChildModel child = repo.GetChild(childId.Id);
+                return new JsonResult(new ChildModel
+                {
+                    Id = child.Id,
+                    FirstName = child.FirstName,
+                    LastName = child.LastName,
+                    Gender = child.Gender,
+                    Grade = child.Grade,
+                    Birthday = child.Birthday,
+                    Bus = child.Bus,
+                    Class = child.Class,
+                    //Picture = child.Picture
                 });
             }
             catch (Exception exc)
