@@ -15,6 +15,7 @@ using API.Models;
 using API.Data;
 using Microsoft.Extensions.Options;
 using System;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -46,14 +47,39 @@ namespace API.Controllers
         [Route("~/api/check-in/child")]
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult CheckInChild(int childId)
+        public async Task<IActionResult> CheckInChild(IdModel model)
         {
+            ChildRepository childRepo = new ChildRepository(configModel.ConnectionString);
+
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (childRepo.IsSuspended(model.Id))
+            {
+                return new JsonResult(new
+                {
+                    Error = "Child is suspended."
+                });
+            }
+
             try
             {
                 CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    numVisits = repo.CheckInChild(childId)
+                    numVisits = repo.CheckInChild(model.Id)
                 });
             }
             catch (Exception exc)
@@ -68,6 +94,8 @@ namespace API.Controllers
         [Route("~/api/check-in/volunteer")]
         [HttpPost]
         [AllowAnonymous]
+        // TODO: remove view roster/notes, classId, busId, and add bool for addNotes
+        // TODO: change from query params to json model, add checks for required params
         public IActionResult CheckInVolunteer(int volunteerId, int? classId, int? busId, bool viewRoster, bool viewNotes)
         {
             try

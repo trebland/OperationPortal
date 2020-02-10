@@ -21,117 +21,108 @@ class ForgotPasswordPage extends StatefulWidget {
 class ForgotPasswordState extends State<ForgotPasswordPage>
 {
 
-  void _showEmailSent(BuildContext context)
-  {
-    final scaffold = Scaffold.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: const Text('Email Sent'),
-        action: SnackBarAction(
-            label: 'CLEAR', onPressed: scaffold.hideCurrentSnackBar),
+  Widget buildEmailRow () {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.email,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  decoration: new InputDecoration(
+                    hintText: 'Email',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ]
+        ),
       ),
+      margin: EdgeInsets.all(25),
+    );
+  }
+
+  Widget buildResetButton (BuildContext context)
+  {
+    return Container(
+      child: SizedBox(
+        child: RaisedButton(
+          child: Text(
+              "Reset Password",
+              style: TextStyle(fontSize: 24, color: Colors.black)
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: Colors.amber,
+        ),
+        height: 50,
+        width: double.infinity,
+      ),
+      margin: EdgeInsets.all(25),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Forgot Password"),
-      ),
-      resizeToAvoidBottomPadding: false,
-      body: Center(
-          child: Column(
-            children: <Widget>[
-              Container(
-                child: Image(
-                    image: AssetImage('assets/OCC_LOGO_128_128.png')
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.all(
-                      new Radius.circular(20)
-                  ),
-                ),
-                margin: EdgeInsets.only(top: 20, left: 20, bottom: 5),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        AppBar appBar = AppBar(
+          title: Text("Forgot Password"),
+        );
+        return Scaffold (
+          appBar: appBar,
+          body: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight - appBar.preferredSize.height*2,
               ),
-              Container(
-                child: Text(
-                  "Reset Password",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            buildEmailRow(),
+                          ],
+                        )
+                    ),
+                    buildResetButton(context)
+                  ],
                 ),
-                margin: EdgeInsets.only(top: 20, left: 20, bottom: 15),
               ),
-              Container(
-                child: IntrinsicHeight(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>
-                      [
-                        Container(
-                          child: Icon(
-                            Icons.email,
-                            size: 40,
-                          ),
-                          decoration: new BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: new BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              bottomLeft: Radius.circular(20),
-                            ),
-                          ),
-                          padding: EdgeInsets.only(left: 5),
-                        ),
-                        Flexible(
-                          child: TextField(
-                            textAlign: TextAlign.left,
-                            decoration: new InputDecoration(
-                              hintText: 'Email',
-                              border: new OutlineInputBorder(
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                borderSide: new BorderSide(
-                                  color: Colors.black,
-                                  width: 0.5,
-                                ),
-                              ),
-                            ),
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ]
-                  ),
-                ),
-                margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
-              ),
-              Expanded (
-                child: Builder(
-                  builder: (context) => Center(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: new SizedBox(
-                          child: RaisedButton(
-                            child: const Text('Send Reset Password Email', style: TextStyle(fontSize: 24)),
-                            onPressed: ()
-                            {
-                              _showEmailSent(context);
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(18.0),
-                            ),
-                          ),
-                        ),
-                      )
-                  ),
-                ),
-
-              )
-            ],
-          )
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,7 @@ namespace API.Models
         public Pair Class { get; set; }
         public Pair Bus { get; set; }
         public string Birthday { get; set; }
-        public string PictureUrl { get; set; }
+        public byte[] Picture { get; set; }
         public bool WaiverReceived { get; set; }
         public DateTime? SuspendedStart { get; set; }
         public DateTime? SuspendedEnd { get; set; }

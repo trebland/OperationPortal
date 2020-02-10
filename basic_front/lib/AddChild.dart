@@ -1,4 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:http/http.dart' as http;
+
+import 'AdditionalOptions.dart';
+import 'Storage.dart';
+
+Future<void> CreateChild_Partial (String token, String firstName, String lastName, int classId, int busId, BuildContext context) async {
+  var mUrl = "https://www.operation-portal.com/api/child-creation";
+
+  Map<String, String> body = {
+    'FirstName': firstName,
+    'LastName': lastName,
+    'Class': '$classId',
+    'Bus': '$busId',
+  };
+
+  var response = await http.post(mUrl,
+      body: body,
+      headers: {'Content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token});
+
+  if (response.statusCode == 200)
+  {
+    Fluttertoast.showToast(
+        msg: "Success",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+
+
+    Navigator.pop(context);
+
+  } else {
+    Fluttertoast.showToast(
+        msg: "Child Creation Failed!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+
+    throw Exception('Failed to load post');
+  }
+}
 
 class AddChildPage extends StatefulWidget {
   AddChildPage({Key key, this.title}) : super(key: key);
@@ -20,7 +71,20 @@ class AddChildPage extends StatefulWidget {
 
 class AddChildState extends State<AddChildPage>
 {
-  Widget buildNameRow ()
+
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final classIdController = TextEditingController();
+  final routeIdController = TextEditingController();
+
+  Storage storage;
+
+  @override
+  void initState() {
+     storage = new Storage();
+  }
+
+  Widget buildFirstNameRow ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -46,8 +110,9 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  controller: firstNameController,
                   decoration: new InputDecoration(
-                    hintText: 'Full Name',
+                    hintText: 'First Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -69,7 +134,7 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
-  Widget buildBirthdayRow ()
+  Widget buildLastNameRow ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -80,7 +145,7 @@ class AddChildState extends State<AddChildPage>
             [
               Container(
                 child: Icon(
-                  Icons.cake,
+                  Icons.more_horiz,
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
@@ -95,8 +160,9 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  controller: lastNameController,
                   decoration: new InputDecoration(
-                    hintText: 'Birthday',
+                    hintText: 'Last Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -118,7 +184,7 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
-  Widget buildGradeRow()
+  Widget buildClassRow()
   {
     return Container(
       child: IntrinsicHeight(
@@ -129,7 +195,7 @@ class AddChildState extends State<AddChildPage>
             [
               Container(
                 child: Icon(
-                  Icons.grade,
+                  Icons.class_,
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
@@ -144,8 +210,65 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  controller: classIdController,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter.digitsOnly,
+                  ],
                   decoration: new InputDecoration(
-                    hintText: 'Grade',
+                    hintText: 'Class',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
+
+  Widget buildRouteRow()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.directions_bus,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  controller: routeIdController,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: new InputDecoration(
+                    hintText: 'Bus Route',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -211,20 +334,29 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
-  Widget buildAddChild ()
+  Widget buildButtonBar ()
   {
-    return SizedBox(
-      child: RaisedButton(
-        child: const Text('Add Child', style: TextStyle(fontSize: 24)),
-        onPressed: ()
-        {
-          Navigator.pop(context);
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(18.0),
+    return ButtonBar(
+      children: <Widget>[
+        OutlineButton(
+          child: Text('Additional Options', style: TextStyle(color: Colors.deepPurple),),
+          onPressed: ()
+          {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
+              lastName: lastNameController.text, classId: int.parse(classIdController.text), routeId: int.parse(routeIdController.text),)));
+          },
         ),
-        color: Colors.amber,
-      ),
+        RaisedButton(
+          child: const Text('Add Child'),
+          onPressed: ()
+          {
+            storage.readToken().then((value) {
+              CreateChild_Partial(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(routeIdController.text), context);
+            });
+          },
+          color: Colors.amber,
+        ),
+      ],
     );
   }
 
@@ -245,11 +377,12 @@ class AddChildState extends State<AddChildPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  buildNameRow(),
-                  buildBirthdayRow(),
-                  buildGradeRow(),
+                  buildFirstNameRow(),
+                  buildLastNameRow(),
+                  buildClassRow(),
+                  buildRouteRow(),
                   buildTakePicture(),
-                  buildAddChild(),
+                  buildButtonBar(),
                 ],
               ),
             ),

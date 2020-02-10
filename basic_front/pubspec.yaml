@@ -18,6 +18,10 @@ environment:
 
 dependencies:
   http: ^0.12.0+2
+  fluttertoast: ^3.1.3
+  flutter_launcher_icons: ^0.7.4
+  qr_flutter: ^3.2.0
+  barcode_scan: ^1.0.0
   flutter:
     sdk: flutter
   camera:
@@ -32,6 +36,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/OCC_LOGO.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
