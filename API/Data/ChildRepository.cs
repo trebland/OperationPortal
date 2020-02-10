@@ -402,7 +402,7 @@ namespace API.Data
             }
         }
 
-        public ChildModel GetChild(int? childId)
+        public ChildModel GetChild(int childId)
         {
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -480,14 +480,8 @@ namespace API.Data
         /// <summary>
         /// The childId is marked suspended for the given start/end dates
         /// </summary>
-        /// <returns>If there is an issue with the given time frame, an error message is returned</returns>
-        public String Suspend(int childId, DateTime start, DateTime end)
-        {
-            if (start > end)
-            {
-                return "Start time occurs after end time.";
-            }
-
+        public string Suspend(int childId, DateTime start, DateTime end)
+        { 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
@@ -512,7 +506,6 @@ namespace API.Data
                     return "The child is already suspended for at least one of these dates.";
                 }
 
-
                 sql = @"INSERT INTO Child_Suspensions (childid, startdate, enddate)
                         VALUES (@childid, @startdate, @enddate)";
 
@@ -526,7 +519,7 @@ namespace API.Data
                 con.Close();
             }
 
-            return null;
+            return "The child has been suspended for the given time frame.";
         }
 
         /// <summary>

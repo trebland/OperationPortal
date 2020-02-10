@@ -224,15 +224,20 @@ namespace API.Controllers
         [Route("~/api/volunteer-attendance-check")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult CheckAttendance(int volunteerId)
+        public IActionResult CheckAttendance(IdModel model)
         {
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("volunteer id");
+            }
+
             try
             {
                 VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
 
                 return new JsonResult(new
                 {
-                    DaysAttended = repo.GetAttendanceDates(volunteerId)
+                    DaysAttended = repo.GetAttendanceDates(model.Id)
                 });
             }
             catch (Exception exc)
@@ -247,15 +252,20 @@ namespace API.Controllers
         [Route("~/api/volunteers-for-day")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult VolunteersForDay(DateTime day, bool checkedIn, bool signedUp)
+        public IActionResult VolunteersForDay(GetVolunteersForDayModel model)
         {
+            if (model.Day == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
             try
             {
                 VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
 
                 return new JsonResult(new
                 {
-                    Volunteers = repo.GetDaysVolunteers(day, checkedIn, signedUp)
+                    Volunteers = repo.GetDaysVolunteers(model.Day, model.CheckedIn, model.SignedUp)
                 });
             }
             catch (Exception exc)

@@ -34,6 +34,8 @@ namespace API.Helpers
             });
         }
 
+        /// <param name="missing">List of required parameters missing from the arguments that were passed</param>
+        /// <returns>JsonResult with Error field that lists all of the missing fields</returns>
         public static JsonResult GenerateMissingInputMessage(List<String> missing)
         {
             if (missing.Count == 1)
@@ -99,5 +101,17 @@ namespace API.Helpers
 
             return (Char.ToUpper(str[0]) + str.Substring(1).ToLower());
         }
+
+        public static string ValidateTimeframe(DateTime start, DateTime end)
+        {
+            if (start > end)
+            {
+                return "Start time occurs after end time.";
+            }
+
+            // Valid timeframe
+            return "";
+        }
+
     }
 }

@@ -44,18 +44,47 @@ namespace API.Controllers
         [Route("~/api/roster")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Roster(int busId, int classId, DateTime date)
+        public async Task<IActionResult> Roster(GetRosterModel model)
         {
+            if (model.Busid == 0 && model.Classid == 0)
+            {
+                return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
+            }
+            /*
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            */
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                List<ChildModel> BusRoster = null;
+                List<ChildModel> ClassRoster = null;
+
+                if (model.Busid != 0)
+                {
+                    BusRoster = repo.GetChildrenBus(model.Busid);
+                }
+
+                if (model.Classid != 0)
+                {
+                    ClassRoster = repo.GetChildrenClass(model.Classid);
+                }
+
                 return new JsonResult(new
                 {
-                    BusRoster = repo.GetChildrenBus(busId),
-                    ClassRoster = repo.GetChildrenClass(classId)
+                    BusRoster,
+                    ClassRoster
                 });
             }
-            catch (Exception exc) 
+            catch (Exception exc)
             {
                 return new JsonResult(new
                 {
@@ -119,6 +148,11 @@ namespace API.Controllers
         // Pass in JSON object
         public IActionResult EditChild(ChildModel child)
         {
+            if (child == null || child.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -149,9 +183,9 @@ namespace API.Controllers
         [Route("~/api/child")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Child(IdModel childId)
+        public IActionResult Child(IdModel model)
         {
-            if (childId == null || childId.Id == null)
+            if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
             }
@@ -159,7 +193,7 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                ChildModel child = repo.GetChild(childId.Id);
+                ChildModel child = repo.GetChild(model.Id);
                 return new JsonResult(new ChildModel
                 {
                     Id = child.Id,
@@ -185,15 +219,22 @@ namespace API.Controllers
         [Route("~/api/waiver")]
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult UpdateWaiver(int childId, bool received)
+        public IActionResult UpdateWaiver(PostWaiverModel model)
         {
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                repo.UpdateWaiver(childId, received);
-                
+                repo.UpdateWaiver(model.Id, model.Received);
+
+                String Message = "The child was recorded as " + (model.Received ? "" : "not ") + "having turned in the waiver.";
                 return new JsonResult(new
                 {
+                    Message
                 });
             }
             catch (Exception exc)
@@ -208,15 +249,20 @@ namespace API.Controllers
         [Route("~/api/child-attendance-check")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult CheckAttendance(int childId)
+        public IActionResult CheckAttendance(IdModel model)
         {
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
 
                 return new JsonResult(new
                 {
-                    DaysAttended = repo.GetAttendanceDates(childId)
+                    DaysAttended = repo.GetAttendanceDates(model.Id)
                 });
             }
             catch (Exception exc)
@@ -231,15 +277,43 @@ namespace API.Controllers
         [Route("~/api/suspend")]
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Suspend(int childId, DateTime start, DateTime end)
+        public IActionResult Suspend(PostSuspendChildModel model)
         {
+            List<String> missingParameters = new List<String>();
+            if (model.Id == 0)
+            {
+                missingParameters.Add("child id");
+            }
+
+            if (model.Start == DateTime.MinValue)
+            {
+                missingParameters.Add("start time");
+            }
+
+            if (model.End == DateTime.MinValue)
+            {
+                missingParameters.Add("end time");
+            }
+
+            if (missingParameters.Count != 0)
+            {
+                return Utilities.GenerateMissingInputMessage(missingParameters);
+            }
+
+            String timeframeMsg = Utilities.ValidateTimeframe(model.Start, model.End);
+            if (!timeframeMsg.Equals(""))
+            {
+                return Utilities.ErrorJson(timeframeMsg);
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                
 
                 return new JsonResult(new
                 {
-                    Error = repo.Suspend(childId, start, end)
+                    Message = repo.Suspend(model.Id, model.Start, model.End)
                 });
             }
             catch (Exception exc)
@@ -277,15 +351,20 @@ namespace API.Controllers
         [Route("~/api/child-current-suspension")]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult CheckChildSuspension(int childId)
+        public IActionResult CheckChildSuspension(IdModel model)
         {
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
 
                 return new JsonResult(new
                 {
-                    IsSuspended = repo.IsSuspended(childId)
+                    IsSuspended = repo.IsSuspended(model.Id)
                 });
             }
             catch (Exception exc)
@@ -300,15 +379,20 @@ namespace API.Controllers
         [Route("~/api/notes-edit")]
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Notes(int childId, string notes)
+        public IActionResult Notes(PostNotesEditModel model)
         {
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
 
                 return new JsonResult(new
                 {
-                    Notes = repo.EditNotes(childId, notes)
+                    Notes = repo.EditNotes(model.Id, model.Notes)
                 });
             }
             catch (Exception exc)
