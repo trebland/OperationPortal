@@ -36,19 +36,14 @@ Widget buildPictureNameRow (String firstName, String lastName)
   );
 }
 
-Widget buildQRButton (BuildContext context, String role)
+Widget buildQRButton (BuildContext context)
 {
   return Container (
     child: FlatButton(
       child: const Text('Scan QR Code', style: TextStyle(fontSize: 24, color: Colors.white)),
       onPressed: ()
       {
-        if (role == "bd")
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
-        else if (role == "vc")
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
-        else
-          Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
       },
     ),
     decoration: new BoxDecoration(

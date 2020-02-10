@@ -32,7 +32,7 @@ class Volunteer_InactiveDashboard_State extends State<Volunteer_InactiveDashboar
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
-            buildQRButton(context, ""),
+            buildQRButton(context),
             buildNotice(),
           ],
         ),

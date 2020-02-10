@@ -1,12 +1,13 @@
 import 'package:basic_front/BuildPresets/AppBar.dart';
 import 'package:basic_front/BuildPresets/InactiveDashboard.dart';
 import 'package:basic_front/Login.dart';
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 class BusDriver_InactiveDashboard_Page extends StatefulWidget {
-  BusDriver_InactiveDashboard_Page({Key key, this.title}) : super(key: key);
+  BusDriver_InactiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
-  final String title;
+  final Profile profile;
 
   @override
   BusDriver_InactiveDashboard_State createState() => BusDriver_InactiveDashboard_State();
@@ -18,7 +19,7 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Dashboard'),
         actions: <Widget>[
           buildLogoutButton(context),
         ],
@@ -29,8 +30,8 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            buildPictureNameRow("Fake", "Profile"),
-            buildQRButton(context, "bd"),
+            buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
+            buildQRButton(context),
             buildNotice(),
           ],
         ),

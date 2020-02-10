@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'BuildPresets/InactiveDashboard.dart';
+import 'Structs/Profile.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key, this.title}) : super(key: key);
+  ProfilePage({Key key, this.profile}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,7 +15,7 @@ class ProfilePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final Profile profile;
 
   @override
   ProfileState createState() => ProfileState();
@@ -29,7 +30,7 @@ class ProfileState extends State<ProfilePage>
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         return Scaffold (
           appBar: new AppBar(
-            title: new Text(widget.title),
+            title: new Text('Profile'),
           ),
           body: SingleChildScrollView(
             child: ConstrainedBox(
@@ -40,7 +41,7 @@ class ProfileState extends State<ProfilePage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  buildPictureNameRow("Fake", "Profile"),
+                  buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
                 ],
               ),
             ),

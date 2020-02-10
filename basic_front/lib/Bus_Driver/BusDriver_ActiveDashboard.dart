@@ -1,9 +1,10 @@
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 class BusDriver_ActiveDashboard_Page extends StatefulWidget {
-  BusDriver_ActiveDashboard_Page({Key key, this.title}) : super(key: key);
+  BusDriver_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,7 +15,7 @@ class BusDriver_ActiveDashboard_Page extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  final Profile profile;
 
   @override
   BusDriver_ActiveDashboard_State createState() => BusDriver_ActiveDashboard_State();
@@ -49,9 +50,9 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Dashboard'),
         actions: <Widget>[
-          buildProfileButton(context),
+          buildProfileButton(context, widget.profile),
           buildLogoutButton(context),
         ],
         bottom: TabBar(

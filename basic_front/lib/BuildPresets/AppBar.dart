@@ -1,9 +1,10 @@
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 import '../Login.dart';
 import '../UserProfile.dart';
 
-Widget buildProfileButton (BuildContext context)
+Widget buildProfileButton (BuildContext context, Profile toPass)
 {
   return IconButton(
     icon: Icon(
@@ -11,7 +12,7 @@ Widget buildProfileButton (BuildContext context)
       color: Colors.black,
     ),
     onPressed: () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(title: 'Profile')));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(profile: toPass)));
     },
   );
 }

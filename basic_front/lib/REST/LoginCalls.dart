@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:basic_front/Bus_Driver/BusDriver_InactiveDashboard.dart';
 import 'package:basic_front/Staff/Staff_ActiveDashboard.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
 import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
+import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -74,9 +76,13 @@ Future<Profile> RetrieveUserAndPush (String token, BuildContext context) async {
     );
 
     if (mPost.profile.role == "Staff")
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(title: 'Dashboard')));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(profile: mPost.profile,)));
+    else if (mPost.profile.role == "Bus Driver")
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(profile: mPost.profile,)));
+    else if (mPost.profile.role == "Volunteer Captain")
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(profile: mPost.profile,)));
     else
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(title: 'Dashboard',)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(profile: mPost.profile,)));
 
 
     return mPost.profile;

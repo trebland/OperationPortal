@@ -1,12 +1,13 @@
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 
 class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
-  VolunteerCaptain_ActiveDashboard_Page({Key key, this.title}) : super(key: key);
+  VolunteerCaptain_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
-  final String title;
+  final Profile profile;
 
   @override
   VolunteerCaptain_ActiveDashboard_State createState() => VolunteerCaptain_ActiveDashboard_State();
@@ -40,9 +41,9 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
     Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text('Dashboard'),
           actions: <Widget>[
-            buildProfileButton(context),
+            buildProfileButton(context, widget.profile),
             buildLogoutButton(context),
           ],
           bottom: TabBar(

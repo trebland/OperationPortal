@@ -1,12 +1,13 @@
 import 'package:basic_front/BuildPresets/AppBar.dart';
 import 'package:basic_front/BuildPresets/InactiveDashboard.dart';
 import 'package:basic_front/Login.dart';
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 class VolunteerCaptain_InactiveDashboard_Page extends StatefulWidget {
-  VolunteerCaptain_InactiveDashboard_Page({Key key, this.title}) : super(key: key);
+  VolunteerCaptain_InactiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
-  final String title;
+  Profile profile;
 
   @override
   VolunteerCaptain_InactiveDashboard_State createState() => VolunteerCaptain_InactiveDashboard_State();
@@ -18,7 +19,7 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Dashboard'),
         actions: <Widget>[
           buildLogoutButton(context),
         ],
@@ -28,8 +29,8 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            buildPictureNameRow("Fake", "Profile"),
-            buildQRButton(context, "vc"),
+            buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
+            buildQRButton(context),
             buildNotice(),
           ],
         ),
