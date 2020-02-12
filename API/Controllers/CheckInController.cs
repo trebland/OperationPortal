@@ -46,18 +46,9 @@ namespace API.Controllers
 
         [Route("~/api/check-in/child")]
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> CheckInChild(IdModel model)
         {
-            ChildRepository childRepo = new ChildRepository(configModel.ConnectionString);
-
-            if (model.Id == 0)
-            {
-                return Utilities.GenerateMissingInputMessage("child id");
-            }
-
             var user = await userManager.GetUserAsync(User);
-
             if (user == null ||
                 !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
                 await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
@@ -66,6 +57,12 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized.");
             }
 
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            ChildRepository childRepo = new ChildRepository(configModel.ConnectionString);
             if (childRepo.IsSuspended(model.Id))
             {
                 return new JsonResult(new

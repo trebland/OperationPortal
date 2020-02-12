@@ -223,9 +223,14 @@ namespace API.Controllers
 
         [Route("~/api/volunteer-attendance-check")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult CheckAttendance(IdModel model)
+        public async Task<IActionResult> CheckAttendance(IdModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null || !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("volunteer id");
@@ -251,9 +256,16 @@ namespace API.Controllers
 
         [Route("~/api/volunteers-for-day")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult VolunteersForDay(GetVolunteersForDayModel model)
+        public async Task<IActionResult> VolunteersForDay(GetVolunteersForDayModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model.Day == DateTime.MinValue)
             {
                 return Utilities.GenerateMissingInputMessage("date");
