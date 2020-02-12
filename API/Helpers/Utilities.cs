@@ -89,6 +89,16 @@ namespace API.Helpers
         /// <returns>The normalized string</returns>
         public static string NormalizeString(string str)
         {
+            // Special cases for roles that require extra normalization, since there isn't really a way to programmatically determine where to capitalize mid-string
+            if (str.ToLower() == UserHelpers.UserRoles.BusDriver.ToString().ToLower())
+            {
+                return UserHelpers.UserRoles.BusDriver.ToString();
+            }
+            if (str.ToLower() == UserHelpers.UserRoles.VolunteerCaptain.ToString().ToLower())
+            {
+                return UserHelpers.UserRoles.VolunteerCaptain.ToString();
+            }
+
             if (String.IsNullOrEmpty(str))
             {
                 return String.Empty;

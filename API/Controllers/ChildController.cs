@@ -46,22 +46,20 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Roster(GetRosterModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model.Busid == 0 && model.Classid == 0)
             {
                 return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
             }
-            /*
-            var user = await userManager.GetUserAsync(User);
-
-            if (user == null ||
-                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
-                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
-                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
-            {
-                return Utilities.ErrorJson("Not authorized.");
-            }
-            */
-
+            
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -95,10 +93,18 @@ namespace API.Controllers
 
         [Route("~/api/child-creation")]
         [HttpPost]
-        [AllowAnonymous]
         // Required input: first name, last name, bus, class
-        public IActionResult CreateChild(ChildModel child)
+        public async Task<IActionResult> CreateChild(ChildModel child)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             List<String> missingParameters = new List<String>();
             if (child.FirstName == null)
             {
@@ -144,10 +150,17 @@ namespace API.Controllers
 
         [Route("~/api/child-edit")]
         [HttpPost]
-        [AllowAnonymous]
-        // Pass in JSON object
-        public IActionResult EditChild(ChildModel child)
+        public async Task<IActionResult> EditChild(ChildModel child)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (child == null || child.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -182,9 +195,17 @@ namespace API.Controllers
 
         [Route("~/api/child")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Child(IdModel model)
+        public async Task<IActionResult> Child(IdModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -248,9 +269,14 @@ namespace API.Controllers
 
         [Route("~/api/child-attendance-check")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult CheckAttendance(IdModel model)
+        public async Task<IActionResult> CheckAttendance(IdModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null || !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -276,9 +302,15 @@ namespace API.Controllers
 
         [Route("~/api/suspend")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult Suspend(PostSuspendChildModel model)
+        public async Task<IActionResult> Suspend(PostSuspendChildModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             List<String> missingParameters = new List<String>();
             if (model.Id == 0)
             {
@@ -327,9 +359,15 @@ namespace API.Controllers
 
         [Route("~/api/suspensions")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Suspensions()
+        public async Task<IActionResult> Suspensions()
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -350,9 +388,15 @@ namespace API.Controllers
 
         [Route("~/api/child-current-suspension")]
         [HttpGet]
-        [AllowAnonymous]
-        public IActionResult CheckChildSuspension(IdModel model)
+        public async Task<IActionResult> CheckChildSuspension(IdModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
