@@ -180,7 +180,7 @@ namespace API.Controllers
                     Birthday = updatedChild.Birthday,
                     Bus = updatedChild.Bus,
                     Class = updatedChild.Class,
-                    //Picture = updatedChild.Picture
+                    Picture = updatedChild.Picture
                 });
             }
             catch (Exception exc)

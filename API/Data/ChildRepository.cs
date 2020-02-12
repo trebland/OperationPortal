@@ -9,6 +9,8 @@ using System.Data;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using java.io;
+using API.Helpers;
 
 namespace API.Data
 {
@@ -100,7 +102,6 @@ namespace API.Data
         /// Creates a new child with first name, last name, bus id, class id, and any extra information
         /// </summary>
         /// <returns>Success message</returns>
-        /// TODO: picture
         public String CreateChild(ChildModel child)
         {
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -162,6 +163,12 @@ namespace API.Data
                 updated[parm] = true;
                 parm++;
 
+                if (child.Picture != null)
+                {
+                    columns.Append($"@picture,");
+                    updated[parm] = true;
+                }
+
                 columns.Length = columns.Length - 1;
 
                 sql = @"INSERT INTO Child (" + Regex.Replace(columns.ToString(), "@" , "")  + @") 
@@ -203,12 +210,12 @@ namespace API.Data
                     {
                         cmd.Parameters.Add($"@classid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
                     }
-                    /*
+                    
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
                     }
-                    */
+                    
                     cmd.ExecuteNonQuery();
                 }
 
@@ -304,23 +311,18 @@ namespace API.Data
                     updated[parm] = true;
                 }
                 parm++;
-                /*
+               
                 if  (child.Picture != null)
                 {
                     parameters.Append($"picture = @p{parm},");
                     updated[parm] = true;
-                }*/
+                }
                 
                 // For testing with Postman
-                // TODO: Save file extention in DB
-               /* File file = new File("test.jfif");
-                FileInputStream fis = new FileInputStream(file);
-                PreparedStatement ps = con.prepareStatement("INSERT INTO images VALUES (?, ?)");
-                ps.setString(1, file.getName());
-                ps.setBinaryStream(2, fis, file.length());
-                ps.executeUpdate();
-                ps.close();
-                fis.close();
+                /*string fname = "test.jfif";
+                FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
+                BinaryReader br = new BinaryReader(fs);
+                byte[] barray = br.ReadBytes((int)fs.Length);
                 */
                 if (parameters.Length == 0) // All fields null - no changes made
                 {
@@ -345,7 +347,7 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = child.Gender;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = Utilities.NormalizeString(child.Gender);
                     }
 
                     if (updated[++parm])
@@ -367,12 +369,12 @@ namespace API.Data
                     {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
                     }
-                    /*
+
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
                     }
-                    */
+                    
                     cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
                     cmd.ExecuteNonQuery();
                 }
@@ -386,12 +388,12 @@ namespace API.Data
                         ON c.classid = cl.id
                         LEFT JOIN Bus b
                         ON c.busid = b.id
-                        WHERE c.busid = @busid";
+                        WHERE c.id = @childId";
 
                 dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
-                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
                     NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
                     da.Fill(dt);
                 }
@@ -601,8 +603,8 @@ namespace API.Data
                     LastName = dr["lastName"].ToString(),
                     SuspendedStart = ((DateTime)dr["startdate"]),
                     SuspendedEnd = ((DateTime)dr["enddate"]),
-                    //Picture = (byte[])dr["picture"]
-                });
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"]
+            });
             }
 
             return children;
@@ -612,7 +614,7 @@ namespace API.Data
         /// Fills out all the information from a row retrieved from the Child table to the 
         /// given child model
         /// </summary>
-        /// TODO: picture, relatives
+        /// TODO: relatives
         private ChildModel GetFullChildModel(DataRow dr)
         {
             ChildModel child = GetBasicChildModel(new ChildModel(), dr);
@@ -661,8 +663,7 @@ namespace API.Data
             };
             child.Birthday = dr["birthday"].ToString();
             child.IsSuspended = IsSuspended((int)dr["id"]);
-            //TODO:
-            //PictureUrl
+            child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
 
             return child;
         }
