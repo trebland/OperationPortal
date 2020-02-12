@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,22 +9,38 @@ import 'package:http/http.dart' as http;
 import 'AdditionalOptions.dart';
 import 'Storage.dart';
 
+class CreateChild_Failure {
+  String error;
+
+  CreateChild_Failure({this.error});
+
+  factory CreateChild_Failure.fromJson(Map<String, dynamic> json) {
+    return CreateChild_Failure(
+      error: json['error'],
+    );
+  }
+}
+
 Future<void> CreateChild_Partial (String token, String firstName, String lastName, int classId, int busId, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
-  Map<String, String> body = {
+  var body = json.encode({
     'FirstName': firstName,
     'LastName': lastName,
-    'Class': '$classId',
-    'Bus': '$busId',
-  };
+    'Class': { 'Id': '$classId' },
+    'Bus': { 'Id': '$busId' },
+  });
+
+
 
   var response = await http.post(mUrl,
       body: body,
-      headers: {'Content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token});
+      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token});
 
   if (response.statusCode == 200)
   {
+
+
     Fluttertoast.showToast(
         msg: "Success",
         toastLength: Toast.LENGTH_SHORT,
@@ -37,8 +55,10 @@ Future<void> CreateChild_Partial (String token, String firstName, String lastNam
     Navigator.pop(context);
 
   } else {
+    CreateChild_Failure mPost = CreateChild_Failure.fromJson(jsonDecode(response.body));
+
     Fluttertoast.showToast(
-        msg: "Child Creation Failed!",
+        msg: mPost.error,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -75,13 +95,76 @@ class AddChildState extends State<AddChildPage>
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final classIdController = TextEditingController();
-  final routeIdController = TextEditingController();
+  final busIdController = TextEditingController();
 
   Storage storage;
 
   @override
   void initState() {
      storage = new Storage();
+  }
+
+  bool filledOut()
+  {
+    if (firstNameController.text == "")
+      {
+        Fluttertoast.showToast(
+            msg: 'First Name is mandatory',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else if (lastNameController.text == "")
+      {
+        Fluttertoast.showToast(
+            msg: 'Last Name is mandatory',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else if (classIdController.text == "")
+      {
+        Fluttertoast.showToast(
+            msg: 'Class Id is mandatory',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else if (busIdController.text == "")
+      {
+        Fluttertoast.showToast(
+            msg: 'Bus Id is mandatory',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else
+      return true;
+
   }
 
   Widget buildFirstNameRow ()
@@ -263,7 +346,7 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
-                  controller: routeIdController,
+                  controller: busIdController,
                   inputFormatters: [
                     WhitelistingTextInputFormatter.digitsOnly,
                   ],
@@ -342,17 +425,19 @@ class AddChildState extends State<AddChildPage>
           child: Text('Additional Options', style: TextStyle(color: Colors.deepPurple),),
           onPressed: ()
           {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
-              lastName: lastNameController.text, classId: int.parse(classIdController.text), routeId: int.parse(routeIdController.text),)));
+            if (filledOut())
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
+                lastName: lastNameController.text, classId: int.parse(classIdController.text), routeId: int.parse(busIdController.text),)));
           },
         ),
         RaisedButton(
           child: const Text('Add Child'),
           onPressed: ()
           {
-            storage.readToken().then((value) {
-              CreateChild_Partial(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(routeIdController.text), context);
-            });
+            if (filledOut())
+              storage.readToken().then((value) {
+                CreateChild_Partial(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(busIdController.text), context);
+              });
           },
           color: Colors.amber,
         ),
