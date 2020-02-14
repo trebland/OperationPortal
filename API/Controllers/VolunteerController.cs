@@ -223,7 +223,7 @@ namespace API.Controllers
 
         [Route("~/api/volunteer-attendance-check")]
         [HttpGet]
-        public async Task<IActionResult> CheckAttendance(IdModel model)
+        public async Task<IActionResult> CheckAttendance([FromQuery]IdModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null || !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
@@ -256,7 +256,7 @@ namespace API.Controllers
 
         [Route("~/api/volunteers-for-day")]
         [HttpGet]
-        public async Task<IActionResult> VolunteersForDay(GetVolunteersForDayModel model)
+        public async Task<IActionResult> VolunteersForDay([FromQuery]GetVolunteersForDayModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
