@@ -61,8 +61,7 @@ namespace API.Helpers
 
             String missingParameters = sb.ToString();
 
-            // Sentence case
-            missingParameters = char.ToUpper(missingParameters[0]) + missingParameters.Substring(1).ToLower();
+            missingParameters = NormalizeString(missingParameters);
 
             return new JsonResult(new
             {
@@ -72,8 +71,7 @@ namespace API.Helpers
 
         public static JsonResult GenerateMissingInputMessage(String missing)
         {
-            // Sentence case
-            missing = char.ToUpper(missing[0]) + missing.Substring(1).ToLower();
+            missing = NormalizeString(missing);
 
             return new JsonResult(new
             {

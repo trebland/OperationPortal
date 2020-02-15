@@ -10,13 +10,24 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 const localizer = momentLocalizer(moment)
 
 export class Home extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: this.props.username,
+      loggedin: false
+    }
+    console.log(this.state.username)
+  }
   
   static displayName = Home.name;
 
   render () {
-    return (
-      <div style={{height: "500px"}}>
-        <h1>calendar</h1>
+    if(this.state.loggedin){
+      return (
+        <div style={{height: "500px"}}>
+        <h1>baldwin</h1>
+        <h1>calendar for{(this.state.loggedin) ? "for " + this.state.username : ""}</h1>
         <Calendar
           localizer = {localizer}
           events = {events}
@@ -24,6 +35,20 @@ export class Home extends Component {
           endAccessor = "end"
         />
       </div>
-    );
+      )
+    }
+    else{
+      return(
+        <div style={{height: "500px"}}>
+          <h1>calendar</h1>
+          <Calendar
+            localizer = {localizer}
+            events = {events}
+            startAccessor = "start"
+            endAccessor = "end"
+          />
+        </div>
+      )
+    }
   }
 }

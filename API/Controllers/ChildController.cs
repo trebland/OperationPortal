@@ -43,8 +43,7 @@ namespace API.Controllers
 
         [Route("~/api/roster")]
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Roster(GetRosterModel model)
+        public async Task<IActionResult> Roster([FromQuery]GetRosterModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -181,7 +180,7 @@ namespace API.Controllers
                     Birthday = updatedChild.Birthday,
                     Bus = updatedChild.Bus,
                     Class = updatedChild.Class,
-                    //Picture = updatedChild.Picture
+                    Picture = updatedChild.Picture
                 });
             }
             catch (Exception exc)
@@ -195,7 +194,7 @@ namespace API.Controllers
 
         [Route("~/api/child")]
         [HttpGet]
-        public async Task<IActionResult> Child(IdModel model)
+        public async Task<IActionResult> Child([FromQuery]IdModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -269,7 +268,7 @@ namespace API.Controllers
 
         [Route("~/api/child-attendance-check")]
         [HttpGet]
-        public async Task<IActionResult> CheckAttendance(IdModel model)
+        public async Task<IActionResult> CheckAttendance([FromQuery]IdModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null || !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
@@ -388,7 +387,7 @@ namespace API.Controllers
 
         [Route("~/api/child-current-suspension")]
         [HttpGet]
-        public async Task<IActionResult> CheckChildSuspension(IdModel model)
+        public async Task<IActionResult> CheckChildSuspension([FromQuery]IdModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
