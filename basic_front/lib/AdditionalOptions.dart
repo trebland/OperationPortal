@@ -22,6 +22,21 @@ class CreateChild_Failure {
 Future<void> CreateChild_Full (String token, String firstName, String lastName, int classId, int busId, String gender, int grade, String birthday, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
+  // Implement Changes
+
+  bool addGender = true;
+  bool addGrade = true;
+  bool addBirthday = true;
+
+  if (gender == "")
+    addGender = false;
+
+  if (grade == "")
+    addGrade = false;
+
+  if (birthday == "")
+    addBirthday = false;
+
   var body = json.encode({
     'FirstName': firstName,
     'LastName': lastName,
@@ -31,6 +46,7 @@ Future<void> CreateChild_Full (String token, String firstName, String lastName, 
     'Grade': '$grade',
     'Birthday': birthday,
   });
+
 
   var response = await http.post(mUrl,
       body: body,
@@ -103,9 +119,9 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
 
   Storage storage;
 
-  int gradeDropdownValue;
+  String gradeDropdownValue;
 
-  Gender _gender = Gender.male;
+  Gender _gender;
 
   @override
   void initState() {
@@ -113,9 +129,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     currentYear = DateTime.now().year;
     previousYears = currentYear - 25;
 
-    genderController.text = "Male";
-    gradeDropdownValue = 1;
-    gradeController.text = '$gradeDropdownValue';
+    gradeDropdownValue = "Select Grade";
 
     selectedDate = DateTime.now();
   }
@@ -303,6 +317,18 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     );
   }
 
+  bool sendGrade = false;
+
+  void _onSendGradeChanged(bool newValue) => setState(() {
+    sendGrade = newValue;
+
+    if (sendGrade) {
+      // TODO: Here goes your functionality that remembers the user.
+    } else {
+      // TODO: Forget the user
+    }
+  });
+
   Widget buildGradeRow()
   {
     return Column(
@@ -357,7 +383,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
         ),
         Container(
-          child: DropdownButton<int>(
+          child: DropdownButton<String>(
             value: gradeDropdownValue,
             icon: Icon(Icons.arrow_downward),
             iconSize: 24,
@@ -369,20 +395,22 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
               height: 2,
               color: Colors.deepPurpleAccent,
             ),
-            onChanged: (int newValue) {
+            onChanged: (String newValue) {
               setState(() {
                 gradeDropdownValue = newValue;
               });
-              gradeController.text = '$gradeDropdownValue';
+              if (gradeDropdownValue != "Select Grade")
+                gradeController.text = gradeDropdownValue;
+              else
+                gradeController.text = "";
             },
-            items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
-                .map<DropdownMenuItem<int>>((int value) {
-              return DropdownMenuItem<int>(
+            items: <String>["Select Grade", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
                 value: value,
                 child: Text('$value'),
               );
-            })
-                .toList(),
+            }).toList(),
           ),
         ),
       ],

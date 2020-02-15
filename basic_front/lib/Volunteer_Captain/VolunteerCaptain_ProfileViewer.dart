@@ -12,6 +12,20 @@ class VolunteerCaptain_ProfileViewer_Page extends StatefulWidget {
 
 class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_ProfileViewer_Page> {
 
+  final suspensionController = TextEditingController();
+  bool isSuspended = false;
+
+  String checkSuspension ()
+  {
+    return isSuspended ? "Suspended" : "Not Suspended";
+  }
+
+  @override
+  void initState() {
+    suspensionController.text = checkSuspension();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +38,27 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
           children: <Widget>[
             buildPictureNameRow_Child(widget.title),
             buildBirthdayAndGradeRow(),
+            Flexible(
+              child: TextField(
+                textAlign: TextAlign.left,
+                controller: suspensionController,
+                decoration: new InputDecoration(
+                  labelText: "Suspension Status",
+                  border: new OutlineInputBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                    borderSide: new BorderSide(
+                      color: Colors.black,
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                enabled: false,
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
           ],
         ),
     );

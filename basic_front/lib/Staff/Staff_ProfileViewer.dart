@@ -16,9 +16,32 @@ class Staff_ProfileViewer_Page extends StatefulWidget {
 
 class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
+  final suspensionController = TextEditingController();
+  bool isSuspended = false;
+
   List<String> notes = ["Doesn't play well with Henry", "Loves Juice", "Dislikes Soccer", "Likes Monopoly"];
 
   final List<int> colorCodes = <int>[600, 500];
+
+  toggleSuspension ()
+  {
+    if (isSuspended)
+      isSuspended = false;
+    else
+      isSuspended = true;
+    suspensionController.text = checkSuspension();
+  }
+
+  String checkSuspension ()
+  {
+    return isSuspended ? "Suspended" : "Not Suspended";
+  }
+
+  @override
+  void initState() {
+    suspensionController.text = checkSuspension();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +55,53 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
           children: <Widget>[
             buildPictureNameRow_Child(widget.title),
             buildBirthdayAndGradeRow(),
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: FlatButton(
+                          child: Text("Suspend", style: TextStyle(color: Colors.white)),
+                          onPressed: () => toggleSuspension(),
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
+                        ),
+                        margin: EdgeInsets.only(left: 20),
+                      ),
+                      Flexible(
+                        child: TextField(
+                          textAlign: TextAlign.left,
+                          controller: suspensionController,
+                          decoration: new InputDecoration(
+                            labelText: "Suspension Status",
+                            border: new OutlineInputBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
+                              ),
+                              borderSide: new BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          enabled: false,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+            ),
             Container(
               child: IntrinsicHeight(
                 child: Row(

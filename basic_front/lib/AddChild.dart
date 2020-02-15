@@ -195,7 +195,7 @@ class AddChildState extends State<AddChildPage>
                   textAlign: TextAlign.left,
                   controller: firstNameController,
                   decoration: new InputDecoration(
-                    hintText: 'First Name',
+                    labelText: 'First Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -245,7 +245,7 @@ class AddChildState extends State<AddChildPage>
                   textAlign: TextAlign.left,
                   controller: lastNameController,
                   decoration: new InputDecoration(
-                    hintText: 'Last Name',
+                    labelText: 'Last Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -298,7 +298,7 @@ class AddChildState extends State<AddChildPage>
                     WhitelistingTextInputFormatter.digitsOnly,
                   ],
                   decoration: new InputDecoration(
-                    hintText: 'Class',
+                    labelText: 'Class',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -351,7 +351,7 @@ class AddChildState extends State<AddChildPage>
                     WhitelistingTextInputFormatter.digitsOnly,
                   ],
                   decoration: new InputDecoration(
-                    hintText: 'Bus Route',
+                    labelText: 'Bus Route',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),

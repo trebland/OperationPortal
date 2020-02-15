@@ -103,6 +103,121 @@ Widget buildSuspendedRoster ()
   );
 }
 
+Widget buildStaffFlexRoster (BuildContext context)
+{
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Container(
+        child: IntrinsicHeight(
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>
+              [
+                Container(
+                  child: Text("Bus Route #3", textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 28, color: Colors.white),),
+                  decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: new BorderRadius.all(
+                        new Radius.circular(20)
+                    ),
+                  ),
+                  padding: EdgeInsets.all(20),
+                ),
+                Flexible(
+                    child: FlatButton(
+                      child: Text("Change Route"),
+                      onPressed: () => null,
+                    )
+                )
+              ]
+          ),
+        ),
+        margin: EdgeInsets.all(10),
+      ),
+      Container(
+        child: IntrinsicHeight(
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>
+              [
+                Container(
+                  child: Icon(
+                    Icons.search,
+                    size: 40,
+                  ),
+                  decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: new BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                  ),
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                Flexible(
+                  child: TextField(
+                    textAlign: TextAlign.left,
+                    decoration: new InputDecoration(
+                      hintText: 'Search...',
+                      border: new OutlineInputBorder(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                        borderSide: new BorderSide(
+                          color: Colors.black,
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                ),
+                Container(
+                    child: FlatButton(
+                        child: Text("Add Child"),
+                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                    )
+                )
+              ]
+          ),
+        ),
+        margin: EdgeInsets.only(left: 10, bottom: 10),
+      ),
+      Expanded(
+        child: new ListView.builder(
+          itemCount: names.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              child: ListTile(
+                title: Text('${names[index]}',
+                    style: TextStyle(color: Colors.white)),
+                trailing: PopupMenuButton<Choice>(
+                  onSelected: _select,
+                  itemBuilder: (BuildContext context) {
+                    return ReturnDummyList();
+                  },
+                ),
+                onTap: ()
+                {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+                },
+                dense: false,
+              ),
+              color: Colors.blue[colorCodes[index%2]],
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
 Widget buildFlexRoster (BuildContext context)
 {
   return Column(
