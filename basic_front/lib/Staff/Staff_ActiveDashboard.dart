@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
 import 'package:basic_front/REST/LoginCalls.dart';
 import 'package:basic_front/ScanQR.dart';
+import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,8 +17,11 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 
+import '../AddChild.dart';
 import '../Storage.dart';
+import 'Staff_ProfileViewer.dart';
 
 class Confirm_Success {
   DateTime daysAttended;
@@ -44,10 +50,8 @@ class Confirm_Failure {
 Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/volunteer-attendance-check";
 
-  int id = toConfirm.id;
-
   var response = await http.get(mUrl,
-      headers: {'Content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token, 'id': '$id'});
+      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token, 'id': '${toConfirm.id}'});
 
   if (response.statusCode == 200) {
 
@@ -55,7 +59,7 @@ Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext co
 
     // If the call to the server was successful, parse the JSON.
     Fluttertoast.showToast(
-        msg: mPost.daysAttended.toString(),
+        msg: "Success",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -82,6 +86,45 @@ Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext co
   }
 }
 
+class ReadChildren {
+
+  List<Child> children;
+
+  ReadChildren({this.children});
+
+  factory ReadChildren.fromJson(Map<String, dynamic> json) {
+    return ReadChildren(
+      children: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
+    );
+  }
+}
+
+Future<ReadChildren> GetRoster (String token, int busId) async {
+  var mUrl = "https://www.operation-portal.com/api/roster?busId=1";
+
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Authorization': 'Bearer ' + token,
+  };
+
+  var queryParameters = {
+    'busId': '$busId',
+  };
+
+  var response = await http.get(mUrl,
+      headers: headers);
+
+  if (response.statusCode == 200) {
+    ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
+
+    return mPost;
+
+  } else {
+
+    return null;
+  }
+}
+
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
@@ -103,17 +146,17 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   ];
 
   TabController _tabController;
+  Storage storage;
   String token;
+
+  List<Child> children = new List<Child>();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
 
-    Storage storage = new Storage();
-    storage.readToken().then((value) {
-      token = value;
-    });
+    storage = new Storage();
   }
 
   @override
@@ -354,9 +397,135 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
               child: buildVolunteerList(),
           );
         else if(tab.text == "Roster")
-          return Center(
-              child: buildFlexRoster(context),
-          );
+          return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Text("Bus Route #3", textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 28, color: Colors.white),),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        padding: EdgeInsets.all(20),
+                      ),
+                      Flexible(
+                          child: FlatButton(
+                            child: Text("Change Route"),
+                            onPressed: () => null,
+                          )
+                      )
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.all(10),
+            ),
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Icon(
+                          Icons.search,
+                          size: 40,
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
+                        ),
+                        padding: EdgeInsets.only(left: 5),
+                      ),
+                      Flexible(
+                        child: TextField(
+                          textAlign: TextAlign.left,
+                          decoration: new InputDecoration(
+                            hintText: 'Search...',
+                            border: new OutlineInputBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20),
+                              ),
+                              borderSide: new BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ),
+                      Container(
+                          child: FlatButton(
+                              child: Text("Add Child"),
+                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                          )
+                      )
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.only(left: 10, bottom: 10),
+            ),
+            FutureBuilder(
+                future: storage.readToken().then((value) {
+                  return GetRoster(value,1);
+                }),
+                builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return new Text('Issue Posting Data');
+                    case ConnectionState.waiting:
+                      return new Center(child: new CircularProgressIndicator());
+                    case ConnectionState.active:
+                      return new Text('');
+                    case ConnectionState.done:
+                      if (snapshot.hasError) {
+                        return Text("Unable to Fetch Roster (May be an unassigned route!)");
+                      } else {
+                        children = snapshot.data.children;
+                        return Expanded(
+                          child: new ListView.builder(
+                            itemCount: children.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                child: ListTile(
+                                  title: Text('${children[index].firstName} ' + '${children[index].lastName}',
+                                      style: TextStyle(color: Colors.white)),
+                                  onTap: ()
+                                  {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+                                  },
+                                  dense: false,
+                                ),
+                                color: Colors.blue[colorCodes[index%2]],
+                              );
+                            },
+                          ),
+                        );
+                      }
+                      break;
+                    default:
+                      return null;
+                  }
+                }
+            ),
+          ],
+        );
         else
           return Center(
               child: buildSuspendedRoster(),

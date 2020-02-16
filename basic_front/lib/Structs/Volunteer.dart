@@ -1,10 +1,13 @@
 class Volunteer {
-  String name;
-  String route;
+  String firstName;
+  String lastName;
 
-  Volunteer (String name, String route)
-  {
-    this.name = name;
-    this.route = route;
+  Volunteer({this.firstName, this.lastName});
+
+  factory Volunteer.fromJson(Map<String, dynamic> json) {
+    return Volunteer(
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+    );
   }
 }
