@@ -82,7 +82,7 @@ export class LoginBox extends Component {
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to={{
-        pathname: '/testing',
+        pathname: '/user',
         state: { 
           username: this.state.username,
           loggedin: true
