@@ -7,6 +7,7 @@ import { RegisterBox } from './components/NotLoggedIn/RegisterBox';
 import { Testing } from './components/testing'
 import { HomeLoggedIn } from './components/LoggedIn/HomeLoggedIn'
 import { Announcements } from './components/LoggedIn/Announcements'
+import { Profile } from './components/LoggedIn/Profile'
 
 import './custom.css'
 
@@ -30,6 +31,7 @@ export default class App extends Component {
           <Route exact path='/' component={Home} />
           <Route exact path='/user' component={HomeLoggedIn} />
           <Route exact path='/annoucements' component={Announcements} />
+          <Route exact path='/profile' component={Profile} />
         </Layout>
       </div>
     );

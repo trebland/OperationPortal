@@ -20,25 +20,44 @@ export class HomeLoggedIn extends Component {
         this.state = {
         // username: (this.props.location.state.username == undefined) ? "" : this.props.location.state.username,
         loggedin: false,
-        redirect: false
+        redirectAnnoucements: false,
+        redirectProfile: false
         }
         // console.log(this.state.username)
     }
-    setRedirect = () => {
+    setRedirectAnnouncements = () => {
         this.setState({
-            redirect: true,
+            redirectAnnoucements: true,
             loggedin: true
         })
     }
 
-    renderRedirect = () => {
-        if (this.state.redirect) {
-        return <Redirect to={{
-            pathname: '/annoucements',
-            state: { 
+    renderRedirectAnnouncements = () => {
+        if (this.state.redirectAnnoucements) {
+            return <Redirect to={{
+                pathname: '/annoucements',
+                state: { 
+                loggedin: true
+                }
+            }}/>
+        }
+    }
+
+    setRedirectProfile = () => {
+        this.setState({
+            redirectProfile: true,
             loggedin: true
-            }
-        }}/>
+        })
+    }
+
+    renderRedirectProfile = () => {
+        if(this.state.redirectProfile) {
+            return <Redirect to={{
+                pathname: '/profile',
+                state: {
+                    loggedin: true
+                }
+            }}/>
         }
     }
 
@@ -46,11 +65,12 @@ export class HomeLoggedIn extends Component {
         return(
         <div>
             <div >
-                <button type="button" class="btn-circle btn-xl">PN</button>
+                {this.renderRedirectProfile()}
+                <button type="button" class="btn-circle btn-xl" onClick={this.setRedirectProfile}>PN</button>
             </div>
             <div style={styles.annoucements}>
-                {this.renderRedirect()}
-                <Button type="submit"  onClick={this.setRedirect} variant="outline-dark" >
+                {this.renderRedirectAnnouncements()}
+                <Button type="submit" onClick={this.setRedirectAnnouncements} variant="outline-dark" >
                     View Annoucements
                 </Button>
             </div>
