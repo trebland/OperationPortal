@@ -92,7 +92,7 @@ export class RegisterBox extends Component {
       return (
         <div className="inner-container">
           <div className="header">
-            <h1>Register</h1>
+            <h1 style={{textAlign: "center"}}>Register</h1>
           </div>
           <div style={styling.outerDiv}>
 

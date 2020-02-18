@@ -104,7 +104,7 @@ export class LoginBox extends Component {
     return (
       <div className="inner-container">
         <div className="header">
-          Login
+          <h1 style={{textAlign: "center"}}>Login</h1>
         </div>
         <div className="box" style={styling.outerDiv}>
           <Form style={styling.formDiv}>
