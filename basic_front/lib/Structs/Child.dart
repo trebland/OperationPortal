@@ -10,9 +10,12 @@ class Child {
   Class mClass;
   Bus mBus;
   String birthday;
+  DateTime startSuspension;
+  DateTime endSuspension;
+
 
   Child({this.id, this.firstName, this.lastName,
-    this.grade, this.gender, this.mClass, this.mBus, this.birthday});
+    this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.startSuspension, this.endSuspension});
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
@@ -24,6 +27,8 @@ class Child {
       mClass: Class.fromJson(json['class']),
       mBus: Bus.fromJson(json['bus']),
       birthday: json['birthday'],
+      startSuspension: json['suspendedStart'] == null ? null : json['suspendedStart'],
+      endSuspension: json['suspendedEnd'] == null ? null : json['suspendedEnd'],
     );
   }
 }

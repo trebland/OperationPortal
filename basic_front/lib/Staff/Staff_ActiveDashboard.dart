@@ -9,6 +9,8 @@ import 'package:basic_front/REST/LoginCalls.dart';
 import 'package:basic_front/ScanQR.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
+import 'package:basic_front/Structs/SuspendedChild.dart';
+import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -125,6 +127,58 @@ Future<ReadChildren> GetRoster (String token, int busId) async {
   }
 }
 
+class ReadVolunteers {
+  List<Volunteer> volunteers;
+
+  ReadVolunteers({this.volunteers});
+
+  factory ReadVolunteers.fromJson(Map<String, dynamic> json) {
+  return ReadVolunteers(
+    volunteers: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
+  );
+  }
+}
+
+Future<ReadVolunteers> GetVolunteers (String token, DateTime currentDay)
+{
+
+}
+
+class ReadSuspensions {
+  List<SuspendedChild> suspended;
+
+  ReadSuspensions({this.suspended});
+
+  factory ReadSuspensions.fromJson(Map<String, dynamic> json) {
+    return ReadSuspensions(
+      suspended: json['suspensions'].map<SuspendedChild>((value) => new SuspendedChild.fromJson(value)).toList(),
+    );
+  }
+}
+
+Future<ReadSuspensions> GetSuspendedChildren (String token)
+async {
+  var mUrl = "https://www.operation-portal.com/api/suspensions";
+
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Authorization': 'Bearer ' + token,
+  };
+
+  var response = await http.get(mUrl,
+      headers: headers);
+
+  if (response.statusCode == 200) {
+    ReadSuspensions mGet = ReadSuspensions.fromJson(json.decode(response.body));
+
+    return mGet;
+
+  } else {
+
+    return null;
+  }
+}
+
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
 
@@ -150,6 +204,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   String token;
 
   List<Child> children = new List<Child>();
+  List<SuspendedChild> suspended = new List<SuspendedChild>();
 
   @override
   void initState() {
@@ -527,8 +582,99 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
           ],
         );
         else
-          return Center(
-              child: buildSuspendedRoster(),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                child: IntrinsicHeight(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>
+                      [
+                        Container(
+                          child: Icon(
+                            Icons.search,
+                            size: 40,
+                          ),
+                          decoration: new BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: new BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              bottomLeft: Radius.circular(20),
+                            ),
+                          ),
+                          padding: EdgeInsets.only(left: 5),
+                        ),
+                        Flexible(
+                          child: TextField(
+                            textAlign: TextAlign.left,
+                            decoration: new InputDecoration(
+                              hintText: 'Search...',
+                              border: new OutlineInputBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  bottomRight: Radius.circular(20),
+                                ),
+                                borderSide: new BorderSide(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                            ),
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ]
+                  ),
+                ),
+                margin: EdgeInsets.all(10),
+              ),
+              FutureBuilder(
+                  future: storage.readToken().then((value) {
+                    return GetSuspendedChildren(value);
+                  }),
+                  builder: (BuildContext context, AsyncSnapshot<ReadSuspensions> snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        return new Text('Issue Posting Data');
+                      case ConnectionState.waiting:
+                        return new Center(child: new CircularProgressIndicator());
+                      case ConnectionState.active:
+                        return new Text('');
+                      case ConnectionState.done:
+                        if (snapshot.hasError) {
+                          return Text("Unable to Fetch Roster (May be an unassigned route!)");
+                        } else {
+                          suspended = snapshot.data.suspended;
+                          return Expanded(
+                            child: new ListView.builder(
+                              itemCount: suspended.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  child: ListTile(
+                                    title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
+                                        style: TextStyle(color: Colors.white)),
+                                    onTap: ()
+                                    {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+                                    },
+                                    dense: false,
+                                  ),
+                                  color: Colors.blue[colorCodes[index%2]],
+                                );
+                              },
+                            ),
+                          );
+                        }
+                        break;
+                      default:
+                        return null;
+                    }
+                  }
+              ),
+            ],
           );
       }).toList(),
     ),
