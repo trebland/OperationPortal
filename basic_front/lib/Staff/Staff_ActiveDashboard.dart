@@ -563,7 +563,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                       style: TextStyle(color: Colors.white)),
                                   onTap: ()
                                   {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
                                   },
                                   dense: false,
                                 ),
@@ -658,7 +658,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                         style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
                                     },
                                     dense: false,
                                   ),

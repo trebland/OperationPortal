@@ -1,14 +1,15 @@
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
+import 'package:basic_front/Structs/Child.dart';
 import 'package:flutter/material.dart';
 
 import '../Structs/Choice.dart';
+import '../SuspensionView.dart';
 
 
 class Staff_ProfileViewer_Page extends StatefulWidget {
-  Staff_ProfileViewer_Page({Key key, this.title, this.isSuspended}) : super(key: key);
+  Staff_ProfileViewer_Page({Key key, this.child}) : super(key: key);
 
-  final String title;
-  final bool isSuspended;
+  final Child child;
 
   @override
   Staff_ProfileViewer_State createState() => Staff_ProfileViewer_State();
@@ -47,13 +48,13 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.child.firstName +  " " + widget.child.lastName),
       ),
       body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            buildPictureNameRow_Child(widget.title),
+            buildPictureNameRow_Child(widget.child.firstName +  " " + widget.child.lastName),
             buildBirthdayAndGradeRow(),
             Container(
               child: IntrinsicHeight(
@@ -65,7 +66,10 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       Container(
                         child: FlatButton(
                           child: Text("Suspend", style: TextStyle(color: Colors.white)),
-                          onPressed: () => toggleSuspension(),
+                          onPressed: ()
+                            {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => SuspensionScreen(child: widget.child)));
+                            }
                         ),
                         decoration: new BoxDecoration(
                           color: Colors.blue,

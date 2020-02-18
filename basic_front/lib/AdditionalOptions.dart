@@ -19,10 +19,11 @@ class CreateChild_Failure {
   }
 }
 
-Future<void> CreateChild_Full (String token, String firstName, String lastName, int classId, int busId, String gender, int grade, String birthday, BuildContext context) async {
+Future<void> CreateChild_Full (String token, String firstName, String lastName, int classId, int busId, String gender, String grade, String birthday, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
   // Implement Changes
+  int gradeAdj;
 
   bool addGender = true;
   bool addGrade = true;
@@ -33,19 +34,85 @@ Future<void> CreateChild_Full (String token, String firstName, String lastName, 
 
   if (grade == "")
     addGrade = false;
+  else
+    gradeAdj = int.parse(grade);
 
   if (birthday == "")
     addBirthday = false;
 
-  var body = json.encode({
-    'FirstName': firstName,
-    'LastName': lastName,
-    'Class': { 'Id': '$classId' },
-    'Bus': { 'Id': '$busId' },
-    'Gender': gender,
-    'Grade': '$grade',
-    'Birthday': birthday,
-  });
+  var body;
+
+  if (!addGender)
+    if (!addGrade)
+      if(!addBirthday)
+        body = json.encode({
+          'FirstName': firstName,
+          'LastName': lastName,
+          'Class': { 'Id': '$classId' },
+          'Bus': { 'Id': '$busId' },
+        });
+      else
+        body = json.encode({
+          'FirstName': firstName,
+          'LastName': lastName,
+          'Class': { 'Id': '$classId' },
+          'Bus': { 'Id': '$busId' },
+          'Birthday': birthday,
+        });
+    else if (!addBirthday)
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Class': { 'Id': '$classId' },
+        'Bus': { 'Id': '$busId' },
+        'Grade': '$gradeAdj',
+      });
+    else
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Class': { 'Id': '$classId' },
+        'Bus': { 'Id': '$busId' },
+        'Grade': '$gradeAdj',
+        'Birthday': birthday,
+      });
+  else if(!addGrade)
+    if(!addBirthday)
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Class': { 'Id': '$classId' },
+        'Bus': { 'Id': '$busId' },
+        'Gender': gender,
+      });
+    else
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'Class': { 'Id': '$classId' },
+        'Bus': { 'Id': '$busId' },
+        'Gender': gender,
+        'Birthday': birthday,
+      });
+  else if(!addBirthday)
+    body = json.encode({
+      'FirstName': firstName,
+      'LastName': lastName,
+      'Class': { 'Id': '$classId' },
+      'Bus': { 'Id': '$busId' },
+      'Gender': gender,
+      'Grade': '$gradeAdj',
+    });
+  else
+    body = json.encode({
+      'FirstName': firstName,
+      'LastName': lastName,
+      'Class': { 'Id': '$classId' },
+      'Bus': { 'Id': '$busId' },
+      'Gender': gender,
+      'Grade': '$gradeAdj',
+      'Birthday': birthday,
+    });
 
 
   var response = await http.post(mUrl,
@@ -433,7 +500,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           onPressed: ()
           {
             storage.readToken().then((value) {
-              CreateChild_Full(value, widget.firstName, widget.lastName, widget.classId, widget.routeId, genderController.text, int.parse(gradeController.text), birthdayController.text, context);
+              CreateChild_Full(value, widget.firstName, widget.lastName, widget.classId, widget.routeId, genderController.text, gradeController.text, birthdayController.text, context);
             });
           },
           color: Colors.amber,

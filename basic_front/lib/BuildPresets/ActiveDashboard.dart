@@ -205,7 +205,7 @@ Widget buildStaffFlexRoster (BuildContext context)
                 ),
                 onTap: ()
                 {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(title: '${names[index]}')));
+
                 },
                 dense: false,
               ),
