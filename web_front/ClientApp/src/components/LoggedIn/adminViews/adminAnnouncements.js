@@ -1,13 +1,18 @@
 import React, { Component } from 'react'
-import AnnouncementCard from './announcementCard'
+import AnnouncementCard from '../announcementCard'
+import { Button } from 'react-bootstrap/'
 
-export class Announcements extends Component {
-    constructor(props){
+export class AdminAnnouncements extends Component {
+    constructor(props) {
         super(props)
     }
+
     render() {
         return (
             <div>
+                <Button type="submit" variant="outline-dark" className="float-right">
+                    Add New Annoucements
+                </Button>
                 <h1 style={styling.head}>Weekly Announcements</h1>
                 <br/>
                 <br/>
@@ -58,6 +63,7 @@ export class Announcements extends Component {
 }
 const styling = {
     head: {
-        textAlign: "center"
+        textAlign: "center",
+        marginLeft: "180px"
     }
 }

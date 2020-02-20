@@ -8,6 +8,8 @@ import { Testing } from './components/testing'
 import { HomeLoggedIn } from './components/LoggedIn/HomeLoggedIn'
 import { Announcements } from './components/LoggedIn/Announcements'
 import { Profile } from './components/LoggedIn/Profile'
+import { AdminAnnouncements } from './components/LoggedIn/adminViews/adminAnnouncements'
+import { AdminHome } from './components/LoggedIn/adminViews/adminHome'
 
 import './custom.css'
 
@@ -17,21 +19,24 @@ export default class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      loggedin: false
+      loggedin: this.props.loggedin
     }
   }
 
   render () {
+    
     return (
       <div className="root-container">
-        <Layout>
+        <Layout loggedin={this.props.loggedin}>
           <Route exact path='/login' component={LoginBox} />
           <Route exact path='/register' component={RegisterBox} />
           <Route exact path='/testing' component={Testing} />
           <Route exact path='/' component={Home} />
-          <Route exact path='/user' component={HomeLoggedIn} />
-          <Route exact path='/annoucements' component={Announcements} />
+          <Route exact path='/dashboard' component={HomeLoggedIn} />
+          <Route exact path='/announcements' component={Announcements} />
           <Route exact path='/profile' component={Profile} />
+          <Route exact path='/admin-announcements' component={AdminAnnouncements} />
+          <Route exact path='/admin-dashboard' component={AdminHome} />
         </Layout>
       </div>
     );
