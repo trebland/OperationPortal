@@ -57,7 +57,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized.");
             }
 
-            if (model.Id == 0)
+            if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
             }
@@ -90,17 +90,25 @@ namespace API.Controllers
 
         [Route("~/api/check-in/volunteer")]
         [HttpPost]
-        [AllowAnonymous]
-        // TODO: remove view roster/notes, classId, busId, and add bool for addNotes
-        // TODO: change from query params to json model, add checks for required params
-        public IActionResult CheckInVolunteer(int volunteerId, int? classId, int? busId, bool viewRoster, bool viewNotes)
+        public async Task<IActionResult> CheckInVolunteer(IdModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("volunteer id");
+            }
+
             try
             {
                 CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    numVisits = repo.CheckInVolunteer(volunteerId, classId, busId, viewRoster, viewNotes)
+                    numVisits = repo.CheckInVolunteer(model.Id)
                 });
             }
             catch (Exception exc)
