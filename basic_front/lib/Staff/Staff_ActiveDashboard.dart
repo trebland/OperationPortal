@@ -1,189 +1,23 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
-import 'package:basic_front/REST/LoginCalls.dart';
-import 'package:basic_front/ScanQR.dart';
+import 'package:basic_front/REST/Get_RetrieveRoster.dart';
+import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
+import 'package:basic_front/REST/Get_RetrieveUser.dart';
+import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:http/http.dart' as http;
 
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 
 import '../AddChild.dart';
 import '../Storage.dart';
 import 'Staff_ProfileViewer.dart';
-
-class Confirm_Success {
-  DateTime daysAttended;
-
-  Confirm_Success({this.daysAttended});
-
-  factory Confirm_Success.fromJson(Map<String, dynamic> json) {
-    return Confirm_Success(
-      daysAttended: json['DaysAttended'],
-    );
-  }
-}
-
-class Confirm_Failure {
-  String error;
-
-  Confirm_Failure({this.error});
-
-  factory Confirm_Failure.fromJson(Map<String, dynamic> json) {
-    return Confirm_Failure(
-      error: json['error'],
-    );
-  }
-}
-
-Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext context) async {
-  var mUrl = "https://www.operation-portal.com/api/check-in/volunteer";
-
-  var body = json.encode({
-    'Id': '${toConfirm.id}'
-  });
-
-  var response = await http.post(mUrl,
-      body: body,
-      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token});
-
-  if (response.statusCode == 200) {
-
-    // If the call to the server was successful, parse the JSON.
-    Fluttertoast.showToast(
-        msg: "Success",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
-  } else {
-
-    Confirm_Failure mPost = Confirm_Failure.fromJson(json.decode(response.body));
-
-    Fluttertoast.showToast(
-        msg: mPost.error,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
-    throw Exception('Failed to load post');
-  }
-}
-
-class ReadChildren {
-
-  List<Child> children;
-
-  ReadChildren({this.children});
-
-  factory ReadChildren.fromJson(Map<String, dynamic> json) {
-    return ReadChildren(
-      children: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
-    );
-  }
-}
-
-Future<ReadChildren> GetRoster (String token, String busId) async {
-  int adjBusId = int.parse(busId);
-
-  var mUrl = "https://www.operation-portal.com/api/roster" + "?busId=" + '$adjBusId';
-
-
-  Map<String, String> headers = {
-    'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + token,
-  };
-
-  var queryParameters = {
-    'busId': '$adjBusId',
-  };
-
-  var response = await http.get(mUrl,
-      headers: headers);
-
-  if (response.statusCode == 200) {
-    ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
-
-    return mPost;
-
-  } else {
-
-    return null;
-  }
-}
-
-class ReadVolunteers {
-  List<Volunteer> volunteers;
-
-  ReadVolunteers({this.volunteers});
-
-  factory ReadVolunteers.fromJson(Map<String, dynamic> json) {
-  return ReadVolunteers(
-    volunteers: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
-  );
-  }
-}
-
-Future<ReadVolunteers> GetVolunteers (String token, DateTime currentDay)
-{
-
-}
-
-class ReadSuspensions {
-  List<SuspendedChild> suspended;
-
-  ReadSuspensions({this.suspended});
-
-  factory ReadSuspensions.fromJson(Map<String, dynamic> json) {
-    return ReadSuspensions(
-      suspended: json['suspensions'].map<SuspendedChild>((value) => new SuspendedChild.fromJson(value)).toList(),
-    );
-  }
-}
-
-Future<ReadSuspensions> GetSuspendedChildren (String token)
-async {
-  var mUrl = "https://www.operation-portal.com/api/suspensions";
-
-  Map<String, String> headers = {
-    'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + token,
-  };
-
-  var response = await http.get(mUrl,
-      headers: headers);
-
-  if (response.statusCode == 200) {
-    ReadSuspensions mGet = ReadSuspensions.fromJson(json.decode(response.body));
-
-    return mGet;
-
-  } else {
-
-    return null;
-  }
-}
 
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
@@ -633,7 +467,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
             FutureBuilder(
                 future: storage.readToken().then((value) {
-                  return GetRoster(value, busRouteController.text);
+                  return RetrieveRoster(value, busRouteController.text);
                 }),
                 builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
                   switch (snapshot.connectionState) {

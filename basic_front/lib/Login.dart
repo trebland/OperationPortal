@@ -1,12 +1,8 @@
-import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 
-import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
-import 'REST/LoginCalls.dart';
-import 'Staff/Staff_ActiveDashboard.dart';
-import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
+import 'REST/Post_Login.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -195,7 +191,7 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 24, color: Colors.black)
           ),
           onPressed: () {
-            POST_InitialLogin(_emailController.text, _passwordController.text, context);
+            Login(_emailController.text, _passwordController.text, context);
             // LoginCheck(_emailController.text);
           },
           color: Colors.amber,
