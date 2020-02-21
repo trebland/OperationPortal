@@ -50,14 +50,17 @@ class Confirm_Failure {
 }
 
 Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext context) async {
-  var mUrl = "https://www.operation-portal.com/api/volunteer-attendance-check";
+  var mUrl = "https://www.operation-portal.com/api/check-in/volunteer";
 
-  var response = await http.get(mUrl,
-      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token, 'id': '${toConfirm.id}'});
+  var body = json.encode({
+    'Id': '${toConfirm.id}'
+  });
+
+  var response = await http.post(mUrl,
+      body: body,
+      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token});
 
   if (response.statusCode == 200) {
-
-    Confirm_Success mPost = Confirm_Success.fromJson(json.decode(response.body));
 
     // If the call to the server was successful, parse the JSON.
     Fluttertoast.showToast(
@@ -101,8 +104,11 @@ class ReadChildren {
   }
 }
 
-Future<ReadChildren> GetRoster (String token, int busId) async {
-  var mUrl = "https://www.operation-portal.com/api/roster?busId=1";
+Future<ReadChildren> GetRoster (String token, String busId) async {
+  int adjBusId = int.parse(busId);
+
+  var mUrl = "https://www.operation-portal.com/api/roster" + "?busId=" + '$adjBusId';
+
 
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -110,7 +116,7 @@ Future<ReadChildren> GetRoster (String token, int busId) async {
   };
 
   var queryParameters = {
-    'busId': '$busId',
+    'busId': '$adjBusId',
   };
 
   var response = await http.get(mUrl,
@@ -192,6 +198,12 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 {
   String barcode = "";
 
+  String busRouteValue;
+  String classIdValue;
+
+  final busRouteController = TextEditingController();
+  final classIdController = TextEditingController();
+
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Dashboard'),
     Tab(text: 'Volunteers'),
@@ -211,7 +223,13 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
 
+    busRouteValue = "Select Route";
+    classIdValue = "Select Class";
+
     storage = new Storage();
+    storage.readToken().then((value) {
+      token = value;
+    });
   }
 
   @override
@@ -307,7 +325,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                 ),
                 FutureBuilder(
                     future: RetrieveUser(barcode, context),
-                    builder: (BuildContext context, AsyncSnapshot<Profile> snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<Volunteer> snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:
                           return new Text('Issue Posting Data');
@@ -345,7 +363,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                           ),
                                           Flexible(
                                             child: Text(
-                                              snapshot.data.firstName + "\n" + snapshot.data.lastName,
+                                              snapshot.data.profile.firstName + "\n" + snapshot.data.profile.lastName,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(fontSize: 28, color: Colors.white),
                                             ),
@@ -425,7 +443,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                 Container(
                                     child: FlatButton(
                                       child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
-                                      onPressed: () => ConfirmAttendance(token, snapshot.data, context),
+                                      onPressed: () {
+                                        ConfirmAttendance(token, snapshot.data.profile, context);
+                                      },
                                     ),
                                     decoration: new BoxDecoration(
                                       color: Colors.blue,
@@ -464,8 +484,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                     children: <Widget>
                     [
                       Container(
-                        child: Text("Bus Route #3", textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28, color: Colors.white),),
+                        child: Text("Bus Route", textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),),
                         decoration: new BoxDecoration(
                           color: Colors.blue,
                           borderRadius: new BorderRadius.all(
@@ -473,13 +493,88 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           ),
                         ),
                         padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(right: 20),
                       ),
-                      Flexible(
-                          child: FlatButton(
-                            child: Text("Change Route"),
-                            onPressed: () => null,
-                          )
-                      )
+                      Container(
+                        child: DropdownButton<String>(
+                          value: busRouteValue,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(
+                              color: Colors.deepPurple
+                          ),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              busRouteValue = newValue;
+                              busRouteController.text = newValue;
+                            });
+                          },
+                          items: <String>["Select Route", "1", "2", "3"]
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.all(10),
+            ),
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Text("Class Id", textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(right: 20),
+                      ),
+                      Container(
+                        child: DropdownButton<String>(
+                          value: classIdValue,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(
+                              color: Colors.deepPurple
+                          ),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              classIdValue = newValue;
+                              classIdController.text = newValue;
+                            });
+                          },
+                          items: <String>["Select Class", "1", "2", "3"]
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ]
                 ),
               ),
@@ -538,7 +633,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
             FutureBuilder(
                 future: storage.readToken().then((value) {
-                  return GetRoster(value,1);
+                  return GetRoster(value, busRouteController.text);
                 }),
                 builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
                   switch (snapshot.connectionState) {
@@ -559,6 +654,15 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 child: ListTile(
+                                  leading: Container(
+                                    child: FlutterLogo(size: 56.0),
+                                    decoration: new BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: new BorderRadius.all(
+                                          new Radius.circular(20)
+                                      ),
+                                    ),
+                                  ),
                                   title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                       style: TextStyle(color: Colors.white)),
                                   onTap: ()

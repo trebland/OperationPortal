@@ -36,14 +36,14 @@ Widget buildPictureNameRow (String firstName, String lastName)
   );
 }
 
-Widget buildQRButton (BuildContext context)
+Widget buildQRButton (String accessToken, BuildContext context)
 {
   return Container (
     child: FlatButton(
-      child: const Text('Scan QR Code', style: TextStyle(fontSize: 24, color: Colors.white)),
+      child: const Text('Show QR Code', style: TextStyle(fontSize: 24, color: Colors.white)),
       onPressed: ()
       {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => QRPage(token: accessToken,)));
       },
     ),
     decoration: new BoxDecoration(

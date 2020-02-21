@@ -5,9 +5,10 @@ import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 class VolunteerCaptain_InactiveDashboard_Page extends StatefulWidget {
-  VolunteerCaptain_InactiveDashboard_Page({Key key, this.profile}) : super(key: key);
+  VolunteerCaptain_InactiveDashboard_Page({Key key, this.profile, this.accessToken}) : super(key: key);
 
   Profile profile;
+  final String accessToken;
 
   @override
   VolunteerCaptain_InactiveDashboard_State createState() => VolunteerCaptain_InactiveDashboard_State();
@@ -30,7 +31,7 @@ class VolunteerCaptain_InactiveDashboard_State extends State<VolunteerCaptain_In
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
-            buildQRButton(context),
+            buildQRButton(widget.accessToken, context),
             buildNotice(),
           ],
         ),

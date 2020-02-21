@@ -1,9 +1,65 @@
+import 'dart:convert';
+
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:http/http.dart' as http;
+
+import '../Storage.dart';
 import '../Structs/Choice.dart';
 import '../SuspensionView.dart';
+
+class NotesEditResponse {
+  String notes;
+
+  NotesEditResponse({this.notes});
+
+  factory NotesEditResponse.fromJson(Map<String, dynamic> json) {
+    return NotesEditResponse(
+      notes: json['notes'],
+    );
+  }
+}
+
+Future<void> EditNotes (String token, int id, String notes)
+async {
+  var mUrl = "https://www.operation-portal.com/api/notes-edit";
+
+  Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Authorization': 'Bearer ' + token,
+  };
+
+  var body = json.encode({
+    'id': id,
+    'notes': notes,
+  });
+
+  var response = await http.post(mUrl,
+      body: body,
+      headers: headers);
+
+  if (response.statusCode == 200) {
+
+    NotesEditResponse mPost = NotesEditResponse.fromJson(json.decode(response.body));
+
+    Fluttertoast.showToast(
+        msg: mPost.notes,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+
+  } else {
+
+    return null;
+  }
+}
 
 
 class Staff_ProfileViewer_Page extends StatefulWidget {
@@ -19,8 +75,11 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
   final suspensionController = TextEditingController();
   bool isSuspended = false;
+  bool isAddingNote = false;
 
   List<String> notes = ["Doesn't play well with Henry", "Loves Juice", "Dislikes Soccer", "Likes Monopoly"];
+
+  Storage storage;
 
   final List<int> colorCodes = <int>[600, 500];
 
@@ -41,6 +100,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
   @override
   void initState() {
     suspensionController.text = checkSuspension();
+    storage = new Storage();
     super.initState();
   }
 
@@ -130,7 +190,11 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       Container(
                         child: FlatButton(
                           child: Text("Add Note", style: TextStyle(color: Colors.white)),
-                          onPressed: () => null,
+                          onPressed: () {
+                            setState(() {
+                              isAddingNote = isAddingNote ?  false :  true;
+                            });
+                          },
                         ),
                         decoration: new BoxDecoration(
                           color: Colors.blue,
@@ -145,6 +209,25 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
               ),
               margin: EdgeInsets.only(top: 10, left: 10),
             ),
+            isAddingNote ? Container(
+              child: TextField(
+                textAlign: TextAlign.left,
+                decoration: new InputDecoration(
+                  labelText: "Note Addition",
+                  border: new OutlineInputBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                    borderSide: new BorderSide(
+                      color: Colors.black,
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ) : Container(),
             Expanded(
               child: Container(
                 child: ListView.builder(

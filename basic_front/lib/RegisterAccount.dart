@@ -258,6 +258,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _passwordController,
+                  obscureText: true,
                   decoration: new InputDecoration(
                     hintText: 'Password',
                     border: new OutlineInputBorder(
@@ -307,6 +308,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _confirmPasswordController,
+                  obscureText: true,
                   decoration: new InputDecoration(
                     hintText: 'Confirm Password',
                     border: new OutlineInputBorder(

@@ -1,13 +1,15 @@
-class Volunteer {
-  String firstName;
-  String lastName;
+import 'Profile.dart';
 
-  Volunteer({this.firstName, this.lastName});
+class Volunteer {
+  Profile profile;
+  bool checkedIn;
+
+  Volunteer({this.profile, this.checkedIn});
 
   factory Volunteer.fromJson(Map<String, dynamic> json) {
     return Volunteer(
-      firstName: json['firstName'],
-      lastName: json['lastName'],
+      profile: json['profile'] != null ? Profile.fromJson(json['profile']) : null,
+      checkedIn: json['checkedIn'],
     );
   }
 }
