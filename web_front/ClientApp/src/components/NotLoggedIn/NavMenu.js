@@ -8,12 +8,12 @@ export class NavMenu extends Component {
 
   constructor (props) {
     super(props);
-
-    this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
       collapsed: true,
-      loggedin: false
+      loggedin: this.props.loggedin
     };
+
+    this.toggleNavbar = this.toggleNavbar.bind(this);
   }
 
   toggleNavbar () {
@@ -27,13 +27,14 @@ export class NavMenu extends Component {
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light>
           <Container>
-            <NavbarBrand tag={Link} to="/">Operation Portal</NavbarBrand>
+            {/* <NavbarBrand tag={Link} to="/">Operation Portal</NavbarBrand> */}
+            <NavbarBrand>Operation Portal</NavbarBrand>
             <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
             <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
               <ul className="navbar-nav flex-grow">
                 
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to={this.state.loggedin ? "/user" : "/"}>Home</NavLink>
+                  <NavLink tag={Link} className="text-dark" to={this.state.loggedin ? "/dashboard" : "/"}>Home</NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/login">Login</NavLink>

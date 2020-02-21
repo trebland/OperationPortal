@@ -17,14 +17,13 @@ export class Home extends Component {
       // username: (this.props.location.state.username == undefined) ? "" : this.props.location.state.username,
       loggedin: false
     }
-    console.log(this.state.username)
   }
   
   static displayName = Home.name;
 
   render () {
     return(
-      <div style={{height: "500px"}}>
+      <div style={{height: "550px"}}>
         <h1>calendar</h1>
         <Calendar
           localizer = {localizer}

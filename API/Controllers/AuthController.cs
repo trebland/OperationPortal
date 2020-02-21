@@ -248,11 +248,14 @@ namespace OCCTest.Controllers
         [HttpGet]
         [Route("~/api/auth/user")]
         [Authorize(AuthenticationSchemes = OpenIddictValidationDefaults.AuthenticationScheme)]
-        public async Task<ActionResult> userInfo()
+        public async Task<ActionResult> UserInfo()
         {
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
+            AttendanceModel attendance;
             VolunteerModel profile;
             var user = await userManager.GetUserAsync(User);
+            bool checkedIn = false;
 
             profile = repo.GetVolunteer(user.VolunteerId);
 
@@ -261,10 +264,20 @@ namespace OCCTest.Controllers
                 return Utilities.ErrorJson("Could not find user profile");
             }
 
+            if (configModel.DebugMode || DateTime.Now.DayOfWeek == DayOfWeek.Saturday)
+            {
+                attendance = calendarRepo.GetSingleAttendance(profile.Id, DateTime.Now.Date);
+                if (attendance != null && attendance.Attended == true)
+                {
+                    checkedIn = true;
+                }
+            }
+
             return new JsonResult(new
             {
                 Error = "",
-                Profile = profile
+                Profile = profile,
+                CheckedIn = checkedIn
             });
 
         }

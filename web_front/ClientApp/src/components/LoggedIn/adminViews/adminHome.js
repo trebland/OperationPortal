@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
-import events from './events'
+import events from '../events'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
-import '../styles.css'
+import '../../styles.css'
 
 // https://www.npmjs.com/package/react-big-calendar
 // http://intljusticemission.github.io/react-big-calendar/examples/index.html#intro
 
 const localizer = momentLocalizer(moment)
 
-export class HomeLoggedIn extends Component {
-    static displayName = HomeLoggedIn.name;
+export class AdminHome extends Component {
+    static displayName = AdminHome.name;
 
     constructor(props) {
         super(props)
@@ -35,7 +35,7 @@ export class HomeLoggedIn extends Component {
     renderRedirectAnnouncements = () => {
         if (this.state.redirectAnnoucements) {
             return <Redirect to={{
-                pathname: '/announcements',
+                pathname: '/admin-announcements',
                 state: { 
                 loggedin: true
                 }
@@ -75,7 +75,7 @@ export class HomeLoggedIn extends Component {
                 </Button>
             </div>
             <div style={styles.calendar}>
-                <h1>user calendar</h1>
+                <h1>admin calendar</h1>
                 <Calendar
                 localizer = {localizer}
                 events = {events}

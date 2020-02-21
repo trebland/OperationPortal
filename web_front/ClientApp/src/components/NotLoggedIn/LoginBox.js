@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
-import { Redirect, Router } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 export class LoginBox extends Component {
 
@@ -80,14 +80,25 @@ export class LoginBox extends Component {
   }
 
   renderRedirect = () => {
-    if (this.state.redirect) {
+    if (this.state.redirect && this.state.username === "admin") {
       return <Redirect to={{
-        pathname: '/user',
+        pathname: '/admin-dashboard',
         state: { 
           username: this.state.username,
           loggedin: true
         }
       }}/>
+    }
+    else if(this.state.redirect) {
+      return (
+        <Redirect to={{
+          pathname: '/dashboard',
+          state: {
+            username: this.state.username,
+            loggedin: true
+          }
+        }}/>
+      )
     }
   }
 
@@ -104,7 +115,7 @@ export class LoginBox extends Component {
     return (
       <div className="inner-container">
         <div className="header">
-          Login
+          <h1 style={{textAlign: "center"}}>Login</h1>
         </div>
         <div className="box" style={styling.outerDiv}>
           <Form style={styling.formDiv}>

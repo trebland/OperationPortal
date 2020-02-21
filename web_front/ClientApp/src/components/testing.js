@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactLoading from "react-loading";
-import { Redirect, Router } from 'react-router-dom'
-import { Section, Title, Article, Prop, list } from "./NotLoggedIn/generic";
+import { Redirect } from 'react-router-dom'
+// import { Section, Title, Article, Prop, list } from "./NotLoggedIn/generic";
 import "./styles.css";
 
 // https://www.npmjs.com/package/react-loading
