@@ -50,8 +50,7 @@ namespace API.Data
                     Route = dr["route"].ToString(),
                     LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
                     LastTireChange = dr["lasttirechange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lasttirechange"]),
-                    LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"]),
-                    MaintenanceForms = new List<MaintenanceForm>()
+                    LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"])
                 });
             }
 
@@ -95,8 +94,7 @@ namespace API.Data
                 Route = dr["route"].ToString(),
                 LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
                 LastTireChange = dr["lasttirechange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lasttirechange"]),
-                LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"]),
-                MaintenanceForms = new List<MaintenanceForm>()
+                LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"])
             };
         }
         

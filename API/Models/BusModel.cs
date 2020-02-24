@@ -13,12 +13,5 @@ namespace API.Models
         public DateTime LastOilChange { get; set; }
         public DateTime LastTireChange { get; set; }
         public DateTime LastMaintenance { get; set; }
-        public List<MaintenanceForm> MaintenanceForms { get; set; }
-    }
-
-    public class MaintenanceForm
-    {
-        public int Id { get; set; }
-        public string Comments { get; set; }
     }
 }

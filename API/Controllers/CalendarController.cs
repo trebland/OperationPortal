@@ -114,22 +114,30 @@ namespace API.Controllers
             List<EventModel> events = null;
             List<GroupModel> groups = null;
             List<VolunteerModel> volunteers = null;
+            List<VolunteerModel> absences = null;
             AttendanceModel attendance;
             DateTime dateTime = date.Date;
             CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
             VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
             bool staff;
             bool busDriver;
+            bool volunteer;
             bool scheduled = false;
             bool isSaturday = (dateTime.DayOfWeek == DayOfWeek.Saturday);
             var user = await userManager.GetUserAsync(User);
+
+            // Check if the user is in the volunteer role, as all other roles are considered to be present unless specified otherwise
+            volunteer = (user != null && User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()));
 
             // Check if the user is in the staff or bus driver roles, as those must be treated differently
             staff = (user != null && User.IsInRole(UserHelpers.UserRoles.Staff.ToString()));
             busDriver = (user != null && User.IsInRole(UserHelpers.UserRoles.Staff.ToString()));
 
-            // Bus drivers and staff are considered scheduled by default
-            scheduled = staff || busDriver || false;
+            // All roles except volunteers are considered scheduled by default
+            if (user != null && !volunteer)
+            {
+                scheduled = true;
+            }
 
             // Get the events occurring on this date, if any.  We only want to get the list of attendees if the user is a staff user
             events = calendarRepo.GetEvents(dateTime, staff);
@@ -162,8 +170,8 @@ namespace API.Controllers
                 });
             }
 
-            // If the user is not a bus driver or staff, check if they are scheduled on this day.  Bus drivers and staff are considered scheduled by default
-            if (!staff && !busDriver)
+            // If the user is a volunteer, check if they are scheduled on this day.  Bus drivers, volunteer captains, and staff are considered scheduled by default
+            if (volunteer)
             {
                 attendance = calendarRepo.GetSingleAttendance(user.VolunteerId, dateTime);
                 if (attendance != null && attendance.Scheduled)
@@ -193,10 +201,11 @@ namespace API.Controllers
                 });
             }
 
-            // If the user is staff, get the list of volunteers who will be attending
+            // If the user is staff, get the list of volunteers who will be attending and people who have said they will not be attending
             try
             {
                 volunteers = volunteerRepo.GetScheduledVolunteers(dateTime);
+                absences = volunteerRepo.GetAbsences(dateTime);
             }
             catch (Exception e)
             {
@@ -209,6 +218,7 @@ namespace API.Controllers
                 Events = events,
                 Groups = groups,
                 People = volunteers,
+                Absences = absences,
                 Scheduled = scheduled
             });
         }

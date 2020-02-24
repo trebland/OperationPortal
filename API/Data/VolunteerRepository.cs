@@ -128,8 +128,9 @@ namespace API.Data
         /// Gets the list of volunteers scheduled to volunteer on a specific date
         /// </summary>
         /// <param name="date">The date to check signups for</param>
+        /// <param name="allRoles">Whether or not to return ALL who are scheduled.  By default, will only return those of the volunteer role</param>
         /// <returns>A list of VolunteerModel objects</returns>
-        public List<VolunteerModel> GetScheduledVolunteers(DateTime date)
+        public List<VolunteerModel> GetScheduledVolunteers(DateTime date, bool allRoles = false)
         {
             List<VolunteerModel> volunteers = new List<VolunteerModel>();
             DataTable dt = new DataTable();
@@ -137,7 +138,7 @@ namespace API.Data
             string sql = @"SELECT V.* 
                            FROM Volunteers AS V INNER JOIN 
                            Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
-                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(1 as bit)";
+                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(1 as bit) AND (V.Role = @volRole OR @allRoles = 1)";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -146,6 +147,64 @@ namespace API.Data
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    cmd.Parameters.Add("@volRole", NpgsqlTypes.NpgsqlDbType.Integer).Value = (int)UserHelpers.UserRoles.Volunteer;
+                    cmd.Parameters.Add("@allRoles", NpgsqlTypes.NpgsqlDbType.Integer).Value = allRoles ? 1 : 0;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // For each resulting row, create a VolunteerModel object and then add it to the list.
+            foreach (DataRow dr in dt.Rows)
+            {
+                volunteers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstName"].ToString(),
+                    LastName = dr["lastName"].ToString(),
+                    Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
+                    Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
+                    Affiliation = dr["affiliation"].ToString(),
+                    Referral = dr["Referral"].ToString(),
+                    Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                    ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
+                    Phone = dr["phone"].ToString(),
+                    Email = dr["email"].ToString(),
+                    Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                    Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
+                });
+            }
+
+            return volunteers;
+        }
+
+        /// <summary>
+        /// Gets the list of those whose role is above volunteer who have said they will not be present on a given day
+        /// </summary>
+        /// <param name="date">The date to check signups for</param>
+        /// <returns>A list of VolunteerModel objects</returns>
+        public List<VolunteerModel> GetAbsences(DateTime date)
+        {
+            List<VolunteerModel> volunteers = new List<VolunteerModel>();
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT V.* 
+                           FROM Volunteers AS V INNER JOIN 
+                           Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
+                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit) AND V.Role <> @volRole"; // TODO: change this to also support getting class teachers
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create and run Postgres command.
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    cmd.Parameters.Add("@volRole", NpgsqlTypes.NpgsqlDbType.Integer).Value = (int)UserHelpers.UserRoles.Volunteer;
 
                     da = new NpgsqlDataAdapter(cmd);
 

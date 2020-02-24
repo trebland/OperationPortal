@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class InventoryModel
+    public class MaintenanceModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int Count { get; set; }
+
+        public int BusId { get; set; }
+
+        public string Text { get; set; }
+
         public bool Resolved { get; set; }
     }
 }
