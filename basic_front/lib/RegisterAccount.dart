@@ -9,6 +9,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
+import 'REST/Post_RegisterAccount.dart';
+
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);
 
@@ -27,57 +29,7 @@ class RegisterAccountPage extends StatefulWidget {
   RegisterAccountState createState() => RegisterAccountState();
 }
 
-class Post {
-  final String error;
-  final String name;
-
-  Post({this.error, this.name});
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      error: json['error'],
-      name: json['name'],
-    );
-  }
-}
-
 class RegisterAccountState extends State<RegisterAccountPage> {
-
-  Future<void> fetchPost(BuildContext context, String email, String password, String firstName, String lastName) async {
-    var mUrl = "https://www.operation-portal.com/api/auth/register";
-
-    var body = json.encode({
-      "Email": '$email',
-      "Password": '$password',
-      "FirstName": '$firstName',
-      "LastName": '$lastName',
-    });
-
-    var response = await http.post(mUrl,
-        body: body,
-        headers: {'Content-type': 'application/json'});
-
-    if (response.statusCode == 200) {
-      // If the call to the server was successful, parse the JSON.
-
-      Navigator.pop(context);
-    } else {
-      // If that call was not successful, throw an error.
-      Post mPost = Post.fromJson(json.decode(response.body));
-
-      Fluttertoast.showToast(
-          msg: mPost.error,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-
-      throw Exception('Failed to load post');
-    }
-  }
 
   TextEditingController _emailController = new TextEditingController();
   TextEditingController _firstNameController = new TextEditingController();
@@ -258,6 +210,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _passwordController,
+                  obscureText: true,
                   decoration: new InputDecoration(
                     hintText: 'Password',
                     border: new OutlineInputBorder(
@@ -307,6 +260,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _confirmPasswordController,
+                  obscureText: true,
                   decoration: new InputDecoration(
                     hintText: 'Confirm Password',
                     border: new OutlineInputBorder(
@@ -384,7 +338,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
           ),
           onPressed: () {
             if (_passwordController.text == _confirmPasswordController.text)
-              fetchPost(context, _emailController.text, _passwordController.text, _firstNameController.text, _lastNameController.text);
+              RegisterAccount(context, _emailController.text, _passwordController.text, _firstNameController.text, _lastNameController.text);
             else
               Fluttertoast.showToast(
                   msg: "Passwords don't match",

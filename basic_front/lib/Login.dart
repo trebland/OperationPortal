@@ -1,44 +1,8 @@
-import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 
-import 'Bus_Driver/BusDriver_InactiveDashboard.dart';
-import 'REST/LoginCalls.dart';
-import 'Staff/Staff_ActiveDashboard.dart';
-import 'Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Operation Portal',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.amber,
-        secondaryHeaderColor: Colors.amberAccent,
-        primaryTextTheme: TextTheme(
-          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          title: TextStyle(fontSize: 24.0),
-          body1: TextStyle(fontSize: 14.0, color: Colors.black),
-        ),
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: LoginPage(),
-    );
-  }
-}
+import 'REST/Post_Login.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -153,6 +117,7 @@ class LoginPageState extends State<LoginPage> {
                   textAlign: TextAlign.left,
                   focusNode: passwordNode,
                   controller: _passwordController,
+                  obscureText: true,
                   decoration: new InputDecoration(
                     hintText: 'Password',
                     border: new OutlineInputBorder(
@@ -226,7 +191,7 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 24, color: Colors.black)
           ),
           onPressed: () {
-            POST_InitialLogin(_emailController.text, _passwordController.text, context);
+            Login(_emailController.text, _passwordController.text, context);
             // LoginCheck(_emailController.text);
           },
           color: Colors.amber,

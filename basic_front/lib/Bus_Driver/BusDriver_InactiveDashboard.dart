@@ -5,9 +5,10 @@ import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 class BusDriver_InactiveDashboard_Page extends StatefulWidget {
-  BusDriver_InactiveDashboard_Page({Key key, this.profile}) : super(key: key);
+  BusDriver_InactiveDashboard_Page({Key key, this.profile, this.accessToken}) : super(key: key);
 
   final Profile profile;
+  final String accessToken;
 
   @override
   BusDriver_InactiveDashboard_State createState() => BusDriver_InactiveDashboard_State();
@@ -31,7 +32,7 @@ class BusDriver_InactiveDashboard_State extends State<BusDriver_InactiveDashboar
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
-            buildQRButton(context),
+            buildQRButton(widget.accessToken, context),
             buildNotice(),
           ],
         ),

@@ -1,183 +1,23 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
-import 'package:basic_front/REST/LoginCalls.dart';
-import 'package:basic_front/ScanQR.dart';
+import 'package:basic_front/REST/Get_RetrieveRoster.dart';
+import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
+import 'package:basic_front/REST/Get_RetrieveUser.dart';
+import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:http/http.dart' as http;
 
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 
 import '../AddChild.dart';
 import '../Storage.dart';
 import 'Staff_ProfileViewer.dart';
-
-class Confirm_Success {
-  DateTime daysAttended;
-
-  Confirm_Success({this.daysAttended});
-
-  factory Confirm_Success.fromJson(Map<String, dynamic> json) {
-    return Confirm_Success(
-      daysAttended: json['DaysAttended'],
-    );
-  }
-}
-
-class Confirm_Failure {
-  String error;
-
-  Confirm_Failure({this.error});
-
-  factory Confirm_Failure.fromJson(Map<String, dynamic> json) {
-    return Confirm_Failure(
-      error: json['error'],
-    );
-  }
-}
-
-Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext context) async {
-  var mUrl = "https://www.operation-portal.com/api/volunteer-attendance-check";
-
-  var response = await http.get(mUrl,
-      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token, 'id': '${toConfirm.id}'});
-
-  if (response.statusCode == 200) {
-
-    Confirm_Success mPost = Confirm_Success.fromJson(json.decode(response.body));
-
-    // If the call to the server was successful, parse the JSON.
-    Fluttertoast.showToast(
-        msg: "Success",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
-  } else {
-
-    Confirm_Failure mPost = Confirm_Failure.fromJson(json.decode(response.body));
-
-    Fluttertoast.showToast(
-        msg: mPost.error,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
-    throw Exception('Failed to load post');
-  }
-}
-
-class ReadChildren {
-
-  List<Child> children;
-
-  ReadChildren({this.children});
-
-  factory ReadChildren.fromJson(Map<String, dynamic> json) {
-    return ReadChildren(
-      children: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
-    );
-  }
-}
-
-Future<ReadChildren> GetRoster (String token, int busId) async {
-  var mUrl = "https://www.operation-portal.com/api/roster?busId=1";
-
-  Map<String, String> headers = {
-    'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + token,
-  };
-
-  var queryParameters = {
-    'busId': '$busId',
-  };
-
-  var response = await http.get(mUrl,
-      headers: headers);
-
-  if (response.statusCode == 200) {
-    ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
-
-    return mPost;
-
-  } else {
-
-    return null;
-  }
-}
-
-class ReadVolunteers {
-  List<Volunteer> volunteers;
-
-  ReadVolunteers({this.volunteers});
-
-  factory ReadVolunteers.fromJson(Map<String, dynamic> json) {
-  return ReadVolunteers(
-    volunteers: json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList(),
-  );
-  }
-}
-
-Future<ReadVolunteers> GetVolunteers (String token, DateTime currentDay)
-{
-
-}
-
-class ReadSuspensions {
-  List<SuspendedChild> suspended;
-
-  ReadSuspensions({this.suspended});
-
-  factory ReadSuspensions.fromJson(Map<String, dynamic> json) {
-    return ReadSuspensions(
-      suspended: json['suspensions'].map<SuspendedChild>((value) => new SuspendedChild.fromJson(value)).toList(),
-    );
-  }
-}
-
-Future<ReadSuspensions> GetSuspendedChildren (String token)
-async {
-  var mUrl = "https://www.operation-portal.com/api/suspensions";
-
-  Map<String, String> headers = {
-    'Content-type': 'application/json',
-    'Authorization': 'Bearer ' + token,
-  };
-
-  var response = await http.get(mUrl,
-      headers: headers);
-
-  if (response.statusCode == 200) {
-    ReadSuspensions mGet = ReadSuspensions.fromJson(json.decode(response.body));
-
-    return mGet;
-
-  } else {
-
-    return null;
-  }
-}
 
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
@@ -191,6 +31,12 @@ class Staff_ActiveDashboard_Page extends StatefulWidget {
 class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with SingleTickerProviderStateMixin
 {
   String barcode = "";
+
+  String busRouteValue;
+  String classIdValue;
+
+  final busRouteController = TextEditingController();
+  final classIdController = TextEditingController();
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Dashboard'),
@@ -211,7 +57,13 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
 
+    busRouteValue = "Select Route";
+    classIdValue = "Select Class";
+
     storage = new Storage();
+    storage.readToken().then((value) {
+      token = value;
+    });
   }
 
   @override
@@ -307,7 +159,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                 ),
                 FutureBuilder(
                     future: RetrieveUser(barcode, context),
-                    builder: (BuildContext context, AsyncSnapshot<Profile> snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<Volunteer> snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:
                           return new Text('Issue Posting Data');
@@ -345,7 +197,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                           ),
                                           Flexible(
                                             child: Text(
-                                              snapshot.data.firstName + "\n" + snapshot.data.lastName,
+                                              snapshot.data.profile.firstName + "\n" + snapshot.data.profile.lastName,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(fontSize: 28, color: Colors.white),
                                             ),
@@ -425,7 +277,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                 Container(
                                     child: FlatButton(
                                       child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
-                                      onPressed: () => ConfirmAttendance(token, snapshot.data, context),
+                                      onPressed: () {
+                                        ConfirmAttendance(token, snapshot.data.profile, context);
+                                      },
                                     ),
                                     decoration: new BoxDecoration(
                                       color: Colors.blue,
@@ -464,8 +318,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                     children: <Widget>
                     [
                       Container(
-                        child: Text("Bus Route #3", textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 28, color: Colors.white),),
+                        child: Text("Bus Route", textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),),
                         decoration: new BoxDecoration(
                           color: Colors.blue,
                           borderRadius: new BorderRadius.all(
@@ -473,13 +327,88 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           ),
                         ),
                         padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(right: 20),
                       ),
-                      Flexible(
-                          child: FlatButton(
-                            child: Text("Change Route"),
-                            onPressed: () => null,
-                          )
-                      )
+                      Container(
+                        child: DropdownButton<String>(
+                          value: busRouteValue,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(
+                              color: Colors.deepPurple
+                          ),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              busRouteValue = newValue;
+                              busRouteController.text = newValue;
+                            });
+                          },
+                          items: <String>["Select Route", "1", "2", "3"]
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+              margin: EdgeInsets.all(10),
+            ),
+            Container(
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>
+                    [
+                      Container(
+                        child: Text("Class Id", textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(right: 20),
+                      ),
+                      Container(
+                        child: DropdownButton<String>(
+                          value: classIdValue,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(
+                              color: Colors.deepPurple
+                          ),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              classIdValue = newValue;
+                              classIdController.text = newValue;
+                            });
+                          },
+                          items: <String>["Select Class", "1", "2", "3"]
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ]
                 ),
               ),
@@ -538,7 +467,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
             FutureBuilder(
                 future: storage.readToken().then((value) {
-                  return GetRoster(value,1);
+                  return RetrieveRoster(value, busRouteController.text);
                 }),
                 builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
                   switch (snapshot.connectionState) {
@@ -559,6 +488,15 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 child: ListTile(
+                                  leading: Container(
+                                    child: FlutterLogo(size: 56.0),
+                                    decoration: new BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: new BorderRadius.all(
+                                          new Radius.circular(20)
+                                      ),
+                                    ),
+                                  ),
                                   title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                       style: TextStyle(color: Colors.white)),
                                   onTap: ()
