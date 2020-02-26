@@ -480,5 +480,47 @@ namespace API.Controllers
                 classes = classes
             });
         }
+
+        /// <summary>
+        /// Gets the list of children's birthdays in the provided month.  Only accessible to staff.
+        /// </summary>
+        /// <param name="month">The month to check.  If a value of 0 is provided (the default), it will check the current month.</param>
+        /// <returns>A list of BirthdayModel objects, each containing a name and a birthday</returns>
+        [HttpGet]
+        [Route("~/api/birthdays/child")]
+        public async Task<IActionResult> ChildBirthdays(int month = 0)
+        {
+            var user = await userManager.GetUserAsync(User);
+            ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+            List<BirthdayModel> birthdays = null;
+
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            //TODO: database connectivity
+            try
+            {
+                if (month == 0)
+                {
+                    //birthdays = repo.GetBirthdays(DateTime.Now.Month);
+                }
+                else
+                {
+                    //birthdays = repo.GetBirthdays(month);
+                }
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Birthdays = birthdays
+            });
+        }
     }
 }

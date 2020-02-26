@@ -30,4 +30,31 @@ namespace API.Models
         public int? Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class GuestVolunteerModel
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Affiliation { get; set; }
+        public DateTime Date { get; set; }
+    }
+
+    public class VolunteerJobModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Min { get; set; }
+        public int Max { get; set; }
+        public int CurrentNumber { get; set; }
+    }
+
+    public class JobAssignmentViewModel
+    {
+        public int Id { get; set; }
+        public int VolunteerId { get; set; }
+        public int JobId { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

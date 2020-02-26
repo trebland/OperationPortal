@@ -578,5 +578,16 @@ namespace API.Data
 
             return volunteers;
         }
+
+        public List<BirthdayModel> GetBirthdays(int month)
+        {
+            List<BirthdayModel> birthdays = new List<BirthdayModel>();
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            
+            // TODO: implement database connectivity
+
+            return birthdays;
+        }
     }
 }
