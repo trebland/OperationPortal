@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'Bus_Driver/BusDriver_ActiveDashboard.dart';
-import 'REST/Get_RetrieveUser.dart';
-import 'Storage.dart';
-import 'Structs/Volunteer.dart';
-import 'Volunteer/Volunteer_ActiveDashboard.dart';
-import 'Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
+import '../Bus_Driver/BusDriver_ActiveDashboard.dart';
+import '../REST/Get_RetrieveUser.dart';
+import '../Storage.dart';
+import '../Structs/Volunteer.dart';
+import '../Volunteer/Volunteer_ActiveDashboard.dart';
+import '../Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
 
 class QRPage extends StatefulWidget {
   QRPage({Key key, this.token}) : super(key: key);
@@ -39,14 +39,15 @@ class QRState extends State<QRPage>
           fontSize: 16.0
       );
 
+      print(volunteer.profile.role);
       if (volunteer.checkedIn)
       {
-        if (volunteer.profile.role == "Bus Driver")
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: volunteer.profile,)));
-        else if (volunteer.profile.role == "Volunteer Captain")
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: volunteer.profile,)));
+        if (volunteer.profile.role == "BusDriver")
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: volunteer.profile,)), (Route<dynamic> route) => false);
+        else if (volunteer.profile.role == "VolunteerCaptain")
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: volunteer.profile,)), (Route<dynamic> route) => false);
         else
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: volunteer.profile,)));
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: volunteer.profile,)),(Route<dynamic> route) => false);
       }
     });
   }

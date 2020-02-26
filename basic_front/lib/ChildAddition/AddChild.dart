@@ -7,8 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import 'AdditionalOptions.dart';
-import 'REST/Post_CreateChildBase.dart';
-import 'Storage.dart';
+import '../REST/Post_CreateChildBase.dart';
+import '../Storage.dart';
 
 class AddChildPage extends StatefulWidget {
   AddChildPage({Key key, this.title}) : super(key: key);

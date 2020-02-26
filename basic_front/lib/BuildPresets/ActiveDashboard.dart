@@ -3,7 +3,7 @@ import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dar
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_VolunteerProfileViewer.dart';
 import 'package:flutter/material.dart';
 
-import '../AddChild.dart';
+import '../ChildAddition/AddChild.dart';
 import '../Structs/Choice.dart';
 import '../Structs/Volunteer.dart';
 

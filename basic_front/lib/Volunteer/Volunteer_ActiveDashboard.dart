@@ -44,6 +44,14 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
         ],
       ),
       resizeToAvoidBottomPadding: false,
+      body: Center(
+        child: Container(
+          child: Text("Checked-in Successfully! Please speak to leadership about your role assignment.", textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 28, color: Colors.blue)),
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.only(top: 20, bottom: 5),
+        ),
+      )
     );
   }
 }

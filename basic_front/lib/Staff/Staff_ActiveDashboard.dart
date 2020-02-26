@@ -5,6 +5,7 @@ import 'package:basic_front/REST/Get_RetrieveRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveUser.dart';
 import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
+import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
@@ -15,7 +16,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import '../AddChild.dart';
+import '../ChildAddition/AddChild.dart';
 import '../Storage.dart';
 import 'Staff_ProfileViewer.dart';
 
@@ -59,6 +60,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
     busRouteValue = "Select Route";
     classIdValue = "Select Class";
+
+    busRouteController.text = busRouteValue;
+    classIdController.text = classIdValue;
 
     storage = new Storage();
     storage.readToken().then((value) {
@@ -467,9 +471,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
             FutureBuilder(
                 future: storage.readToken().then((value) {
-                  return RetrieveRoster(value, busRouteController.text);
+                  return RetrieveRoster(value, busRouteController.text, classIdController.text);
                 }),
-                builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<Child>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                       return new Text('Issue Posting Data');
@@ -481,7 +485,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       if (snapshot.hasError) {
                         return Text("Unable to Fetch Roster (May be an unassigned route!)");
                       } else {
-                        children = snapshot.data.children;
+                        children = snapshot.data;
                         return Expanded(
                           child: new ListView.builder(
                             itemCount: children.length,
@@ -596,7 +600,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                         style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_SuspendedProfileViewer_Page(child: suspended[index])));
                                     },
                                     dense: false,
                                   ),
