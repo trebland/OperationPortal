@@ -675,6 +675,11 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
+            if (month < 0 || month > 12)
+            {
+                return Utilities.ErrorJson("Invalid month");
+            }
+
             try
             {
                 if (month == 0)
