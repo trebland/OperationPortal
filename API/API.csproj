@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="IKVM" Version="8.1.5717" />
+    <PackageReference Include="MailKit" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Npgsql" Version="4.1.2" />
