@@ -36,7 +36,7 @@ async {
         fontSize: 16.0
     );
 
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   } else {
 
     return null;

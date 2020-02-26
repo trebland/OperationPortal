@@ -23,7 +23,6 @@ class Staff_ProfileViewer_Page extends StatefulWidget {
 class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
   final suspensionController = TextEditingController();
-  bool isSuspended = false;
   bool isAddingNote = false;
 
   List<String> notes = ["Doesn't play well with Henry", "Loves Juice", "Dislikes Soccer", "Likes Monopoly"];
@@ -32,18 +31,25 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
   final List<int> colorCodes = <int>[600, 500];
 
-  toggleSuspension ()
+  Future<void> checkSuspensionResponse () async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SuspensionScreen(child: widget.child)),
+    );
+
+    updateSuspension (result);
+  }
+
+  updateSuspension (bool isSuspended)
   {
-    if (isSuspended)
-      isSuspended = false;
-    else
-      isSuspended = true;
-    suspensionController.text = checkSuspension();
+    setState(() {
+      suspensionController.text = isSuspended ? "Suspended" : "Not Suspended";
+    });
   }
 
   String checkSuspension ()
   {
-    return isSuspended ? "Suspended" : "Not Suspended";
+    return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
   @override
@@ -77,7 +83,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                           child: Text("Suspend", style: TextStyle(color: Colors.white)),
                           onPressed: ()
                             {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SuspensionScreen(child: widget.child)));
+                              checkSuspensionResponse();
                             }
                         ),
                         decoration: new BoxDecoration(

@@ -5,6 +5,7 @@ import 'package:basic_front/REST/Get_RetrieveRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveUser.dart';
 import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
+import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
@@ -15,7 +16,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import '../AddChild.dart';
+import '../ChildAddition/AddChild.dart';
 import '../Storage.dart';
 import 'Staff_ProfileViewer.dart';
 
@@ -37,6 +38,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
   final busRouteController = TextEditingController();
   final classIdController = TextEditingController();
+  final searchController = TextEditingController();
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Dashboard'),
@@ -45,11 +47,39 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     Tab(text: 'Suspended'),
   ];
 
+  void filterSearchResults(String query) {
+    if (children == null || childrenData == null)
+      return;
+
+    query = query.toUpperCase();
+
+    List<Child> dummySearchList = List<Child>();
+    dummySearchList.addAll(childrenData);
+    if(query.isNotEmpty) {
+      List<Child> dummyListData = List<Child>();
+      dummySearchList.forEach((item) {
+        if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      displayChildren.clear();
+      displayChildren.addAll(dummyListData);
+      setState(() {
+      });
+    } else {
+      displayChildren.clear();
+      setState(() {
+      });
+    }
+  }
+
   TabController _tabController;
   Storage storage;
   String token;
 
+  List<Child> displayChildren = new List<Child>();
   List<Child> children = new List<Child>();
+  List<Child> childrenData = new List<Child>();
   List<SuspendedChild> suspended = new List<SuspendedChild>();
 
   @override
@@ -59,6 +89,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
     busRouteValue = "Select Route";
     classIdValue = "Select Class";
+
+    busRouteController.text = busRouteValue;
+    classIdController.text = classIdValue;
 
     storage = new Storage();
     storage.readToken().then((value) {
@@ -421,37 +454,18 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>
                     [
-                      Container(
-                        child: Icon(
-                          Icons.search,
-                          size: 40,
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                        ),
-                        padding: EdgeInsets.only(left: 5),
-                      ),
                       Flexible(
                         child: TextField(
-                          textAlign: TextAlign.left,
-                          decoration: new InputDecoration(
-                            hintText: 'Search...',
-                            border: new OutlineInputBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(20),
-                                bottomRight: Radius.circular(20),
-                              ),
-                              borderSide: new BorderSide(
-                                color: Colors.black,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          onChanged: (value) {
+                            filterSearchResults(value);
+                          },
+                          controller: searchController,
+                          decoration: InputDecoration(
+                              labelText: "Search",
+                              hintText: "Search",
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
                         ),
                       ),
                       Container(
@@ -467,9 +481,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
             FutureBuilder(
                 future: storage.readToken().then((value) {
-                  return RetrieveRoster(value, busRouteController.text);
+                  return RetrieveRoster(value, busRouteController.text, classIdController.text);
                 }),
-                builder: (BuildContext context, AsyncSnapshot<ReadChildren> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<Child>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                       return new Text('Issue Posting Data');
@@ -479,9 +493,13 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       return new Text('');
                     case ConnectionState.done:
                       if (snapshot.hasError) {
-                        return Text("Unable to Fetch Roster (May be an unassigned route!)");
+                        children = null;
+                        return Center(
+                          child: Text("Unable to Fetch Roster (May be an unassigned route!)"),
+                        );
                       } else {
-                        children = snapshot.data.children;
+                        childrenData = snapshot.data;
+                        children = displayChildren.length > 0 ? displayChildren : snapshot.data;
                         return Expanded(
                           child: new ListView.builder(
                             itemCount: children.length,
@@ -596,7 +614,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                         style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_SuspendedProfileViewer_Page(child: suspended[index])));
                                     },
                                     dense: false,
                                   ),

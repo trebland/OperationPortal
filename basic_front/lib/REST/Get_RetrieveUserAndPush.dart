@@ -39,7 +39,7 @@ Future<Volunteer> RetrieveUserAndPush (String token, BuildContext context) async
     {
       if (mPost.profile.role == "Bus Driver")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: mPost.profile,)));
-      else if (mPost.profile.role == "Volunteer Captain")
+      else if (mPost.profile.role == "VolunteerCaptain")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: mPost.profile,)));
       else
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: mPost.profile,)));
@@ -48,7 +48,7 @@ Future<Volunteer> RetrieveUserAndPush (String token, BuildContext context) async
     {
       if (mPost.profile.role == "Bus Driver")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
-      else if (mPost.profile.role == "Volunteer Captain")
+      else if (mPost.profile.role == "VolunteerCaptain")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
       else
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));

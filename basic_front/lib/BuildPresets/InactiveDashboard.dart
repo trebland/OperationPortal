@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../GenerateQR.dart';
+import '../QR/GenerateQR.dart';
 
 Widget buildPictureNameRow (String firstName, String lastName)
 {
