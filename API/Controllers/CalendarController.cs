@@ -292,7 +292,9 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
             AttendanceModel attendance = repo.GetSingleAttendance(user.VolunteerId, date.Date);
+            VolunteerModel profile;
 
             if (date.Date.DayOfWeek != DayOfWeek.Saturday)
             {
@@ -302,17 +304,41 @@ namespace API.Controllers
             if (User.IsInRole(UserHelpers.UserRoles.BusDriver.ToString()))
             {
                 // TODO: Add in code to email staff if a bus driver cancels
-                return Utilities.NoErrorJson();
+                try
+                {
+                    profile = volunteerRepo.GetVolunteer(user.VolunteerId);
+                    await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", "Bus Driver Cancellation",
+                        $"A bus driver ({profile.FirstName} {profile.LastName}) has been marked as not attending on {date.Date.ToString("dd/MM/yyyy")}.  Please update bus assignments accordingly.",
+                        configModel.EmailOptions);
+                }
+                catch (Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
             }
 
-            if ((attendance != null && !attendance.Scheduled) || attendance == null)
+            // TODO: add check for if user is a class teacher
+            else if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && (attendance == null || !attendance.Scheduled))
             {
                 return Utilities.ErrorJson("You are not currently scheduled on this date");
             }
 
             try
             {
-                repo.UpdateScheduled(attendance.Id, false);
+                if (attendance != null)
+                {
+                    repo.UpdateScheduled(attendance.Id, false);
+                }
+                else
+                {
+                    repo.InsertAttendance(new AttendanceModel
+                    {
+                        VolunteerId = user.VolunteerId,
+                        DayAttended = date.Date,
+                        Scheduled = false,
+                        Attended = false,
+                    });
+                }
             }
             catch (Exception e)
             {

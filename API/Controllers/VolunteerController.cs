@@ -609,7 +609,7 @@ namespace API.Controllers
         [Route("~/api/volunteer-jobs-enabled")]
         public async Task<IActionResult> VolunteerJobsEnabled()
         {
-            var user = userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
             bool enabled = false;
 
@@ -673,6 +673,11 @@ namespace API.Controllers
             if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
             {
                 return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (month < 0 || month > 12)
+            {
+                return Utilities.ErrorJson("Invalid month");
             }
 
             try

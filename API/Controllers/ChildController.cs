@@ -58,7 +58,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
             }
-            
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -340,7 +340,7 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                
+
 
                 return new JsonResult(new
                 {
@@ -469,7 +469,7 @@ namespace API.Controllers
             {
                 classes = repo.GetClasses();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Utilities.ErrorJson(e.Message);
             }
@@ -497,6 +497,11 @@ namespace API.Controllers
             if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
             {
                 return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (month < 0 || month > 12)
+            {
+                return Utilities.ErrorJson("Invalid month");
             }
 
             //TODO: database connectivity

@@ -59,7 +59,15 @@ namespace API
             services.Configure<ConfigurationModel>(options =>
             {
                 options.ConnectionString = Configuration.GetConnectionString("DevConnection");
+                options.Environment = Configuration.GetValue<string>("Environment");
                 options.DebugMode = true;
+                options.EmailOptions = new EmailConfig
+                {
+                    Name = Configuration.GetValue<string>("EmailName"),
+                    UserName = Configuration.GetValue<string>("EmailUserName"),
+                    Server = Configuration.GetValue<string>("EmailServer"),
+                    Password = Configuration.GetValue<string>("EmailPassword")
+                };
             });
 
             services.AddOpenIddict()
