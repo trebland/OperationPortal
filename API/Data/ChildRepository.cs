@@ -712,9 +712,8 @@ namespace API.Data
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
-                {   
+                {
                     da = new NpgsqlDataAdapter(cmd);
-                    
                     con.Open();
                     da.Fill(dt);
                     con.Close();
@@ -731,6 +730,34 @@ namespace API.Data
             }
 
             return classes;
+        }
+
+        /// <summary>
+        /// Takes in two ChildModel lists and returns a list of ChildModels that appears in both
+        /// </summary>
+        public List<ChildModel> GetIntersection(List<ChildModel> list1, List<ChildModel> list2)
+        {
+            if (list1 == null || list2 == null)
+            {
+                return null;
+            }
+
+            HashSet<int> list1Ids = new HashSet<int>();
+            foreach (ChildModel child in list1)
+            {
+                list1Ids.Add(child.Id);
+            }
+
+            List<ChildModel> inBoth = new List<ChildModel>();
+            foreach (ChildModel child in list2)
+            {
+                if (list1Ids.Contains(child.Id))
+                {
+                    inBoth.Add(child);
+                }
+            }
+
+            return inBoth;
         }
     }
 }
