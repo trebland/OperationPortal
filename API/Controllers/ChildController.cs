@@ -504,16 +504,16 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid month");
             }
 
-            //TODO: database connectivity
+            // Query the database
             try
             {
                 if (month == 0)
                 {
-                    //birthdays = repo.GetBirthdays(DateTime.Now.Month);
+                    birthdays = repo.GetBirthdays(DateTime.Now.Month);
                 }
                 else
                 {
-                    //birthdays = repo.GetBirthdays(month);
+                    birthdays = repo.GetBirthdays(month);
                 }
             }
             catch (Exception e)

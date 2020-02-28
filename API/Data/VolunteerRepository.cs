@@ -579,13 +579,40 @@ namespace API.Data
             return volunteers;
         }
 
+        /// <summary>
+        /// Gets all of the names and birthdays of volunteers with a birthday in the given month
+        /// </summary>
+        /// <param name="month">The number of the month in question</param>
+        /// <returns>A list of BirthdayModel objects</returns>
         public List<BirthdayModel> GetBirthdays(int month)
         {
-            List<BirthdayModel> birthdays = new List<BirthdayModel>();
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da;
-            
-            // TODO: implement database connectivity
+            string sql = "SELECT firstname, lastname, birthday from volunteers where EXTRACT(month from birthday) = @month";
+            List<BirthdayModel> birthdays = new List<BirthdayModel>();
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                birthdays.Add(new BirthdayModel
+                {
+                    Name = dr["firstname"].ToString() + " " + dr["lastname"].ToString(),
+                    Date = Convert.ToDateTime(dr["birthday"])
+                });
+            }
 
             return birthdays;
         }
