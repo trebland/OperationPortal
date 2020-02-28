@@ -81,12 +81,11 @@ namespace API.Controllers
             });
         }
 
-        // TODO: Work out exactly what will and will not be editable
         /// <summary>
-        /// Allows for editing a volunteer's profile.  DOES NOT edit email.
+        /// Allows for editing a volunteer's profile.  DOES NOT edit email or staff-only information (orientation, training, background check, etc.).
         /// </summary>
         /// <param name="volunteer">A VolunteerModel object containing the updated information.  Will be rejected if this is not the current user</param>
-        /// <returns>An indication of any errors that occurred</returns>
+        /// <returns>An indication of any errors that occurred and the updated profile</returns>
         [Route("~/api/volunteer-profile-edit")]
         [HttpPost]
         public async Task<IActionResult> VolunteerProfileEdit(VolunteerModel volunteer) 
@@ -122,7 +121,50 @@ namespace API.Controllers
             // Update the volunteer's profile
             try
             {
-                repo.UpdateVolunteer(volunteer);
+                repo.UpdateVolunteerProfile(volunteer);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            // We want to make sure we return the most up-to-date information
+            return new JsonResult(new
+            {
+                Volunteer = repo.GetVolunteer(volunteer.Id),
+                Error = ""
+            });
+        }
+
+        /// <summary>
+        /// Allows for updating the administrative records for a volunteer.  Does not update trainings, which are separate
+        /// </summary>
+        /// <param name="v">A VolunteerModel object.  Should contain id, Orientation, BlueShirt, Nametag, PersonalInterviewCompleted, and YearStarted</param>
+        /// <returns>An indication of any errors that occurred and the updated profile</returns>
+        [Route("~/api/volunteer-records-edit")]
+        [HttpPost]
+        public async Task<IActionResult> VolunteerRecordsEdit(VolunteerModel volunteer)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel currentModel = repo.GetVolunteer(volunteer.Id);
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Return with an error if there is no volunteer model to update 
+            if (currentModel == null)
+            {
+                return Utilities.ErrorJson("Profile does not exist");
+            }
+
+            // Update the volunteer's profile
+            try
+            {
+                repo.UpdateVolunteerRecords(volunteer);
             }
             catch (Exception e)
             {
@@ -146,7 +188,7 @@ namespace API.Controllers
         /// id is the id of the volunteer whose role is being updated
         /// role is the name of the role they are being given.  This is validated against a list of valid roles, maintained here in the code.
         /// </param>
-        /// <returns></returns>
+        /// <returns>An error string, or a blank string if no error occurs</returns>
         [Route("~/api/role-edit")]
         [HttpPost]
         public async Task<IActionResult> RoleEdit( [FromBody]JObject data)
@@ -346,6 +388,258 @@ namespace API.Controllers
             return Utilities.NoErrorJson();
         }
 
+        #region Volunteer training actions
+
+        /// <summary>
+        /// Creates a training volunteers can have completed
+        /// </summary>
+        /// <param name="training">A VolunteerTrainingModel object with a name</param>
+        /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
+        [HttpPost]
+        [Route("~/api/volunteer-training-creation")]
+        public async Task<IActionResult> VolunteerTrainingCreation(VolunteerTrainingModel training)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate inputs
+            if (String.IsNullOrEmpty(training.Name))
+            {
+                return Utilities.ErrorJson("Name is required");
+            }
+
+            try
+            {
+                repo.CreateTraining(training.Name);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Edits the name of a training
+        /// </summary>
+        /// <param name="training">A VolunteerTrainingModel object with an id and name</param>
+        /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
+        [HttpPost]
+        [Route("~/api/volunteer-training-edit")]
+        public async Task<IActionResult> VolunteerTrainingEdit (VolunteerTrainingModel training)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel dbTraining;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate inputs
+            dbTraining = repo.GetTraining(training.Id);
+            if (dbTraining == null)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            // If there has been no change, we can just return
+            if (dbTraining.Name == training.Name)
+            {
+                return Utilities.NoErrorJson();
+            }
+
+            if (String.IsNullOrEmpty(training.Name))
+            {
+                return Utilities.ErrorJson("Name is required");
+            }
+
+            try
+            {
+                repo.EditTraining(training.Id, training.Name);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Deletes a training
+        /// </summary>
+        /// <param name="training">A VolunteerTrainingModel object with an id</param>
+        /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
+        [HttpPost]
+        [Route("~/api/volunteer-training-delete")]
+        public async Task<IActionResult> VolunteerTrainingDelete(VolunteerTrainingModel training)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel dbTraining;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate inputs
+            dbTraining = repo.GetTraining(training.Id);
+            if (dbTraining == null)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            try
+            {
+                repo.DeleteTraining(training.Id);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Gets the list of trainings available to be completed
+        /// </summary>
+        /// <returns>An error message, if applicable, and a list of VolunteerTrainingModel objects</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-trainings")]
+        public async Task<IActionResult> VolunteerTrainings()
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerTrainingModel> trainings;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            try
+            {
+                trainings = repo.GetTrainings();
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Trainings = trainings
+            });
+        }
+
+        /// <summary>
+        /// Marks a user as having completed a training
+        /// </summary>
+        /// <param name="vm">A view model with a training id and volunteer id</param>
+        /// <returns>An error message if applicable, or a blank string if no error occured</returns>
+        [HttpPost]
+        [Route("~/api/volunteer-training-complete")]
+        public async Task<IActionResult> VolunteerTrainingComplete(TrainingCompletedViewModel vm)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel training;
+            VolunteerModel profile;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate inputs
+            training = repo.GetTraining(vm.TrainingId);
+            if (training == null)
+            {
+                return Utilities.ErrorJson("Invalid training id");
+            }
+
+            profile = repo.GetVolunteer(vm.VolunteerId);
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Invalid volunteer id");
+            }
+
+            try
+            {
+                repo.AddTrainingCompleted(vm.VolunteerId, vm.TrainingId);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Removes the record of a user as having completed a training
+        /// </summary>
+        /// <param name="vm">A view model with a training id and volunteer id</param>
+        /// <returns>An error message if applicable, or a blank string if no error occured</returns>
+        [HttpPost]
+        [Route("~/api/volunteer-training-incomplete")]
+        public async Task<IActionResult> VolunteerTrainingInomplete(TrainingCompletedViewModel vm)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel training;
+            VolunteerModel profile;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate inputs
+            training = repo.GetTraining(vm.TrainingId);
+            if (training == null)
+            {
+                return Utilities.ErrorJson("Invalid training id");
+            }
+
+            profile = repo.GetVolunteer(vm.VolunteerId);
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Invalid volunteer id");
+            }
+
+            try
+            {
+                repo.RemoveTrainingCompleted(vm.VolunteerId, vm.TrainingId);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
+        #endregion
+
+        #region Volunteer Job actions
+
         /// <summary>
         /// Creates a job volunteers can sign up for
         /// </summary>
@@ -384,7 +678,7 @@ namespace API.Controllers
 
             try
             {
-                //repo.CreateVolunteerJob(job);
+                repo.CreateVolunteerJob(job);
             }
             catch(Exception e)
             {
@@ -413,7 +707,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            //dbJob = repo.GetVolunteerJob(job.Id);
+            dbJob = repo.GetVolunteerJob(job.Id, DateTime.MinValue);
 
             // Get job from database to check that it exists
             if (dbJob == null)
@@ -441,7 +735,7 @@ namespace API.Controllers
 
             try
             {
-                //repo.UpdateVolunteerJob(job);
+                repo.UpdateVolunteerJob(job);
             }
             catch (Exception e)
             {
@@ -470,7 +764,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            //dbJob = repo.GetVolunteerJob(job.Id);
+            dbJob = repo.GetVolunteerJob(job.Id, DateTime.MinValue);
 
             // Get job from database to check it exists
             if (dbJob == null)
@@ -480,7 +774,7 @@ namespace API.Controllers
 
             try
             {
-                //repo.DeleteVolunteerJob(job.Id);
+                repo.DeleteVolunteerJob(job);
             }
             catch (Exception e)
             {
@@ -506,14 +800,7 @@ namespace API.Controllers
 
             try
             {
-                if (date == DateTime.MinValue)
-                {
-                    //jobs = repo.GetVolunteerJobs();
-                }
-                else
-                {
-                    //jobs = repo.GetVolunteerJobs(date);
-                }
+                jobs = repo.GetVolunteerJobs(date);
 
                 return new JsonResult(new
                 {
@@ -538,6 +825,7 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerJobModel job;
 
             // This endpoint should only be accessible if the user is a staff member or if the user is trying to sign themselves up for a job
             if (user.VolunteerId != vm.VolunteerId && !User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
@@ -549,19 +837,26 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Jobs can only be signed up for for Saturdays");
             }
+
             // The first check is so we can skip a call to the database if the user is signing up for a job on their own - clearly the user id is valid in that case
             if (vm.VolunteerId != user.VolunteerId && repo.GetVolunteer(vm.VolunteerId) == null)
             {
                 return Utilities.ErrorJson("Invalid volunteer id");
             }
-            if (true /*repo.GetVolunteerJob(vm.JobId) == null*/)
+
+            job = repo.GetVolunteerJob(vm.JobId, vm.Date);
+            if (job == null)
             {
                 return Utilities.ErrorJson("Invalid volunteer job id");
+            }
+            if (job.CurrentNumber >= job.Max)
+            {
+                return Utilities.ErrorJson("Too many people are already signed up for this job");
             }
 
             try
             {
-                // repo.AddVolunteerJobAssignment(vm.VolunteerId, vm.JobId, vm.Date);
+                repo.AddVolunteerJobAssignment(vm.VolunteerId, vm.JobId, vm.Date);
             }
             catch (Exception e)
             {
@@ -582,6 +877,7 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerJobModel job;
 
             // This endpoint should only be accessible if the user is a staff member or if the user is trying to remove a job they have signed themselves up for
             if (user.VolunteerId != vm.VolunteerId && !User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
@@ -589,9 +885,25 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Unauthorized");
             }
 
+            // The first check is so we can skip a call to the database if the user is signing up for a job on their own - clearly the user id is valid in that case
+            if (vm.VolunteerId != user.VolunteerId && repo.GetVolunteer(vm.VolunteerId) == null)
+            {
+                return Utilities.ErrorJson("Invalid volunteer id");
+            }
+
+            job = repo.GetVolunteerJob(vm.JobId, vm.Date);
+            if (job == null)
+            {
+                return Utilities.ErrorJson("Invalid volunteer job id");
+            }
+            if (job.CurrentNumber == job.Min)
+            {
+                return Utilities.ErrorJson("Too many people are already signed up for this job");
+            }
+
             try
             {
-                // repo.RemoveVolunteerJobAssignment(vm.VolunteerId, vm.JobId, vm.Date);
+                repo.RemoveVolunteerJobAssignment(vm.VolunteerId, vm.JobId, vm.Date);
             }
             catch(Exception e)
             {
@@ -656,6 +968,8 @@ namespace API.Controllers
 
             return Utilities.NoErrorJson();
         }
+
+        #endregion
 
         /// <summary>
         /// Gets the list of children's birthdays in the provided month.  Only accessible to staff.

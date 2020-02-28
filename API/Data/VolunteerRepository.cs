@@ -61,6 +61,8 @@ namespace API.Data
                 Id = (int)dr["id"],
                 FirstName = dr["firstName"].ToString(),
                 LastName = dr["lastName"].ToString(),
+                PreferredName = dr["preferredName"].ToString(),
+                WeeksAttended = (int)dr["weeksAttended"],
                 Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                 Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                 Affiliation = dr["affiliation"].ToString(),
@@ -69,6 +71,13 @@ namespace API.Data
                 ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                 Phone = dr["phone"].ToString(),
                 Email = dr["email"].ToString(),
+                BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                YearStarted = (int)dr["yearstarted"],
+                Birthday = Convert.ToDateTime(dr["birthday"]),
+                Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                 Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                 Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
             };
@@ -108,6 +117,8 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    PreferredName = dr["preferredName"].ToString(),
+                    WeeksAttended = (int)dr["weeksAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -116,6 +127,13 @@ namespace API.Data
                     ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
+                    BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                    PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                    YearStarted = (int)dr["yearstarted"],
+                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
                 }) ;
@@ -166,6 +184,8 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    PreferredName = dr["preferredName"].ToString(),
+                    WeeksAttended = (int)dr["weeksAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -174,6 +194,13 @@ namespace API.Data
                     ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
+                    BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                    PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                    YearStarted = (int)dr["yearstarted"],
+                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
                 });
@@ -222,6 +249,8 @@ namespace API.Data
                     Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    PreferredName = dr["preferredName"].ToString(),
+                    WeeksAttended = (int)dr["weeksAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -230,12 +259,219 @@ namespace API.Data
                     ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
+                    BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                    PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                    YearStarted = (int)dr["yearstarted"],
+                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
                 });
             }
 
             return volunteers;
+        }
+
+        #region Training database access
+
+        /// <summary>
+        /// Creates a training that volunteers can be marked as having completed
+        /// </summary>
+        /// <param name="name">The name of the training</param>
+        public void CreateTraining (string name)
+        {
+            string sql = "INSERT INTO Training (TrainingType, Name) VALUES (1, @name)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Edit the name of a training
+        /// </summary>
+        /// <param name="id">The id of the training to edit</param>
+        /// <param name="name">The name of the training</param>
+        public void EditTraining (int id, string name)
+        {
+            string sql = "UPDATE Training SET Name = @name WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete a training and all records of those who have completed it
+        /// </summary>
+        /// <param name="id">The id of the training to delete</param>
+        public void DeleteTraining(int id)
+        {
+            string sql = "DELETE FROM Trainings_Completed WHERE trainingId = @id; DELETE FROM Training WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of all trainings in the database
+        /// </summary>
+        /// <returns>A list of VolunteerTrainingModel objects</returns>
+        public List<VolunteerTrainingModel> GetTrainings()
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerTrainingModel> trainings = new List<VolunteerTrainingModel>();
+            string sql = "SELECT id, Name FROM Trainings";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach(DataRow dr in dt.Rows)
+            {
+                trainings.Add(new VolunteerTrainingModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["Name"].ToString()
+                });
+            }
+
+            return trainings;
+        }
+
+        /// <summary>
+        /// Gets a specific TrainingModel object
+        /// </summary>
+        /// <returns>A list of VolunteerTrainingModel objects</returns>
+        public VolunteerTrainingModel GetTraining(int id)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            DataRow dr;
+            string sql = "SELECT id, Name FROM Trainings WHERE id = @id LIMIT 1";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            dr = dt.Rows[0];
+
+            return new VolunteerTrainingModel
+            {
+                Id = (int)dr["id"],
+                Name = dr["Name"].ToString()
+            };
+        }
+
+        /// <summary>
+        /// Adds a record that a volunteer has completed a specific training
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer</param>
+        /// <param name="trainingId">The id of the training</param>
+        public void AddTrainingCompleted (int volunteerId, int trainingId)
+        {
+            string sql = "INSERT INTO Trainings_Completed (volunteerId, trainingId) VALUES (@vid, @tid)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@tid", NpgsqlTypes.NpgsqlDbType.Integer).Value = trainingId;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a record that a volunteer has completed a specific training
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer</param>
+        /// <param name="trainingId">The id of the training</param>
+        public void RemoveTrainingCompleted (int volunteerId, int trainingId)
+        {
+            string sql = "DELETE FROM Trainings_Completed WHERE volunteerId = @vid AND trainingId = @tid";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@tid", NpgsqlTypes.NpgsqlDbType.Integer).Value = trainingId;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
         }
 
         /// <summary>
@@ -273,6 +509,282 @@ namespace API.Data
 
             return trainings;
         }
+
+        #endregion
+
+        #region Volunteer job database access
+
+        /// <summary>
+        /// Creates a job that volunteers can sign up for specifically
+        /// </summary>
+        /// <param name="job">A VolunteerJobModel object with the name, min, and max</param>
+        public void CreateVolunteerJob(VolunteerJobModel job)
+        {
+            string sql = "INSERT INTO Volunteer_Jobs (Name, Min, Max) VALUES (@name, @min, @max)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = job.Name;
+                    cmd.Parameters.Add("@min", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Min;
+                    cmd.Parameters.Add("@max", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Max;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Edits a job that volunteers can sign up for specifically
+        /// </summary>
+        /// <param name="job">A VolunteerJobModel object with the id, name, min, and max</param>
+        public void UpdateVolunteerJob(VolunteerJobModel job)
+        {
+            string sql = "UPDATE Volunteer_Jobs SET Name = @name, Min = @min, Max = @max WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = job.Name;
+                    cmd.Parameters.Add("@min", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Min;
+                    cmd.Parameters.Add("@max", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Max;
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Id;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deletes a job so it cannot be signed up for
+        /// </summary>
+        /// <param name="job">A VolunteerJobModel object with the id of the job to delete</param>
+        public void DeleteVolunteerJob(VolunteerJobModel job)
+        {
+            string sql = "DELETE FROM Volunteer_Jobs  WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = job.Id;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of all jobs in the database
+        /// </summary>
+        /// <param name="date">A date to check the signup count for.  If the date is the min value of DateTime, no count will be provided</param>
+        /// <returns>A list of VolunteerJobModel objects</returns>
+        public List<VolunteerJobModel> GetVolunteerJobs(DateTime date)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerJobModel> jobs = new List<VolunteerJobModel>();
+            string sql = "SELECT id, Name, Min, Max FROM Volunteer_Jobs";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+
+                if (date != DateTime.MinValue)
+                {
+                    jobs.Add(new VolunteerJobModel
+                    {
+                        Id = (int)dr["id"],
+                        Name = dr["Name"].ToString(),
+                        Min = (int)dr["Min"],
+                        Max = (int)dr["Max"],
+                        CurrentNumber = GetJobSignupCount((int)dr["id"], date)
+                    });
+                }
+                else
+                {
+                    jobs.Add(new VolunteerJobModel
+                    {
+                        Id = (int)dr["id"],
+                        Name = dr["Name"].ToString(),
+                        Min = (int)dr["Min"],
+                        Max = (int)dr["Max"]
+                    });
+                }
+                
+            }
+
+            return jobs;
+        }
+
+        /// <summary>
+        /// Gets a specific job
+        /// </summary>
+        /// <param name="id">The id of the job to retrieve</param>
+        /// <param name="date">A date to get the count for.  If the date is the minimum value of DateTime, no count will be retrieved</param>
+        /// <returns>A list of VolunteerJobModel objects</returns>
+        public VolunteerJobModel GetVolunteerJob(int id, DateTime date)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            DataRow dr;
+            string sql = "SELECT id, Name, Min, Max FROM Volunteer_Jobs WHERE id = @id LIMIT 1";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            dr = dt.Rows[0];
+
+            if (date == DateTime.MinValue)
+            {
+                return new VolunteerJobModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["Name"].ToString(),
+                    Min = (int)dr["Min"],
+                    Max = (int)dr["Max"]
+                };
+            }
+            else
+            {
+                return new VolunteerJobModel
+                {
+                    Id = (int)dr["id"],
+                    Name = dr["Name"].ToString(),
+                    Min = (int)dr["Min"],
+                    Max = (int)dr["Max"],
+                    CurrentNumber = GetJobSignupCount(id, date)
+                };
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of volunteers signed up for a specific job
+        /// </summary>
+        /// <param name="jobId">The id of the job</param>
+        /// <param name="date">The date to check</param>
+        /// <returns>An integer with the number signed up</returns>
+        public int GetJobSignupCount (int jobId, DateTime date)
+        {
+            int count;
+            string sql = "SELECT COUNT(*) FROM Volunteer_Jobs_Assignment WHERE VolunteerJobId = @jid AND Date = @date";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@jid", NpgsqlTypes.NpgsqlDbType.Integer).Value = jobId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    // Make the query
+                    con.Open();
+                    count = (int)cmd.ExecuteScalar();
+                    con.Close();
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Signs a user up for a job on a specific date
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer</param>
+        /// <param name="jobId">The id of the job</param>
+        /// <param name="date">The date</param>
+        public void AddVolunteerJobAssignment(int volunteerId, int jobId, DateTime date)
+        {
+            string sql = "INSERT INTO Volunteer_Jobs_Assigned (volunteerid, volunteerjobid, date) VALUES (@vid, @jid, @date)";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@jid", NpgsqlTypes.NpgsqlDbType.Integer).Value = jobId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cancels a user having signed up for a job on a date
+        /// </summary>
+        /// <param name="volunteerId">The id of the volunteer</param>
+        /// <param name="jobId">The id of the job</param>
+        /// <param name="date">The date</param>
+        public void RemoveVolunteerJobAssignment(int volunteerId, int jobId, DateTime date)
+        {
+            string sql = "DELETE FROM Volunteer_Jobs_Assigned WHERE volunteerid = @vid AND volunteerjobid = @jid AND date = @date";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@jid", NpgsqlTypes.NpgsqlDbType.Integer).Value = jobId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Gets the list of languages a volunteer reports knowing
@@ -349,13 +861,22 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Allows for updating a volunteer's profile information.  DOES NOT update email
+        /// Allows for updating a volunteer's profile information.  DOES NOT update email or any of the administrative records about them
         /// </summary>
-        /// <param name="v">A VolunteerModel object.  Should contain id, first name, last name, affiliation, referral, newsletter, phone, and contactwhenshort</param>
-        public void UpdateVolunteer(VolunteerModel v)
+        /// <param name="v">A VolunteerModel object.  Should contain id, first name, last name, preferred name, affiliation, referral, newsletter, phone, birthday, picture, and contactwhenshort</param>
+        public void UpdateVolunteerProfile(VolunteerModel v)
         {
             string sql = @"UPDATE Volunteers 
-                           SET FirstName = @fname, LastName = @lname, Phone = @phone, Referral = @referral, Newsletter = @newsletter, ContactWhenShort = @contact 
+                           SET FirstName = @fname, 
+                                LastName = @lname, 
+                                PreferredName = @pname,
+                                Phone = @phone, 
+                                Referral = @referral, 
+                                Affiliation = @affiliation,
+                                Newsletter = @newsletter, 
+                                ContactWhenShort = @contact,
+                                Birthday = @birthday,
+                                Picture = @picture
                            WHERE id = @id";
 
             // Connect to DB
@@ -367,10 +888,50 @@ namespace API.Data
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
                     cmd.Parameters.Add("@fname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.FirstName;
                     cmd.Parameters.Add("@lname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.LastName;
+                    cmd.Parameters.Add("@pname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.PreferredName;
                     cmd.Parameters.Add("@phone", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Phone;
                     cmd.Parameters.Add("@referral", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Referral;
+                    cmd.Parameters.Add("@affiliation", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Affiliation;
                     cmd.Parameters.Add("@newsletter", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Newsletter;
                     cmd.Parameters.Add("@contact", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.ContactWhenShort;
+                    cmd.Parameters.Add("@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = v.Birthday;
+                    cmd.Parameters.Add("@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = v.Picture;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return;
+        }
+
+        /// <summary>
+        /// Allows for updating the administrative records for a volunteer.  Does not update trainings, which are separate
+        /// </summary>
+        /// <param name="v">A VolunteerModel object.  Should contain id, Orientation, BlueShirt, Nametag, PersonalInterviewCompleted, and YearStarted</param>
+        public void UpdateVolunteerRecords(VolunteerModel v)
+        {
+            string sql = @"UPDATE Volunteers 
+                           SET orientation = @orientation,
+                               blueshirt = @shirt,
+                               nametag = @nametag,
+                               personalinterviewcompleted = @interview,
+                               yearstarted = @year
+                           WHERE id = @id";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create command and add parameters - again, using parameters to make sure SQL Injection can't occur
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
+                    cmd.Parameters.Add("@orientation", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Orientation;
+                    cmd.Parameters.Add("@shirt", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.BlueShirt;
+                    cmd.Parameters.Add("@nametag", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.NameTag;
+                    cmd.Parameters.Add("@interview", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.PersonalInterviewCompleted;
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.YearStarted;
 
                     con.Open();
                     cmd.ExecuteNonQuery();
