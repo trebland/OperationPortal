@@ -47,7 +47,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
                 child: TextField(
                   textAlign: TextAlign.left,
                   decoration: new InputDecoration(
-                    hintText: 'Email',
+                    labelText: 'Email',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),

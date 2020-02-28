@@ -75,10 +75,13 @@ namespace API.Controllers
                     ClassRoster = repo.GetChildrenClass(model.Classid);
                 }
 
+                List<ChildModel> IntersectionRoster = repo.GetIntersection(BusRoster, ClassRoster);
+
                 return new JsonResult(new
                 {
                     BusRoster,
-                    ClassRoster
+                    ClassRoster,
+                    IntersectionRoster
                 });
             }
             catch (Exception exc)

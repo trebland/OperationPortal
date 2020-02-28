@@ -1,6 +1,7 @@
 import 'package:basic_front/ForgotPassword.dart';
 import 'package:basic_front/RegisterAccount.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'REST/Post_Login.dart';
 
@@ -67,8 +68,12 @@ class LoginPageState extends State<LoginPage> {
                   },
                   textAlign: TextAlign.left,
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  inputFormatters: [
+                    BlacklistingTextInputFormatter(RegExp(" ")),
+                  ],
                   decoration: new InputDecoration(
-                    hintText: 'Email',
+                    labelText: 'Email',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -118,8 +123,11 @@ class LoginPageState extends State<LoginPage> {
                   focusNode: passwordNode,
                   controller: _passwordController,
                   obscureText: true,
+                  inputFormatters: [
+                    BlacklistingTextInputFormatter(RegExp(" ")),
+                  ],
                   decoration: new InputDecoration(
-                    hintText: 'Password',
+                    labelText: 'Password',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),

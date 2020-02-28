@@ -712,9 +712,8 @@ namespace API.Data
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
-                {   
+                {
                     da = new NpgsqlDataAdapter(cmd);
-                    
                     con.Open();
                     da.Fill(dt);
                     con.Close();
@@ -734,41 +733,31 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Gets all of the names and birthdays of children with a birthday in the given month
+        /// Takes in two ChildModel lists and returns a list of ChildModels that appears in both
         /// </summary>
-        /// <param name="month">The number of the month in question</param>
-        /// <returns>A list of BirthdayModel objects</returns>
-        public List<BirthdayModel> GetBirthdays(int month)
+        public List<ChildModel> GetIntersection(List<ChildModel> list1, List<ChildModel> list2)
         {
-            DataTable dt = new DataTable();
-            NpgsqlDataAdapter da;
-            string sql = "SELECT firstname, lastname, birthday from child where EXTRACT(month from birthday) = @month";
-            List<BirthdayModel> birthdays = new List<BirthdayModel>();
-
-            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            if (list1 == null || list2 == null)
             {
-                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                return null;
+            }
+
+            HashSet<int> list1Ids = new HashSet<int>();
+            foreach (ChildModel child in list1)
+            {
+                list1Ids.Add(child.Id);
+            }
+
+            List<ChildModel> inBoth = new List<ChildModel>();
+            foreach (ChildModel child in list2)
+            {
+                if (list1Ids.Contains(child.Id))
                 {
-                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month;
-
-                    da = new NpgsqlDataAdapter(cmd);
-
-                    con.Open();
-                    da.Fill(dt);
-                    con.Close();
+                    inBoth.Add(child);
                 }
             }
 
-            foreach (DataRow dr in dt.Rows)
-            {
-                birthdays.Add(new BirthdayModel
-                {
-                    Name = dr["firstname"].ToString() + " " + dr["lastname"].ToString(),
-                    Date = Convert.ToDateTime(dr["birthday"])
-                });
-            }
-
-            return birthdays;
+            return inBoth;
         }
     }
 }

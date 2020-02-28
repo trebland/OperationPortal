@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
 import 'package:basic_front/Structs/Child.dart';
@@ -30,6 +31,41 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
   Storage storage;
 
   final List<int> colorCodes = <int>[600, 500];
+
+  Widget buildPictureNameRow(String title) {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Image.memory(base64.decode((widget.child.picture))),
+                decoration: new BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                height: 200,
+                width: 200,
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(right: 10),
+              ),
+              Flexible(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 28),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
 
   Future<void> checkSuspensionResponse () async {
     final result = await Navigator.push(
@@ -69,7 +105,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            buildPictureNameRow_Child(widget.child.firstName +  " " + widget.child.lastName),
+            buildPictureNameRow(widget.child.firstName +  " " + widget.child.lastName),
             buildBirthdayAndGradeRow(),
             Container(
               child: IntrinsicHeight(
