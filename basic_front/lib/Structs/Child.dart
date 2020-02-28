@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'Bus.dart';
 import 'Class.dart';
 
@@ -10,13 +12,15 @@ class Child {
   Class mClass;
   Bus mBus;
   String birthday;
+  String picture;
   DateTime startSuspension;
   DateTime endSuspension;
   bool isSuspended;
 
 
   Child({this.id, this.firstName, this.lastName,
-    this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.startSuspension, this.endSuspension, this.isSuspended});
+    this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.picture,
+    this.startSuspension, this.endSuspension, this.isSuspended});
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
@@ -28,6 +32,7 @@ class Child {
       mClass: Class.fromJson(json['class']),
       mBus: Bus.fromJson(json['bus']),
       birthday: json['birthday'],
+      picture: json['picture'],
       startSuspension: json['suspendedStart'] == null ? null : json['suspendedStart'],
       endSuspension: json['suspendedEnd'] == null ? null : json['suspendedEnd'],
       isSuspended: json['isSuspended'],

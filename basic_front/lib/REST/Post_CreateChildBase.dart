@@ -1,18 +1,26 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> CreateChildBase (String token, String firstName, String lastName, int classId, int busId, BuildContext context) async {
+Future<void> CreateChildBase (String token, String firstName, String lastName, int classId, int busId, String childImagePath, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
+
+  Uint8List bytes = (await File(childImagePath).readAsBytes());
+  print(await File(childImagePath).readAsBytes());
+  // Image image = await decodeImageFromList(bytes);
 
   var body = json.encode({
     'FirstName': firstName,
     'LastName': lastName,
     'Class': { 'Id': '$classId' },
     'Bus': { 'Id': '$busId' },
+    'Picture': bytes,
   });
 
 

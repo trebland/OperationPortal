@@ -41,7 +41,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   final searchController = TextEditingController();
 
   final List<Tab> myTabs = <Tab>[
-    Tab(text: 'Dashboard'),
+    Tab(text: 'Check-In'),
     Tab(text: 'Volunteers'),
     Tab(text: 'Roster'),
     Tab(text: 'Suspended'),
@@ -149,7 +149,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
       body: TabBarView(
       controller: _tabController,
       children: myTabs.map((Tab tab) {
-        if (tab.text == "Dashboard")
+        if (tab.text == "Check-In")
           return SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -381,7 +381,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                               busRouteController.text = newValue;
                             });
                           },
-                          items: <String>["Select Route", "1", "2", "3"]
+                          items: <String>["Select Route", "1", "2", "3", "4"]
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -462,7 +462,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           controller: searchController,
                           decoration: InputDecoration(
                               labelText: "Search",
-                              hintText: "Search",
                               prefixIcon: Icon(Icons.search),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(25.0)))),
@@ -549,36 +548,14 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>
                       [
-                        Container(
-                          child: Icon(
-                            Icons.search,
-                            size: 40,
-                          ),
-                          decoration: new BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: new BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              bottomLeft: Radius.circular(20),
-                            ),
-                          ),
-                          padding: EdgeInsets.only(left: 5),
-                        ),
                         Flexible(
                           child: TextField(
                             textAlign: TextAlign.left,
-                            decoration: new InputDecoration(
-                              hintText: 'Search...',
-                              border: new OutlineInputBorder(
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                borderSide: new BorderSide(
-                                  color: Colors.black,
-                                  width: 0.5,
-                                ),
-                              ),
-                            ),
+                            decoration: InputDecoration(
+                                labelText: "Search",
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
                             style: TextStyle(fontSize: 16),
                           ),
                         ),

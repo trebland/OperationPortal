@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../TakePicture.dart';
 import 'AdditionalOptions.dart';
 import '../REST/Post_CreateChildBase.dart';
 import '../Storage.dart';
@@ -37,6 +41,30 @@ class AddChildState extends State<AddChildPage>
   final busIdController = TextEditingController();
 
   Storage storage;
+  String childImagePath;
+
+  Future<void> checkTakePictureResponse () async {
+    // Ensure that plugin services are initialized so that `availableCameras()`
+    // can be called before `runApp()`
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Obtain a list of the available cameras on the device.
+    final cameras = await availableCameras();
+
+    // Get a specific camera from the list of available cameras.
+    final firstCamera = cameras.first;
+
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PicturePage(camera: firstCamera,)),
+    );
+
+    childImagePath = result;
+    print(File(childImagePath).readAsBytesSync());
+    setState(() {
+    });
+  }
 
   @override
   void initState() {
@@ -101,6 +129,20 @@ class AddChildState extends State<AddChildPage>
 
         return false;
       }
+    else if (childImagePath == null)
+    {
+      Fluttertoast.showToast(
+          msg: 'Child image is mandatory',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
     else
       return true;
 
@@ -314,45 +356,52 @@ class AddChildState extends State<AddChildPage>
 
   Widget buildTakePicture ()
   {
-    return  Container(
-      child: IntrinsicHeight(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>
-            [
-              Container(
-                child: Icon(
-                  Icons.camera_alt,
-                  size: 40,
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: new BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
+    return Column(
+      children: <Widget>[
+        childImagePath != null ? Container(child: Image.memory(File(childImagePath).readAsBytesSync()), margin: EdgeInsets.all(20),) : Container(),
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
                   ),
-                ),
-                padding: EdgeInsets.only(left: 5),
-              ),
-              Container(
-                child: FlatButton(
-                  child: Text("Take Picture", style: TextStyle(color: Colors.white)),
-                  onPressed: () => null,
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: new BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                  Container(
+                    child: FlatButton(
+                      child: Text("Take Picture", style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        checkTakePictureResponse();
+                      },
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
                   ),
-                ),
-                padding: EdgeInsets.only(left: 5),
-              ),
-            ]
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
         ),
-      ),
-      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+      ],
     );
   }
 
@@ -375,7 +424,7 @@ class AddChildState extends State<AddChildPage>
           {
             if (filledOut())
               storage.readToken().then((value) {
-                CreateChildBase(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(busIdController.text), context);
+                CreateChildBase(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(busIdController.text), childImagePath, context);
               });
           },
           color: Colors.amber,
