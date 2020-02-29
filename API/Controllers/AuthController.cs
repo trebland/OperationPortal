@@ -141,6 +141,7 @@ namespace OCCTest.Controllers
             List<string> errors = new List<string>();
             IdentityResult passResult;
             bool passwordFailed = false;
+            int id;
 
             // Validate that the first and last name were provided
             if (String.IsNullOrEmpty(newUser.FirstName))
@@ -186,20 +187,32 @@ namespace OCCTest.Controllers
             // Create the profile in the database
             try
             {
-                profile = repo.CreateVolunteer(new VolunteerModel
+                id = repo.CreateVolunteer(new VolunteerModel
                 {
                     Email = newUser.Email,
                     FirstName = newUser.FirstName,
-                    LastName = newUser.LastName
+                    LastName = newUser.LastName,
+                    PreferredName = newUser.FirstName,
+                    Picture = newUser.Picture
                 });
 
-                if (profile == null)
+                if (id == 0)
                 {
                     throw new Exception("Unable to create profile in database");
                 }
             }
             catch (Exception e)
             {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            try
+            {
+                profile = repo.GetVolunteer(id);
+            }
+            catch(Exception e)
+            {
+                repo.DeleteVolunteer(id);
                 return Utilities.ErrorJson(e.Message);
             }
 

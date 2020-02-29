@@ -62,7 +62,7 @@ namespace API.Data
                 FirstName = dr["firstName"].ToString(),
                 LastName = dr["lastName"].ToString(),
                 PreferredName = dr["preferredName"].ToString(),
-                WeeksAttended = (int)dr["weeksAttended"],
+                WeeksAttended = (int)dr["weekendsAttended"],
                 Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                 Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                 Affiliation = dr["affiliation"].ToString(),
@@ -76,7 +76,7 @@ namespace API.Data
                 NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                 PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                 YearStarted = (int)dr["yearstarted"],
-                Birthday = Convert.ToDateTime(dr["birthday"]),
+                Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                 Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                 Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                 Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
@@ -118,7 +118,7 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
                     PreferredName = dr["preferredName"].ToString(),
-                    WeeksAttended = (int)dr["weeksAttended"],
+                    WeeksAttended = (int)dr["weekendsAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -132,7 +132,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
-                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
@@ -185,7 +185,7 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
                     PreferredName = dr["preferredName"].ToString(),
-                    WeeksAttended = (int)dr["weeksAttended"],
+                    WeeksAttended = (int)dr["weekendsAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -199,7 +199,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
-                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
@@ -250,7 +250,7 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     LastName = dr["lastName"].ToString(),
                     PreferredName = dr["preferredName"].ToString(),
-                    WeeksAttended = (int)dr["weeksAttended"],
+                    WeeksAttended = (int)dr["weekendsAttended"],
                     Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Affiliation = dr["affiliation"].ToString(),
@@ -264,7 +264,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
-                    Birthday = Convert.ToDateTime(dr["birthday"]),
+                    Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Languages = GetVolunteerLanguages((int)dr["id"]).ToArray()
@@ -824,13 +824,13 @@ namespace API.Data
         /// </summary>
         /// <param name="volunteer">A VolunteerModel object with the basic info to be inserted into the database</param>
         /// <returns>A VolunteerModel representing the volunteer inserted into the database</returns>
-        public VolunteerModel CreateVolunteer(VolunteerModel volunteer)
+        public int CreateVolunteer(VolunteerModel volunteer)
         {
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = @"INSERT INTO Volunteers (firstName, lastName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone) 
-                           VALUES (@firstName, @lastName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '') 
+            string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, yearStarted, Picture) 
+                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, @year, @picture ) 
                            RETURNING id";
 
             // Connect to DB
@@ -841,7 +841,17 @@ namespace API.Data
                 {
                     cmd.Parameters.Add("@firstName", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.FirstName;
                     cmd.Parameters.Add("@lastName", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.LastName;
+                    cmd.Parameters.Add("@prefName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = volunteer.PreferredName;
                     cmd.Parameters.Add("@email", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = volunteer.Email;
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = DateTime.Now.Year;
+                    if (volunteer.Picture == null)
+                    {
+                        cmd.Parameters.Add("@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = DBNull.Value;
+                    }
+                    else
+                    {
+                        cmd.Parameters.Add("@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = volunteer.Picture;
+                    }
 
                     da = new NpgsqlDataAdapter(cmd);
 
@@ -853,11 +863,11 @@ namespace API.Data
 
             if (dt.Rows.Count != 1)
             {
-                return null;
+                return 0;
             }
 
             dr = dt.Rows[0];
-            return GetVolunteer((int)dr["id"]);
+            return (int)dr["id"];
         }
 
         /// <summary>
