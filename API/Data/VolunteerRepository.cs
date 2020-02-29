@@ -571,7 +571,7 @@ namespace API.Data
         /// <param name="job">A VolunteerJobModel object with the id of the job to delete</param>
         public void DeleteVolunteerJob(VolunteerJobModel job)
         {
-            string sql = "DELETE FROM Volunteer_Jobs  WHERE id = @id";
+            string sql = "DELETE FROM Volunteer_Jobs_Assignment WHERE VolunteerJobId = @id; DELETE FROM Volunteer_Jobs  WHERE id = @id";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -702,6 +702,29 @@ namespace API.Data
             }
         }
 
+        public bool CheckSignedUpForJob (int jobId, int volunteerId, DateTime date)
+        {
+            int count;
+            string sql = "SELECT COUNT(*) FROM Volunteer_Jobs_Assignment WHERE VolunteerJobId = @jid AND VolunteerId = @vid AND Date = @date";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@jid", NpgsqlTypes.NpgsqlDbType.Integer).Value = jobId;
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    // Make the query
+                    con.Open();
+                    count = Convert.ToInt32(cmd.ExecuteScalar());
+                    con.Close();
+                }
+            }
+
+            return count > 0;
+        }
+
         /// <summary>
         /// Gets the number of volunteers signed up for a specific job
         /// </summary>
@@ -722,7 +745,7 @@ namespace API.Data
 
                     // Make the query
                     con.Open();
-                    count = (int)cmd.ExecuteScalar();
+                    count = Convert.ToInt32(cmd.ExecuteScalar());
                     con.Close();
                 }
             }
@@ -738,7 +761,7 @@ namespace API.Data
         /// <param name="date">The date</param>
         public void AddVolunteerJobAssignment(int volunteerId, int jobId, DateTime date)
         {
-            string sql = "INSERT INTO Volunteer_Jobs_Assigned (volunteerid, volunteerjobid, date) VALUES (@vid, @jid, @date)";
+            string sql = "INSERT INTO Volunteer_Jobs_Assignment (volunteerid, volunteerjobid, date) VALUES (@vid, @jid, @date)";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -765,7 +788,7 @@ namespace API.Data
         /// <param name="date">The date</param>
         public void RemoveVolunteerJobAssignment(int volunteerId, int jobId, DateTime date)
         {
-            string sql = "DELETE FROM Volunteer_Jobs_Assigned WHERE volunteerid = @vid AND volunteerjobid = @jid AND date = @date";
+            string sql = "DELETE FROM Volunteer_Jobs_Assignment WHERE volunteerid = @vid AND volunteerjobid = @jid AND date = @date";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))

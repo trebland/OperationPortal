@@ -820,7 +820,7 @@ namespace API.Controllers
         /// <param name="vm">A viewmodel with a VolunteerId, JobId, and Date</param>
         /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
         [HttpPost]
-        [Route("~/api/volunteer-job-assignment")]
+        [Route("~/api/volunteer-jobs-assignment")]
         public async Task<IActionResult> VolunteerJobAssignment(JobAssignmentViewModel vm)
         {
             var user = await userManager.GetUserAsync(User);
@@ -831,6 +831,11 @@ namespace API.Controllers
             if (user.VolunteerId != vm.VolunteerId && !User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
             {
                 return Utilities.ErrorJson("Unauthorized");
+            }
+
+            if (vm.Date == DateTime.MinValue)
+            {
+                return Utilities.ErrorJson("Must specify a date");
             }
 
             if (vm.Date.DayOfWeek != DayOfWeek.Saturday)
@@ -844,11 +849,25 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid volunteer id");
             }
 
-            job = repo.GetVolunteerJob(vm.JobId, vm.Date);
+            try
+            {
+                job = repo.GetVolunteerJob(vm.JobId, vm.Date);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+            
             if (job == null)
             {
                 return Utilities.ErrorJson("Invalid volunteer job id");
             }
+
+            if (repo.CheckSignedUpForJob(vm.JobId, vm.VolunteerId, vm.Date))
+            {
+                return Utilities.ErrorJson("Already signed up");
+            }
+
             if (job.CurrentNumber >= job.Max)
             {
                 return Utilities.ErrorJson("Too many people are already signed up for this job");
@@ -872,7 +891,7 @@ namespace API.Controllers
         /// <param name="vm">A viewmodel with a VolunteerId, JobId, and Date</param>
         /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
         [HttpPost]
-        [Route("~/api/volunteer-job-removal")]
+        [Route("~/api/volunteer-jobs-removal")]
         public async Task<IActionResult> VolunteerJobRemoval(JobAssignmentViewModel vm)
         {
             var user = await userManager.GetUserAsync(User);
@@ -891,14 +910,26 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid volunteer id");
             }
 
+            if (vm.Date == DateTime.MinValue)
+            {
+                return Utilities.ErrorJson("Must specify a date");
+            }
+
             job = repo.GetVolunteerJob(vm.JobId, vm.Date);
             if (job == null)
             {
                 return Utilities.ErrorJson("Invalid volunteer job id");
             }
+
+            if(!repo.CheckSignedUpForJob(vm.JobId, vm.VolunteerId, vm.Date))
+            {
+                return Utilities.ErrorJson("Not currently signed up for this job");
+            }
+
             if (job.CurrentNumber == job.Min)
             {
-                return Utilities.ErrorJson("Too many people are already signed up for this job");
+                await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date} - {job.Name} may be understaffed", 
+                    $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up.", configModel.EmailOptions);
             }
 
             try
