@@ -356,7 +356,7 @@ namespace API.Data
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             List<VolunteerTrainingModel> trainings = new List<VolunteerTrainingModel>();
-            string sql = "SELECT id, Name FROM Trainings";
+            string sql = "SELECT id, Name FROM Training";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -393,7 +393,7 @@ namespace API.Data
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = "SELECT id, Name FROM Trainings WHERE id = @id LIMIT 1";
+            string sql = "SELECT id, Name FROM Training WHERE id = @id LIMIT 1";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
