@@ -54,7 +54,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized.");
             }
 
-            if (model.Busid == 0 && model.Classid == 0)
+            if (model == null || (model.Busid == 0 && model.Classid == 0))
             {
                 return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
             }
@@ -241,9 +241,15 @@ namespace API.Controllers
 
         [Route("~/api/waiver")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult UpdateWaiver(PostWaiverModel model)
+        public async Task<IActionResult> UpdateWaiver(PostWaiverModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -304,7 +310,7 @@ namespace API.Controllers
 
         [Route("~/api/suspend")]
         [HttpPost]
-        public async Task<IActionResult> Suspend(PostSuspendChildModel model)
+        public async Task<IActionResult> Suspend(PostSuspendModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -365,7 +371,9 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
-               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
@@ -394,7 +402,9 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
-               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
