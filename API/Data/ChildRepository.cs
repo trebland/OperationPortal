@@ -436,18 +436,45 @@ namespace API.Data
             return GetFullChildModel(dt.Rows[0]);
         }
 
-        public String EditNotes(int childId, String editedNotes)
+        /// <summary>
+        /// Saves a note about a child and sends an email indicating a note has been added
+        /// </summary>
+        /// <param name="authorId">Writer of the note</param>
+        /// <param name="childId">Child the note is about</param>
+        /// <param name="priority">Sends email to staff member(s) based on priority</param>
+        /// <returns></returns>
+        public void AddNote(string author, int childId, string content)
         {
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"UPDATE Child SET notes = @editedNotes
-                             WHERE id = @childId";
+                string sql = @"INSERT INTO Notes (childid, content, author)
+                        VALUES (@childid, @content, @author)";
 
                 DataTable dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     con.Open();
                     cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    cmd.Parameters.Add("@content", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = content;
+                    cmd.Parameters.Add("@author", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = author;
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }            
+            }
+        }
+
+        public string EditNote(int noteId, String editedNotes)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"UPDATE Notes SET content = @editedNotes
+                             WHERE id = @noteId";
+
+                DataTable dt = new DataTable();
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@noteId", NpgsqlTypes.NpgsqlDbType.Integer).Value = noteId;
                     cmd.Parameters.Add("@editedNotes", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = editedNotes;
                     cmd.ExecuteNonQuery();
                     con.Close();
@@ -455,6 +482,34 @@ namespace API.Data
             }
 
             return editedNotes;
+        }
+
+        public List<NoteModel> GetNotes(int childId)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT id, content, author
+                               FROM Notes 
+                               WHERE childid = @childId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<NoteModel> notes = new List<NoteModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                notes.Add(new NoteModel((int)dr["id"], dr["content"].ToString(), dr["author"].ToString()));
+            }
+
+            return notes;
         }
 
         /// <summary>
@@ -604,7 +659,7 @@ namespace API.Data
                     SuspendedStart = ((DateTime)dr["startdate"]),
                     SuspendedEnd = ((DateTime)dr["enddate"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"]
-            });
+                });
             }
 
             return children;
@@ -796,6 +851,91 @@ namespace API.Data
             }
 
             return birthdays;
+        }
+
+        public String GetBusName(int childId)
+        {
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT b.name
+                           FROM Bus b
+                           LEFT JOIN Child c
+                           ON c.busid = b.id
+                           WHERE c.id = @childId";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return "NO BUS";
+            }
+
+            return dt.Rows[0]["name"].ToString();
+        }
+
+        public String GetClassName(int childId)
+        {
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT cl.description
+                           FROM Class_List cl
+                           LEFT JOIN Child c
+                           ON c.classid = cl.id
+                           WHERE c.id = @childId";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            if (dt.Rows.Count == 0)
+            {
+                return "NO CLASS";
+            }
+
+            return dt.Rows[0]["description"].ToString();
+        }
+
+        public String GetName(int id)
+        {
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            string sql = @"SELECT firstname, lastname 
+                           FROM Child 
+                           WHERE id = @id";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            return dt.Rows[0]["firstname"].ToString() + " " + dt.Rows[0]["lastname"].ToString();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized.");
             }
 
-            if (model.Busid == 0 && model.Classid == 0)
+            if (model == null || (model.Busid == 0 && model.Classid == 0))
             {
                 return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
             }
@@ -241,9 +241,15 @@ namespace API.Controllers
 
         [Route("~/api/waiver")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult UpdateWaiver(PostWaiverModel model)
+        public async Task<IActionResult> UpdateWaiver(PostWaiverModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -304,7 +310,7 @@ namespace API.Controllers
 
         [Route("~/api/suspend")]
         [HttpPost]
-        public async Task<IActionResult> Suspend(PostSuspendChildModel model)
+        public async Task<IActionResult> Suspend(PostSuspendModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -365,7 +371,9 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
-               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
@@ -394,7 +402,9 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
-               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
@@ -422,11 +432,88 @@ namespace API.Controllers
             }
         }
 
-        [Route("~/api/notes-edit")]
+        // TODO: Change to occ's email
+        [Route("~/api/note")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult Notes(PostNotesEditModel model)
+        public async Task<IActionResult> Note(PostNoteModel model)
         {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            List<String> missingParameters = new List<String>();
+            if (model.Author.Equals(""))
+            {
+                missingParameters.Add("author name");
+            }
+
+            if (model.ChildId == 0)
+            {
+                missingParameters.Add("child id");
+            }
+
+            if (model.Content.Equals(""))
+            {
+                missingParameters.Add("content");
+            }
+
+            if (model.Priority.Equals(""))
+            {
+                missingParameters.Add("priority");
+            }
+
+            if (missingParameters.Count > 0)
+            {
+                Utilities.GenerateMissingInputMessage(missingParameters);
+            }
+            
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+                // Email which class the child is in, which bus they are in, the priority level, and who wrote this note
+                String childName = repo.GetName(model.ChildId);
+                String className = repo.GetClassName(model.ChildId);
+                String busName = repo.GetBusName(model.ChildId);
+
+                String message = "A new note has been added about " + childName + " with the priority level " +
+                    model.Priority + ". The child is in the class " + className + " and on the bus " + busName + ". The" +
+                    " note was written by " + model.Author + ".";
+
+                String subject = "New note: " + childName + " in class " + className + " - " + model.Priority + ".";
+                await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
+                
+                repo.AddNote(model.Author, model.ChildId, model.Content);
+
+                return new JsonResult(new
+                {
+                    Error = ""
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message
+                });
+            }
+        }
+
+        [Route("~/api/note-edit")]
+        [HttpPost]
+        public async Task<IActionResult> NoteEdit(PostNoteEditModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
             if (model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("child id");
@@ -438,7 +525,41 @@ namespace API.Controllers
 
                 return new JsonResult(new
                 {
-                    Notes = repo.EditNotes(model.Id, model.Notes)
+                    Note = repo.EditNote(model.Id, model.Content)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/notes")]
+        [HttpGet]
+        public async Task<IActionResult> Notes([FromQuery]IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Notes = repo.GetNotes(model.Id)
                 });
             }
             catch (Exception exc)

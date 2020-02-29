@@ -76,7 +76,7 @@ namespace API.Controllers
                 CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    numVisits = repo.CheckInChild(model.Id)
+                    NumVisits = repo.CheckInChild(model.Id)
                 });
             }
             catch (Exception exc)
@@ -98,6 +98,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
+
             if (model == null || model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("volunteer id");
@@ -108,7 +109,7 @@ namespace API.Controllers
                 CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    numVisits = repo.CheckInVolunteer(model.Id)
+                    NumVisits = repo.CheckInVolunteer(model.Id)
                 });
             }
             catch (Exception exc)
