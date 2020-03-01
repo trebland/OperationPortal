@@ -115,6 +115,7 @@ namespace API.Controllers
             List<GroupModel> groups = null;
             List<VolunteerModel> volunteers = null;
             List<VolunteerModel> absences = null;
+            List<VolunteerJobModel> jobs = null;
             AttendanceModel attendance;
             DateTime dateTime = date.Date;
             CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
@@ -150,7 +151,8 @@ namespace API.Controllers
                     Events = events,
                     Groups = groups,
                     People = volunteers,
-                    Scheduled = scheduled
+                    Scheduled = scheduled,
+                    Jobs = jobs
                 });
             }
 
@@ -166,8 +168,18 @@ namespace API.Controllers
                     Events = events,
                     Groups = groups,
                     People = volunteers,
-                    Scheduled = scheduled
+                    Scheduled = scheduled,
+                    Jobs = jobs
                 });
+            }
+
+            try
+            {
+                jobs = volunteerRepo.GetVolunteerJobs(dateTime, staff);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
             }
 
             // If the user is a volunteer, check if they are scheduled on this day.  Bus drivers, volunteer captains, and staff are considered scheduled by default
@@ -197,11 +209,12 @@ namespace API.Controllers
                     Events = events,
                     Groups = groups,
                     People = volunteers,
-                    Scheduled = scheduled
+                    Scheduled = scheduled,
+                    Jobs = jobs
                 });
             }
 
-            // If the user is staff, get the list of volunteers who will be attending and people who have said they will not be attending
+            // If the user is staff, get the list of volunteers who will be attending and people who have said they will not be attending, and the jobs that have people signed up for them
             try
             {
                 volunteers = volunteerRepo.GetScheduledVolunteers(dateTime);
@@ -219,7 +232,8 @@ namespace API.Controllers
                 Groups = groups,
                 People = volunteers,
                 Absences = absences,
-                Scheduled = scheduled
+                Scheduled = scheduled,
+                Jobs = jobs
             });
         }
 

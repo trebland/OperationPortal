@@ -14,5 +14,7 @@ namespace API.Models
         public string Text { get; set; }
 
         public bool Resolved { get; set; }
+
+        public string AddedBy { get; set; }
     }
 }

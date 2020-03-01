@@ -593,7 +593,7 @@ namespace API.Data
         /// </summary>
         /// <param name="date">A date to check the signup count for.  If the date is the min value of DateTime, no count will be provided</param>
         /// <returns>A list of VolunteerJobModel objects</returns>
-        public List<VolunteerJobModel> GetVolunteerJobs(DateTime date)
+        public List<VolunteerJobModel> GetVolunteerJobs(DateTime date, bool includeNames = false)
         {
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
@@ -625,7 +625,8 @@ namespace API.Data
                         Name = dr["Name"].ToString(),
                         Min = (int)dr["Min"],
                         Max = (int)dr["Max"],
-                        CurrentNumber = GetJobSignupCount((int)dr["id"], date)
+                        CurrentNumber = GetJobSignupCount((int)dr["id"], date),
+                        Volunteers = includeNames ? GetJobVolunteerNames((int)dr["id"], date) : null
                     });
                 }
                 else
@@ -702,6 +703,13 @@ namespace API.Data
             }
         }
 
+        /// <summary>
+        /// Checks if a user is signed up for a specific job on a specific date
+        /// </summary>
+        /// <param name="jobId">The id of the job</param>
+        /// <param name="volunteerId">The id of the volunteer</param>
+        /// <param name="date">The date</param>
+        /// <returns>True or false</returns>
         public bool CheckSignedUpForJob (int jobId, int volunteerId, DateTime date)
         {
             int count;
@@ -723,6 +731,51 @@ namespace API.Data
             }
 
             return count > 0;
+        }
+
+        /// <summary>
+        /// Get the names and ids of volunteers who have signed up for a job in a date.  Does not get the full volunteer profile
+        /// </summary>
+        /// <param name="jobId">The id of the job</param>
+        /// <param name="date">The date</param>
+        /// <returns>A list of VolunteerModels containing only id, preferred name, and last name</returns>
+        public List<VolunteerModel> GetJobVolunteerNames(int jobId, DateTime date)
+        {
+            List<VolunteerModel> list = new List<VolunteerModel>();
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            string sql = @"SELECT V.id, V.PreferredName, V.LastName
+                           FROM Volunteers AS V INNER JOIN 
+                           Volunteer_Jobs_Assignment AS JA ON JA.volunteerid = V.id INNER JOIN 
+                           Volunteer_Jobs AS J on JA.volunteerjobid = J.id 
+                           WHERE J.id = @jid AND Date = @date";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@jid", NpgsqlTypes.NpgsqlDbType.Integer).Value = jobId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    da = new NpgsqlDataAdapter(cmd);
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    PreferredName = dr["PreferredName"].ToString(),
+                    LastName = dr["LastName"].ToString()
+                });
+            }
+
+            return list;
         }
 
         /// <summary>

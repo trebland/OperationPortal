@@ -57,6 +57,7 @@ namespace API.Models
         public int Min { get; set; }
         public int Max { get; set; }
         public int CurrentNumber { get; set; }
+        public List<VolunteerModel> Volunteers { get; set; }
     }
 
     public class JobAssignmentViewModel
