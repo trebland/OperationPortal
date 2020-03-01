@@ -41,7 +41,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
             children: <Widget>
             [
               Container(
-                child: Image.memory(base64.decode((widget.child.picture))),
+                child: (widget.child.picture != null) ? Image.memory(base64.decode((widget.child.picture))) : Center(child: Text("No Image"),),
                 decoration: new BoxDecoration(
                   color: Colors.white,
                   borderRadius: new BorderRadius.all(

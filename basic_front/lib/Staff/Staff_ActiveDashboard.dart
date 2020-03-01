@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
@@ -506,16 +508,13 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                               return Container(
                                 child: ListTile(
                                   leading: Container(
-                                    child: FlutterLogo(size: 56.0),
-                                    decoration: new BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: new BorderRadius.all(
-                                          new Radius.circular(20)
-                                      ),
+                                    child: CircleAvatar(
+                                        backgroundImage: AssetImage('OCC_LOGO.png'),
                                     ),
                                   ),
                                   title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                       style: TextStyle(color: Colors.white)),
+                                  subtitle: Text('${children[index].grade != null ? children[index].grade : 'No Grade'}', style: TextStyle(color: Colors.white)),
                                   onTap: ()
                                   {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
