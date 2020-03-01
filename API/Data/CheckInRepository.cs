@@ -90,8 +90,6 @@ namespace API.Data
                     da.Fill(dt);
                 }
 
-                bool justCheckedIn = false;
-
                 // Volunteer wasn't scheduled for this day, add to table as checked in and unscheduled
                 if (dt.Rows.Count == 0)
                 {
@@ -103,8 +101,6 @@ namespace API.Data
                         cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
                         cmd.ExecuteNonQuery();
                     }
-
-                    justCheckedIn = true;
                 }
 
                 // Volunteer was scheduled and is checking in now
@@ -120,27 +116,12 @@ namespace API.Data
                         cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
                         cmd.ExecuteNonQuery();
                     }
-
-                    justCheckedIn = true;
-                }
-
-                if (justCheckedIn)
-                {
-                    // Increment # weekends attended on Volunteers table
-                    sql = @"UPDATE Volunteers
-                            SET weekendsattended = weekendsattended + 1
-                            WHERE id = @volunteerId";
-
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
-                    {
-                        cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
-                        cmd.ExecuteNonQuery();
-                    }
                 }
 
                 // Find total number of visits
-                sql = @"SELECT weekendsattended FROM Volunteers
-                        WHERE id = @volunteerId";
+                sql = @"SELECT COUNT(*)
+                        FROM Volunteer_Attendance
+                        WHERE volunteerid = @volunteerId";
                 dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
@@ -149,7 +130,7 @@ namespace API.Data
                     da.Fill(dt);
                 }
 
-                numVisits = (int)dt.Rows[0]["weekendsattended"];
+                numVisits = (int)(long)dt.Rows[0]["count"];
 
                 con.Close();
             }
