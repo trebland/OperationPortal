@@ -47,13 +47,15 @@ namespace API.Controllers
         /// <param name="maintenance">A MaintenanceModel object.  Must include bus id and text</param>
         /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
         [HttpPost]
-        [Route("~api/maintenance-forms-creation")]
+        [Route("~/api/maintenance-forms-creation")]
         public async Task<ActionResult> MaintenanceFormsCreation(MaintenanceModel maintenance)
         {
             BusModel bus;
-            //MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
+            MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
             BusRepository busRepo = new BusRepository(configModel.ConnectionString);
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
             var user = await userManager.GetUserAsync(User);
+            VolunteerModel profile;
 
             if (user == null || !User.IsInRole(UserHelpers.UserRoles.BusDriver.ToString()))
             {
@@ -72,7 +74,9 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Text cannot be empty");
             }
 
-            //repo.CreateMaintenanceForm(maintenance.BusId, maintenance.Text);
+            profile = volunteerRepo.GetVolunteer(user.VolunteerId);
+
+            repo.CreateMaintenanceForm(maintenance.BusId, maintenance.Text, profile.PreferredName + " " + profile.LastName);
 
             return Utilities.NoErrorJson();
         }
@@ -83,11 +87,11 @@ namespace API.Controllers
         /// <param name="maintenance">A MaintenanceModel object that must include id, text, and resolved</param>
         /// <returns>An error message if an error occurred, or a blank string otherwise</returns>
         [HttpPost]
-        [Route("~api/maintenance-forms-edit")]
+        [Route("~/api/maintenance-forms-edit")]
         public async Task<ActionResult> MaintenanceFormsEdit(MaintenanceModel maintenance)
         {
             MaintenanceModel dbModel = null;
-            //MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
+            MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
             var user = await userManager.GetUserAsync(User);
 
             if (user == null 
@@ -97,7 +101,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            //dbModel = repo.GetMaintenanceForm(maintenance.Id)
+            dbModel = repo.GetMaintenanceForm(maintenance.Id);
 
             if (dbModel == null)
             {
@@ -109,7 +113,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Text cannot be empty");
             }
 
-            //repo.UpdateMaintenance(maintenance.Id, maintenance.Text, maintenance.Resolved);
+            repo.UpdateMaintenanceForm(maintenance.Id, maintenance.Text, maintenance.Resolved);
 
             return Utilities.NoErrorJson();
         }
@@ -121,11 +125,11 @@ namespace API.Controllers
         /// <param name="resolved">Allows looking at resolved forms.  Set to false by default</param>
         /// <returns>A list of MaintenaceModel objects, or an error message if an error occurs</returns>
         [HttpGet]
-        [Route("~api/maintenance-forms")]
+        [Route("~/api/maintenance-forms")]
         public async Task<ActionResult> MaintenanceForms(int busId = 0, bool resolved = false)
         {
             List<MaintenanceModel> maintenanceForms = null;
-            //MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
+            MaintenanceRepository repo = new MaintenanceRepository(configModel.ConnectionString);
             var user = await userManager.GetUserAsync(User);
 
             if (user == null
@@ -135,7 +139,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            //maintenanceForms = repo.GetMaintenanceForms(busId, resolved);
+            maintenanceForms = repo.GetMaintenanceForms(resolved, busId);
 
             return new JsonResult(new
             {
