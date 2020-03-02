@@ -514,6 +514,27 @@ namespace API.Data
             return GetChildEditModel(dt.Rows[0]);
         }
 
+        public string DeleteChild(int childId)
+        {
+            int columnRemoved = 0;
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"DELETE 
+                               FROM Child
+                               WHERE id = @childId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    columnRemoved = cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return columnRemoved == 1 ? "The child has been removed." : "This child does not exist.";
+        }
+
         /// <summary>
         /// Saves a note about a child and sends an email indicating a note has been added
         /// </summary>
@@ -588,6 +609,27 @@ namespace API.Data
             }
 
             return notes;
+        }
+
+        public string DeleteNote(int noteId)
+        {
+            int columnRemoved = 0;
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"DELETE 
+                               FROM Notes
+                               WHERE id = @noteId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@noteId", NpgsqlTypes.NpgsqlDbType.Integer).Value = noteId;
+                    columnRemoved = cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return columnRemoved == 1 ? "The note has been removed." : "This note does not exist.";
         }
 
         /// <summary>

@@ -250,6 +250,40 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/child")]
+        [HttpDelete]
+        public async Task<IActionResult> ChildDeletion([FromQuery]IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteChild(model.Id)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         [Route("~/api/waiver")]
         [HttpPost]
         public async Task<IActionResult> UpdateWaiver(PostWaiverModel model)
@@ -443,7 +477,6 @@ namespace API.Controllers
             }
         }
 
-        // TODO: Change to occ's email
         [Route("~/api/note")]
         [HttpPost]
         public async Task<IActionResult> Note(PostNoteModel model)
@@ -496,7 +529,10 @@ namespace API.Controllers
                     " note was written by " + model.Author + ".";
 
                 String subject = "New note: " + childName + " in class " + className + " - " + model.Priority + ".";
-                await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
+
+
+                // TODO: Change to occ's email
+                // await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
                 
                 repo.AddNote(model.Author, model.ChildId, model.Content);
 
@@ -571,6 +607,40 @@ namespace API.Controllers
                 return new JsonResult(new
                 {
                     Notes = repo.GetNotes(model.Id)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/note")]
+        [HttpDelete]
+        public async Task<IActionResult> NoteDeletion([FromQuery]IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("note id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteNote(model.Id)
                 });
             }
             catch (Exception exc)
