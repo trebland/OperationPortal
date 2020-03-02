@@ -633,6 +633,140 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Given two child IDs and a relationship between the two, adds this relationship to the database where
+        /// childid1 is the childid and childid2 is the relativeid
+        /// If the children already have a relationship, the relation is updated to what is passed
+        /// </summary>
+
+        public string AddRelation(RelationModel model)
+        {
+            // Check if pre-existing relationship exists
+            bool haveRelation = false;
+            string sql = @"SELECT *
+                           FROM Relatives
+                           WHERE (childid = @childid1
+                           OR childid = @childid2)";
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childid1", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId1;
+                    cmd.Parameters.Add("@childid2", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId2;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // Update existing relationship
+            if (dt.Rows.Count == 1)
+            {
+                haveRelation = true;
+                sql = @"UPDATE Relatives 
+                        SET relation = @relation
+                        WHERE (childid = @childid1 AND relativeid = @childid2)
+                        OR (childid = @childid2 AND relativeid = @childid1)";
+
+                using (NpgsqlConnection con = new NpgsqlConnection(connString))
+                {
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                    {
+                        con.Open();
+                        cmd.Parameters.Add("@childid1", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId1;
+                        cmd.Parameters.Add("@childid2", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId2;
+                        cmd.Parameters.Add("@relation", NpgsqlTypes.NpgsqlDbType.Varchar).Value = Utilities.NormalizeString(model.Relation);
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+
+            // Add new relationship
+            else
+            {
+                using (NpgsqlConnection con = new NpgsqlConnection(connString))
+                {
+                    sql = @"INSERT INTO Relatives (relativeid, relation, childid)
+                               VALUES (@childid1, @relation, @childid2)";
+
+                    con.Open();
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                    {
+                        cmd.Parameters.Add("@childid1", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId1;
+                        cmd.Parameters.Add("@childid2", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId2;
+                        cmd.Parameters.Add("@relation", NpgsqlTypes.NpgsqlDbType.Varchar).Value = Utilities.NormalizeString(model.Relation);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            return haveRelation ? "The relationship has been changed." : "The relationship has been added.";
+        }
+
+        /// <summary>
+        /// Retrieves a list of RelativeModels associated with the given child id
+        /// </summary>
+        public List<RelativeModel> GetRelations(IdModel model)
+        {
+            // Check if pre-existing relationship exists
+            List<RelativeModel> relatives = new List<RelativeModel>();
+            string sql = @"SELECT relativeid, relation, childid
+                           FROM Relatives
+                           WHERE (childid = @childid
+                           OR relativeid = @childid)";
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.Id;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows) {
+                // Don't know which column the relative is stored in, so check both
+                int relativeId = (int)dr["childid"];
+                if (relativeId == model.Id)
+                {
+                    relativeId = (int)dr["relativeid"];
+                }
+
+                relatives.Add(new RelativeModel(relativeId, dr["relation"].ToString()));
+            }
+
+            return relatives;
+        }
+
+        public string DeleteRelation(DeleteRelationModel model)
+        {
+            int columnRemoved = 0;
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"DELETE 
+                               FROM Relatives
+                               WHERE (childid = @childid1 AND relativeid = @childid2)
+                               OR (childid = @childid2 AND relativeid = @childid1)";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childid1", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId1;
+                    cmd.Parameters.Add("@childid2", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.ChildId2;
+                    columnRemoved = cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+
+            return columnRemoved == 1 ? "The relationship has been removed." : "This relationship does not exist.";
+        }
+
+        /// <summary>
         /// Given a child id and a boolean, updates whether or not the child's waiver has been received
         /// </summary>
         public void UpdateWaiver(int childId, bool received)

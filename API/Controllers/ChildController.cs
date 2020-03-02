@@ -106,7 +106,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-            
+
             List<String> missingParameters = new List<String>();
             if (model.FirstName == null)
             {
@@ -515,7 +515,7 @@ namespace API.Controllers
             {
                 Utilities.GenerateMissingInputMessage(missingParameters);
             }
-            
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -533,7 +533,7 @@ namespace API.Controllers
 
                 // TODO: Change to occ's email
                 // await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
-                
+
                 repo.AddNote(model.Author, model.ChildId, model.Content);
 
                 return new JsonResult(new
@@ -628,7 +628,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-            
+
             if (model.Id == 0)
             {
                 return Utilities.GenerateMissingInputMessage("note id");
@@ -641,6 +641,151 @@ namespace API.Controllers
                 return new JsonResult(new
                 {
                     Message = repo.DeleteNote(model.Id)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relation")]
+        [HttpPost]
+        public async Task<IActionResult> Relation(RelationModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            List<String> missingParameters = new List<String>();
+            int missingIds = 0;
+            if (model.ChildId1 == 0)
+            {
+                missingIds++;
+            }
+
+            if (model.ChildId2 == 0)
+            {
+                missingIds++;
+            }
+
+            if (model.Relation == null)
+            {
+                missingParameters.Add("relationship");
+            }
+
+            if (missingIds > 0)
+            {
+                missingParameters.Add(missingIds + " more child id" + (missingIds == 2 ? "s" : ""));
+            }
+
+            if (missingParameters.Count > 0)
+            {
+                return Utilities.GenerateMissingInputMessage(missingParameters);
+            }
+
+            if (model.ChildId1 == model.ChildId2)
+            {
+                return new JsonResult(new
+                {
+                    Error = "Children ids cannot be the same."
+                });
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.AddRelation(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relations")]
+        [HttpGet]
+        public async Task<IActionResult> Relations([FromQuery] IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Relatives = repo.GetRelations(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relation")]
+        [HttpDelete]
+        [AllowAnonymous]
+        public IActionResult Relation(DeleteRelationModel model)
+        {/*
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            */
+
+            if (model.ChildId1 == 0 && model.ChildId2 == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("2 more child ids are required.");
+            }
+
+            if (model.ChildId1 == 0 || model.ChildId2 == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("1 more child id is required.");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteRelation(model)
                 });
             }
             catch (Exception exc)
