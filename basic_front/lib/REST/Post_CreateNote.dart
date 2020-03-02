@@ -5,9 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> EditNotes (String token, int id, String notes)
+Future<void> CreateNote (String token, String author, int childId, String content, String priority, BuildContext context)
 async {
-  var mUrl = "https://www.operation-portal.com/api/notes-edit";
+  var mUrl = "https://www.operation-portal.com/api/note";
 
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -15,8 +15,10 @@ async {
   };
 
   var body = json.encode({
-    'id': id,
-    'notes': notes,
+    'author': author,
+    'childId': childId,
+    'content': content,
+    'priority': priority,
   });
 
   var response = await http.post(mUrl,
@@ -25,10 +27,8 @@ async {
 
   if (response.statusCode == 200) {
 
-    NotesEditResponse mPost = NotesEditResponse.fromJson(json.decode(response.body));
-
     Fluttertoast.showToast(
-        msg: mPost.notes,
+        msg: "Note Added",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -37,20 +37,9 @@ async {
         fontSize: 16.0
     );
 
+    Navigator.pop(context);
   } else {
 
     return null;
-  }
-}
-
-class NotesEditResponse {
-  String notes;
-
-  NotesEditResponse({this.notes});
-
-  factory NotesEditResponse.fromJson(Map<String, dynamic> json) {
-    return NotesEditResponse(
-      notes: json['notes'],
-    );
   }
 }
