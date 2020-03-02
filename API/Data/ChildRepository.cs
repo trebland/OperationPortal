@@ -319,7 +319,7 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.ParentalWaiver)
+                if (child.ParentalWaiver != null)
                 {
                     parameters.Append($"parentalwaiver = @p{parm},");
                     updated[parm] = true;
@@ -340,21 +340,21 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.BusWaiver)
+                if (child.BusWaiver != null)
                 {
                     parameters.Append($"buswaiver = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.HaircutWaiver)
+                if (child.HaircutWaiver != null)
                 {
                     parameters.Append($"haircutpermission = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.ParentalEmailOptIn)
+                if (child.ParentalEmailOptIn != null)
                 {
                     parameters.Append($"parentalemailoptin = @p{parm},");
                     updated[parm] = true;
@@ -488,20 +488,14 @@ namespace API.Data
             }
         }
 
-        public ChildModel GetChild(int childId)
+        public PostChildEditModel GetChild(int childId)
         {
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"SELECT c.*,
-                               cl.description,
-                               b.name AS busname
-                        FROM Child c
-                        LEFT JOIN Class_List cl
-                        ON c.classid = cl.id
-                        LEFT JOIN Bus b
-                        ON c.busid = b.id
-                        WHERE c.id = @childId";
+                string sql = @"SELECT *
+                               FROM Child
+                               WHERE id = @childId";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
@@ -514,10 +508,10 @@ namespace API.Data
 
             if (dt.Rows.Count == 0)
             {
-                return new ChildModel();
+                return new PostChildEditModel();
             }
 
-            return GetFullChildModel(dt.Rows[0]);
+            return GetChildEditModel(dt.Rows[0]);
         }
 
         /// <summary>

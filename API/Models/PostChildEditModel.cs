@@ -13,12 +13,12 @@ namespace API.Models
         public string Birthday { get; set; }
         public string Gender { get; set; }
         public int Grade { get; set; }
-        public bool ParentalWaiver { get; set; }
+        public bool? ParentalWaiver { get; set; }
         public int ClassId { get; set; }
         public byte[] Picture { get; set; }
-        public bool BusWaiver { get; set; }
-        public bool HaircutWaiver { get; set; }
-        public bool ParentalEmailOptIn { get; set; }
+        public bool? BusWaiver { get; set; }
+        public bool? HaircutWaiver { get; set; }
+        public bool? ParentalEmailOptIn { get; set; }
         public int OrangeShirtStatus { get; set; }
     }
 }

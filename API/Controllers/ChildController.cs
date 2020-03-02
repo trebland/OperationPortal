@@ -147,17 +147,16 @@ namespace API.Controllers
 
         [Route("~/api/child-edit")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult EditChild(PostChildEditModel child)
-        {/*
+        public async Task<IActionResult> EditChild(PostChildEditModel child)
+        {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
-                return Ut*lities.ErrorJson("Not authorized.");
-            }*/
+                return Utilities.ErrorJson("Not authorized.");
+            }
 
             if (child == null || child.Id == 0)
             {
@@ -171,7 +170,7 @@ namespace API.Controllers
                 return new JsonResult(new PostChildEditModel
                 {
                     Id = updatedChild.Id,
-                    // FIelds that can be updated:
+                    // Fields that can be updated:
                     FirstName = updatedChild.FirstName,
                     LastName = updatedChild.LastName,
                     PreferredName = updatedChild.LastName,
@@ -220,18 +219,26 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                ChildModel child = repo.GetChild(model.Id);
-                return new JsonResult(new ChildModel
+                PostChildEditModel child = repo.GetChild(model.Id);
+                return new JsonResult(new PostChildEditModel
                 {
                     Id = child.Id,
                     FirstName = child.FirstName,
                     LastName = child.LastName,
+                    PreferredName = child.LastName,
+                    ContactNumber = child.ContactNumber,
+                    ParentName = child.ParentName,
+                    BusId = child.BusId,
+                    Birthday = child.Birthday,
                     Gender = child.Gender,
                     Grade = child.Grade,
-                    Birthday = child.Birthday,
-                    Bus = child.Bus,
-                    Class = child.Class,
-                    //Picture = child.Picture
+                    ParentalWaiver = child.ParentalWaiver,
+                    ClassId = child.ClassId,
+                    Picture = child.Picture,
+                    BusWaiver = child.BusWaiver,
+                    HaircutWaiver = child.HaircutWaiver,
+                    ParentalEmailOptIn = child.ParentalEmailOptIn,
+                    OrangeShirtStatus = child.OrangeShirtStatus
                 });
             }
             catch (Exception exc)
