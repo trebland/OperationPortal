@@ -95,8 +95,8 @@ namespace API.Controllers
 
         [Route("~/api/child-creation")]
         [HttpPost]
-        // Required input: first name, last name, bus, class
-        public async Task<IActionResult> CreateChild(ChildModel child)
+        // Required input: contact number, parent name, child first name
+        public async Task<IActionResult> CreateChild(PostChildCreationModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -106,26 +106,21 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-
+            
             List<String> missingParameters = new List<String>();
-            if (child.FirstName == null)
+            if (model.FirstName == null)
             {
                 missingParameters.Add("first name");
             }
 
-            if (child.LastName == null)
+            if (model.ParentName == null)
             {
-                missingParameters.Add("last name");
+                missingParameters.Add("parent name");
             }
 
-            if (child.Bus == null || child.Bus.Id == null)
+            if (model.ContactNumber == null)
             {
-                missingParameters.Add("bus id");
-            }
-
-            if (child.Class == null || child.Class.Id == null)
-            {
-                missingParameters.Add("class id");
+                missingParameters.Add("contact number");
             }
 
             if (missingParameters.Count != 0)
@@ -138,7 +133,7 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    Message = repo.CreateChild(child)
+                    Message = repo.CreateChild(model)
                 });
             }
             catch (Exception exc)
@@ -152,16 +147,17 @@ namespace API.Controllers
 
         [Route("~/api/child-edit")]
         [HttpPost]
-        public async Task<IActionResult> EditChild(ChildModel child)
-        {
+        [AllowAnonymous]
+        public IActionResult EditChild(PostChildEditModel child)
+        {/*
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
                await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
-                return Utilities.ErrorJson("Not authorized.");
-            }
+                return Ut*lities.ErrorJson("Not authorized.");
+            }*/
 
             if (child == null || child.Id == 0)
             {
@@ -171,19 +167,27 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                ChildModel updatedChild = repo.EditChild(child);
-                return new JsonResult(new ChildModel
+                PostChildEditModel updatedChild = repo.EditChild(child);
+                return new JsonResult(new PostChildEditModel
                 {
                     Id = updatedChild.Id,
-                    // Fields that can be updated:
+                    // FIelds that can be updated:
                     FirstName = updatedChild.FirstName,
                     LastName = updatedChild.LastName,
+                    PreferredName = updatedChild.LastName,
+                    ContactNumber = updatedChild.ContactNumber,
+                    ParentName = updatedChild.ParentName,
+                    BusId = updatedChild.BusId,
+                    Birthday = updatedChild.Birthday,
                     Gender = updatedChild.Gender,
                     Grade = updatedChild.Grade,
-                    Birthday = updatedChild.Birthday,
-                    Bus = updatedChild.Bus,
-                    Class = updatedChild.Class,
-                    Picture = updatedChild.Picture
+                    ParentalWaiver = updatedChild.ParentalWaiver,
+                    ClassId = updatedChild.ClassId,
+                    Picture = updatedChild.Picture,
+                    BusWaiver = updatedChild.BusWaiver,
+                    HaircutWaiver = updatedChild.HaircutWaiver,
+                    ParentalEmailOptIn = updatedChild.ParentalEmailOptIn,
+                    OrangeShirtStatus = updatedChild.OrangeShirtStatus
                 });
             }
             catch (Exception exc)

@@ -99,10 +99,10 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Creates a new child with first name, last name, bus id, class id, and any extra information
+        /// Creates a new child with first name, parent name, contact number, and any extra information
         /// </summary>
         /// <returns>Success message</returns>
-        public String CreateChild(ChildModel child)
+        public String CreateChild(PostChildCreationModel child)
         {
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
@@ -120,30 +120,49 @@ namespace API.Data
 
                 int numColumns = (int)(long)dt.Rows[0]["count"];
                 // Update parameters that are not null
-                // First name, last name, bus and class ID have been checked in the controller
+                // First name, parent name, and contact number have been checked in the controller
                 StringBuilder columns = new StringBuilder();
-                StringBuilder vals = new StringBuilder();
                 bool[] updated = new bool[numColumns];
                 int parm = 0;
 
-                columns.Append($"@firstname,");
-                updated[parm] = true;
-                parm++;
-
-                columns.Append($"@lastname,");
-                updated[parm] = true;
-                parm++;
-
-                if (child.Gender != null)
+                if (child.ContactNumber != null)
                 {
-                    columns.Append($"@gender,");
+                    columns.Append($"@contactnumber,");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.Grade != null)
+                if (child.ParentName != null)
                 {
-                    columns.Append($"@grade,");
+                    columns.Append($"@parentname,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.FirstName != null)
+                {
+                    columns.Append($"@firstname,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.LastName != null)
+                {
+                    columns.Append($"@lastname,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.PreferredName != null)
+                {
+                    columns.Append($"@preferredname,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.BusId != 0)
+                {
+                    columns.Append($"@busid,");
                     updated[parm] = true;
                 }
                 parm++;
@@ -153,29 +172,23 @@ namespace API.Data
                     columns.Append($"@birthday,");
                     updated[parm] = true;
                 }
-                parm++;
-
-                columns.Append($"@busid,");
-                updated[parm] = true;
-                parm++;
-
-                columns.Append($"@classid,");
-                updated[parm] = true;
-                parm++;
-
-                if (child.Picture != null)
-                {
-                    columns.Append($"@picture,");
-                    updated[parm] = true;
-                }
 
                 columns.Length = columns.Length - 1;
-
                 sql = @"INSERT INTO Child (" + Regex.Replace(columns.ToString(), "@" , "")  + @") 
                         VALUES (" + columns.ToString() + ")";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     parm = -1;
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@contactnumber", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@parentname", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ParentName;
+                    }
+
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@firstname", NpgsqlTypes.NpgsqlDbType.Varchar, 60).Value = child.FirstName;
@@ -188,32 +201,17 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@gender", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = child.Gender;
+                        cmd.Parameters.Add($"@preferredname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.PreferredName;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@grade", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Grade;
+                        cmd.Parameters.Add($"@busid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.BusId;
                     }
 
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
-                    }
-
-                    if (updated[++parm])
-                    {
-                        cmd.Parameters.Add($"@busid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus.Id;
-                    }
-
-                    if (updated[++parm])
-                    {
-                        cmd.Parameters.Add($"@classid", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
-                    }
-                    
-                    if (updated[++parm])
-                    {
-                        cmd.Parameters.Add($"@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
                     }
                     
                     cmd.ExecuteNonQuery();
@@ -228,22 +226,16 @@ namespace API.Data
         /// <summary>
         /// Updates information corresponding to child.Id in the database
         /// </summary>
-        /// <param name="child">ChildModel with fields to be updated in the database</param>
-        /// <returns>ChildModel of the merged information</returns>
-        public ChildModel EditChild(ChildModel child)
+        /// <param name="child">PostChildEditModel with fields to be updated in the database</param>
+        /// <returns>PostChildEditModel of the merged information</returns>
+        public PostChildEditModel EditChild(PostChildEditModel child)
         {
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
-                string sql = @"SELECT c.*,
-                               cl.description,
-                               b.name AS busname
-                        FROM Child c
-                        LEFT JOIN Class_List cl
-                        ON c.classid = cl.id
-                        LEFT JOIN Bus b
-                        ON c.busid = b.id
-                        WHERE c.busid = @busid";
+                string sql = @"SELECT *
+                               FROM Child
+                               WHERE id = @childid";
 
                 DataTable dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -256,20 +248,21 @@ namespace API.Data
                 // This ID does not exist
                 if (dt.Rows.Count == 0)
                 {
-                    return new ChildModel();
+                    return new PostChildEditModel();
                 }
 
                 // Update parameters that are not null
                 StringBuilder parameters = new StringBuilder();
                 bool[] updated = new bool[dt.Columns.Count];
                 int parm = 0;
+
                 if (child.FirstName != null)
                 {
                     parameters.Append($"firstname = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
-                
+
                 if (child.LastName != null)
                 {
                     parameters.Append($"lastname = @p{parm},");
@@ -277,16 +270,30 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.Gender != null)
+                if (child.PreferredName != null)
                 {
-                    parameters.Append($"gender = @p{parm},");
+                    parameters.Append($"preferredname = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.Grade != null)
+                if (child.ContactNumber != null)
                 {
-                    parameters.Append($"grade = @p{parm},");
+                    parameters.Append($"contactnumber = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.ParentName != null)
+                {
+                    parameters.Append($"parentname = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.BusId != 0)
+                {
+                    parameters.Append($"busid = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
@@ -298,26 +305,69 @@ namespace API.Data
                 }
                 parm++;
 
-                if (child.Bus != null && child.Bus.Id != null)
+                if (child.Gender != null)
                 {
-                    parameters.Append($"busid = @p{parm},");
+                    parameters.Append($"gender = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
 
-                if (child.Class != null && child.Class.Id != null)
+                if (child.Grade != 0)
+                {
+                    parameters.Append($"grade = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.ParentalWaiver)
+                {
+                    parameters.Append($"parentalwaiver = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.ClassId != 0)
                 {
                     parameters.Append($"classid = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
-               
-                if  (child.Picture != null)
+
+                if (child.Picture != null)
                 {
                     parameters.Append($"picture = @p{parm},");
                     updated[parm] = true;
                 }
-                
+                parm++;
+
+                if (child.BusWaiver)
+                {
+                    parameters.Append($"buswaiver = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.HaircutWaiver)
+                {
+                    parameters.Append($"haircutpermission = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.ParentalEmailOptIn)
+                {
+                    parameters.Append($"parentalemailoptin = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.OrangeShirtStatus != 0)
+                {
+                    parameters.Append($"orangeshirt = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+
                 // For testing with Postman
                 /*string fname = "test.jfif";
                 FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
@@ -326,7 +376,7 @@ namespace API.Data
                 */
                 if (parameters.Length == 0) // All fields null - no changes made
                 {
-                    return GetFullChildModel(dt.Rows[0]);
+                    return GetChildEditModel(dt.Rows[0]);
                 }
 
                 parameters.Length = parameters.Length - 1; // Remove last comma
@@ -347,6 +397,31 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.PreferredName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ParentName;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.BusId;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
+                    }
+
+                    if (updated[++parm])
+                    {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = Utilities.NormalizeString(child.Gender);
                     }
 
@@ -357,38 +432,47 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.ParentalWaiver;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Bus.Id;
-                    }
-
-                    if (updated[++parm])
-                    {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Class.Id;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.ClassId;
                     }
 
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
                     }
-                    
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.BusWaiver;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.HaircutWaiver;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.ParentalEmailOptIn;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.OrangeShirtStatus;
+                    }
+
                     cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = child.Id;
                     cmd.ExecuteNonQuery();
                 }
 
                 // Retrieve row that has been updated and bus/class name
-                sql = @"SELECT c.*,
-                               cl.description,
-                               b.name AS busname
-                        FROM Child c
-                        LEFT JOIN Class_List cl
-                        ON c.classid = cl.id
-                        LEFT JOIN Bus b
-                        ON c.busid = b.id
-                        WHERE c.id = @childId";
+                sql = @"SELECT *
+                        FROM Child
+                        WHERE id = @childid";
 
                 dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -400,7 +484,7 @@ namespace API.Data
 
                 con.Close();
 
-                return GetFullChildModel(dt.Rows[0]);
+                return GetChildEditModel(dt.Rows[0]);
             }
         }
 
@@ -673,7 +757,6 @@ namespace API.Data
         private ChildModel GetFullChildModel(DataRow dr)
         {
             ChildModel child = GetBasicChildModel(new ChildModel(), dr);
-            child.Notes = dr["notes"].ToString();
             child.WaiverReceived = dr["waiver"] == System.DBNull.Value ? false : (bool)dr["waiver"];
 
             return child;
@@ -719,6 +802,29 @@ namespace API.Data
             child.Birthday = dr["birthday"].ToString();
             child.IsSuspended = IsSuspended((int)dr["id"]);
             child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
+
+            return child;
+        }
+
+        private PostChildEditModel GetChildEditModel(DataRow dr)
+        {
+            PostChildEditModel child = new PostChildEditModel();
+            child.Id = (int)dr["id"];
+            child.FirstName = dr["firstname"].ToString();
+            child.LastName = dr["lastname"].ToString();
+            child.PreferredName = dr["preferredname"].ToString();
+            child.ContactNumber = dr["contactnumber"].ToString();
+            child.ParentName = dr["parentname"].ToString();
+            child.BusId = DBNull.Value.Equals(dr["busid"]) ? 0 : (int)dr["busid"];
+            child.Birthday = dr["birthday"].ToString();
+            child.Gender = dr["gender"].ToString();
+            child.ParentalWaiver = DBNull.Value.Equals(dr["parentalwaiver"]) ? false : (bool)dr["parentalwaiver"];
+            child.ClassId = DBNull.Value.Equals(dr["classid"]) ? 0 : (int)dr["classid"];
+            child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
+            child.BusWaiver = DBNull.Value.Equals(dr["buswaiver"]) ? false : (bool)dr["buswaiver"];
+            child.HaircutWaiver = DBNull.Value.Equals(dr["haircutpermission"]) ? false : (bool)dr["haircutpermission"];
+            child.ParentalEmailOptIn = DBNull.Value.Equals(dr["parentalemailoptin"]) ? false : (bool)dr["parentalemailoptin"];
+            child.OrangeShirtStatus = DBNull.Value.Equals(dr["orangeshirt"]) ? 0 : (int)dr["orangeshirt"];
 
             return child;
         }
