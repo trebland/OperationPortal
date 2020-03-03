@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
 import 'package:basic_front/NoteAddition.dart';
+import 'package:basic_front/NoteView.dart';
 import 'package:basic_front/REST/Get_RetrieveNotes.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Note.dart';
@@ -228,6 +229,10 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                                   title: Text('${snapshot.data[index].content}',
                                       style: TextStyle(color: Colors.white)),
                                   dense: false,
+                                  onTap: ()
+                                  {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteViewPage(note: snapshot.data[index])));
+                                  },
                                 ),
                                 color: Colors.blue[colorCodes[index%2]],
 

@@ -144,6 +144,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
         ],
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           tabs: myTabs,
         ),
       ),

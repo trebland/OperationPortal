@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> CreateChildFull (String token, String firstName, String lastName, int classId, int busId, String gender, String grade, String birthday, BuildContext context) async {
+Future<void> CreateChildFull (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, String gender, String grade, String birthday, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
   // Implement Changes
@@ -26,6 +28,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, i
   if (birthday == "")
     addBirthday = false;
 
+  Uint8List bytes = (await File(childImagePath).readAsBytes());
   var body;
 
   if (!addGender)
@@ -34,31 +37,39 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, i
         body = json.encode({
           'FirstName': firstName,
           'LastName': lastName,
-          'Class': { 'Id': '$classId' },
-          'Bus': { 'Id': '$busId' },
+          'ParentName': parentName,
+          'ContactNumber': contactNumber,
+          //'Bus': { 'Id': '$busId' },
+          'Picture': bytes,
         });
       else
         body = json.encode({
           'FirstName': firstName,
           'LastName': lastName,
-          'Class': { 'Id': '$classId' },
-          'Bus': { 'Id': '$busId' },
+          'ParentName': parentName,
+          'ContactNumber': contactNumber,
+          //'Bus': { 'Id': '$busId' },
+          'Picture': bytes,
           'Birthday': birthday,
         });
     else if (!addBirthday)
       body = json.encode({
         'FirstName': firstName,
         'LastName': lastName,
-        'Class': { 'Id': '$classId' },
-        'Bus': { 'Id': '$busId' },
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
         'Grade': '$gradeAdj',
       });
     else
       body = json.encode({
         'FirstName': firstName,
         'LastName': lastName,
-        'Class': { 'Id': '$classId' },
-        'Bus': { 'Id': '$busId' },
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
         'Grade': '$gradeAdj',
         'Birthday': birthday,
       });
@@ -67,16 +78,20 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, i
       body = json.encode({
         'FirstName': firstName,
         'LastName': lastName,
-        'Class': { 'Id': '$classId' },
-        'Bus': { 'Id': '$busId' },
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
         'Gender': gender,
       });
     else
       body = json.encode({
         'FirstName': firstName,
         'LastName': lastName,
-        'Class': { 'Id': '$classId' },
-        'Bus': { 'Id': '$busId' },
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
         'Gender': gender,
         'Birthday': birthday,
       });
@@ -84,8 +99,10 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, i
     body = json.encode({
       'FirstName': firstName,
       'LastName': lastName,
-      'Class': { 'Id': '$classId' },
-      'Bus': { 'Id': '$busId' },
+      'ParentName': parentName,
+      'ContactNumber': contactNumber,
+      //'Bus': { 'Id': '$busId' },
+      'Picture': bytes,
       'Gender': gender,
       'Grade': '$gradeAdj',
     });
@@ -93,8 +110,10 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, i
     body = json.encode({
       'FirstName': firstName,
       'LastName': lastName,
-      'Class': { 'Id': '$classId' },
-      'Bus': { 'Id': '$busId' },
+      'ParentName': parentName,
+      'ContactNumber': contactNumber,
+      //'Bus': { 'Id': '$busId' },
+      'Picture': bytes,
       'Gender': gender,
       'Grade': '$gradeAdj',
       'Birthday': birthday,
