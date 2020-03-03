@@ -754,40 +754,6 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Gets the list of all classes in the database
-        /// </summary>
-        /// <returns>A list of ClassModel objects representing classes, each containing the name and id of a class</returns>
-        public List<ClassModel> GetClasses()
-        {
-            DataTable dt = new DataTable();
-            NpgsqlDataAdapter da;
-            string sql = "SELECT * FROM class_list";
-            List<ClassModel> classes = new List<ClassModel>();
-
-            using (NpgsqlConnection con = new NpgsqlConnection(connString))
-            {
-                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
-                {
-                    da = new NpgsqlDataAdapter(cmd);
-                    con.Open();
-                    da.Fill(dt);
-                    con.Close();
-                }
-            }
-
-            foreach (DataRow dr in dt.Rows)
-            {
-                classes.Add(new ClassModel
-                {
-                    Id = (int)dr["id"],
-                    Name = dr["description"].ToString()
-                });
-            }
-
-            return classes;
-        }
-
-        /// <summary>
         /// Takes in two ChildModel lists and returns a list of ChildModels that appears in both
         /// </summary>
         public List<ChildModel> GetIntersection(List<ChildModel> list1, List<ChildModel> list2)
