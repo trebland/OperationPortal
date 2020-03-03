@@ -58,7 +58,7 @@ namespace API.Controllers
             profile = volunteerRepo.GetVolunteer(user.VolunteerId);
 
             // Verify that the user has permissions to create an inventory item
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
@@ -104,7 +104,7 @@ namespace API.Controllers
             var user = await userManager.GetUserAsync(User);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
@@ -155,7 +155,7 @@ namespace API.Controllers
             var user = await userManager.GetUserAsync(User);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
