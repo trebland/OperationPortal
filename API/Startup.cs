@@ -64,6 +64,7 @@ namespace API
                 options.EmailOptions = new EmailConfig
                 {
                     Name = Configuration.GetValue<string>("EmailName"),
+                    Address = Configuration.GetValue<string>("EmailAddress"),
                     UserName = Configuration.GetValue<string>("EmailUserName"),
                     Server = Configuration.GetValue<string>("EmailServer"),
                     Password = Configuration.GetValue<string>("EmailPassword")

@@ -23,7 +23,7 @@ namespace API.Helpers
 
             var message = new MimeMessage();
 
-            message.From.Add(new MailboxAddress(config.Name, config.UserName));
+            message.From.Add(new MailboxAddress(config.Name, config.Address));
             message.To.Add(new MailboxAddress(to));
             message.Subject = subject;
             message.Body = new TextPart(MimeKit.Text.TextFormat.Plain)
