@@ -14,7 +14,7 @@ namespace API.Data
 {
     public class AnalyticsRepository
     {
-        private readonly string connString; 
+        private readonly string connString;
         public AnalyticsRepository(string connString)
         {
             this.connString = connString;
@@ -131,6 +131,96 @@ namespace API.Data
             }
 
             return numChildrenPerBus;
+        }
+
+        /// <summary>
+        /// Returns the number of new volunteers who were present on a given day
+        /// </summary>
+        public int GetNumNewVolunteers(DateModel date)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT COUNT(volunteerid)
+                               FROM Volunteer_Attendance va
+                               WHERE attended = CAST(1 AS bit)
+                               AND dayattended = @date
+                               AND 0 = 
+	                               (SELECT COUNT(*) FROM Volunteer_Attendance 
+	                                WHERE volunteerid = va.volunteerid 
+	                                AND dayattended <> va.dayattended
+	                                AND attended = CAST(1 as bit))";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    cmd.Parameters.Add($"@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            return (int)(long)dt.Rows[0]["count"];
+        }
+
+        /// <summary>
+        /// Returns the number of returning volunteers who were present on a given day
+        /// </summary>
+        public int GetNumReturningVolunteers(DateModel date)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT COUNT(volunteerid)
+                               FROM Volunteer_Attendance va
+                               WHERE attended = CAST(1 AS bit)
+                               AND dayattended = @date
+                               AND 0 <> 
+	                               (SELECT COUNT(*) FROM Volunteer_Attendance 
+	                                WHERE volunteerid = va.volunteerid 
+	                                AND dayattended <> va.dayattended
+	                                AND attended = CAST(1 as bit))";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    cmd.Parameters.Add($"@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            return (int)(long)dt.Rows[0]["count"];
+        }
+
+        /// <summary>
+        /// Returns the number of "blue shirt" volunteers who were present on a given day
+        /// </summary>
+        public int GetNumBlueShirtVolunteers(DateModel date)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT COUNT(va.volunteerid)
+                               FROM Volunteer_Attendance va
+                               LEFT JOIN Volunteers v
+                               ON va.volunteerid = v.id
+                               WHERE v.blueshirt
+                               AND dayattended = @date";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    cmd.Parameters.Add($"@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            return (int)(long)dt.Rows[0]["count"];
         }
     }
 }

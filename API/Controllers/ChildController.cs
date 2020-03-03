@@ -756,9 +756,8 @@ namespace API.Controllers
 
         [Route("~/api/relation")]
         [HttpDelete]
-        [AllowAnonymous]
-        public IActionResult Relation(DeleteRelationModel model)
-        {/*
+        public async Task<IActionResult> Relation(DeleteRelationModel model)
+        {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
@@ -767,7 +766,6 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-            */
 
             if (model.ChildId1 == 0 && model.ChildId2 == 0)
             {

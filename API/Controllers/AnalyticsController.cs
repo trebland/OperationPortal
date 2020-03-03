@@ -160,5 +160,110 @@ namespace API.Controllers
                 });
             }
         }
+
+        [Route("~/api/analytics/volunteers-new")]
+        [HttpGet]
+        public async Task<IActionResult> VolunteersNew([FromQuery]DateModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Date == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
+            try
+            {
+                AnalyticsRepository repo = new AnalyticsRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Count = repo.GetNumNewVolunteers(model)
+                });
+            }
+
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/analytics/volunteers-returning")]
+        [HttpGet]
+        public async Task<IActionResult> VolunteersReturning([FromQuery]DateModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Date == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
+            try
+            {
+                AnalyticsRepository repo = new AnalyticsRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Count = repo.GetNumReturningVolunteers(model)
+                });
+            }
+
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/analytics/volunteers-blue-shirt")]
+        [HttpGet]
+        public async Task<IActionResult> VolunteersBlueShirt([FromQuery]DateModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            
+            if (model.Date == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
+            try
+            {
+                AnalyticsRepository repo = new AnalyticsRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Count = repo.GetNumBlueShirtVolunteers(model)
+                });
+            }
+
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
     }
 }
