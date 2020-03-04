@@ -38,16 +38,18 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
   final List<int> colorCodes = <int>[600, 500];
 
-  Widget buildPictureNameRow(String title) {
+  Widget buildPictureNameRow(String firstName, String lastName) {
     return Container(
       child: IntrinsicHeight(
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>
             [
               Container(
-                child: (widget.child.picture != null) ? Image.memory(base64.decode((widget.child.picture))) : Center(child: Text("No Image"),),
+                child: CircleAvatar(
+                  backgroundImage: (widget.child.picture != null) ? MemoryImage(base64.decode((widget.child.picture))) : null,
+                ),
                 decoration: new BoxDecoration(
                   color: Colors.white,
                   borderRadius: new BorderRadius.all(
@@ -61,7 +63,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
               ),
               Flexible(
                 child: Text(
-                  title,
+                  firstName + "\n" + lastName,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 28),
                 ),
@@ -69,7 +71,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
             ]
         ),
       ),
-      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+      margin: EdgeInsets.all(10),
     );
   }
 
@@ -77,7 +79,10 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SuspensionScreen(child: widget.child)),
-    );
+    ).then((value) {
+      setState(() {
+      });
+    });
 
     updateSuspension (result);
   }
@@ -111,8 +116,8 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          buildPictureNameRow(widget.child.firstName +  " " + widget.child.lastName),
-          buildBirthdayAndGradeRow(),
+          buildPictureNameRow(widget.child.firstName, widget.child.lastName),
+          buildBirthdayAndGradeRow(widget.child.birthday, widget.child.grade),
           Container(
             child: IntrinsicHeight(
               child: Row(
@@ -188,7 +193,10 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       child: FlatButton(
                         child: Text("Add Note", style: TextStyle(color: Colors.white)),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.profile, child: widget.child)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.profile, child: widget.child))).then((value) {
+                            setState(() {
+                            });
+                          });
                         },
                       ),
                       decoration: new BoxDecoration(
@@ -221,7 +229,8 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                         return Text("Press 'Scan QR' to begin!");
                       } else {
                         return Expanded(
-                          child: new ListView.builder(
+                          child: snapshot.data.length > 0
+                              ? new ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
@@ -231,15 +240,31 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                                   dense: false,
                                   onTap: ()
                                   {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteViewPage(note: snapshot.data[index])));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteViewPage(note: snapshot.data[index]))).then((value) {
+                                      setState(() {
+                                      });
+                                    });
                                   },
                                 ),
                                 color: Colors.blue[colorCodes[index%2]],
-
                                 margin: EdgeInsets.only(left: 10, right: 10),
                               );
                             },
-                          ),
+                          )
+                              : Container(
+                            child: Center(
+                              child: Text('No Notes Attached!', style: TextStyle(color: Colors.white)),
+                            ),
+                            decoration: new BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: new BorderRadius.only(
+                                bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20),
+                              ),
+                            ),
+
+
+                            margin: EdgeInsets.only(left: 10, right: 10),
+                          )
                         );
                       }
                       break;

@@ -49,7 +49,7 @@ class Staff_SuspendedProfileViewer_State extends State<Staff_SuspendedProfileVie
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow_Child(widget.child.firstName +  " " + widget.child.lastName),
-          buildBirthdayAndGradeRow(),
+          buildBirthdayAndGradeRow("", null),
           Container(
             child: IntrinsicHeight(
               child: Row(

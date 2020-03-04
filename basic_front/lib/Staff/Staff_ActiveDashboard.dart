@@ -52,7 +52,33 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     Tab(text: 'Suspended'),
   ];
 
-  void filterSearchResults(String query) {
+  void filterVolunteerResults(String query) {
+    if (volunteers == null || volunteerData == null)
+      return;
+
+    query = query.toUpperCase();
+
+    List<Volunteer> dummySearchList = List<Volunteer>();
+    dummySearchList.addAll(volunteerData);
+    if(query.isNotEmpty) {
+      List<Volunteer> dummyListData = List<Volunteer>();
+      dummySearchList.forEach((item) {
+        if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      displayVolunteers.clear();
+      displayVolunteers.addAll(dummyListData);
+      setState(() {
+      });
+    } else {
+      displayVolunteers.clear();
+      setState(() {
+      });
+    }
+  }
+
+  void filterRosterResults(String query) {
     if (children == null || childrenData == null)
       return;
 
@@ -78,6 +104,32 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     }
   }
 
+  void filterSuspendedResults(String query) {
+    if (suspended == null || suspendedData == null)
+      return;
+
+    query = query.toUpperCase();
+
+    List<SuspendedChild> dummySearchList = List<SuspendedChild>();
+    dummySearchList.addAll(suspendedData);
+    if(query.isNotEmpty) {
+      List<SuspendedChild> dummyListData = List<SuspendedChild>();
+      dummySearchList.forEach((item) {
+        if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
+          dummyListData.add(item);
+        }
+      });
+      displaySuspended.clear();
+      displaySuspended.addAll(dummyListData);
+      setState(() {
+      });
+    } else {
+      displaySuspended.clear();
+      setState(() {
+      });
+    }
+  }
+
   TabController _tabController;
   Storage storage;
   String token;
@@ -89,7 +141,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   List<Child> displayChildren = new List<Child>();
   List<Child> children = new List<Child>();
   List<Child> childrenData = new List<Child>();
+
+  List<SuspendedChild> displaySuspended = new List<SuspendedChild>();
   List<SuspendedChild> suspended = new List<SuspendedChild>();
+  List<SuspendedChild> suspendedData = new List<SuspendedChild>();
 
   @override
   void initState() {
@@ -128,6 +183,18 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
          });
        },
      );
+  }
+
+  DateTime parseBirthday (String birthday)
+  {
+    List<String> dateBreak = new List<String>();
+    dateBreak = birthday.split('/');
+    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
+  }
+
+  int calculateBirthday(Child child)
+  {
+    return (DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays / 365.25).round();
   }
 
   @override
@@ -290,7 +357,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                         Flexible(
                           child: TextField(
                             onChanged: (value) {
-                              filterSearchResults(value);
+                              filterVolunteerResults(value);
                             },
                             controller: searchController,
                             decoration: InputDecoration(
@@ -478,14 +545,15 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       Flexible(
                         child: TextField(
                           onChanged: (value) {
-                            filterSearchResults(value);
+                            filterRosterResults(value);
                           },
                           controller: searchController,
                           decoration: InputDecoration(
                               labelText: "Search",
                               prefixIcon: Icon(Icons.search),
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                                  borderRadius: BorderRadius.all(Radius.circular(25.0)))
+                          ),
                         ),
                       ),
                       Container(
@@ -528,12 +596,12 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                 child: ListTile(
                                   leading: Container(
                                     child: CircleAvatar(
-                                        backgroundImage: AssetImage('OCC_LOGO.png'),
+                                      backgroundImage: (children[index].picture != null) ? MemoryImage(base64.decode((children[index].picture))) : null,
                                     ),
                                   ),
                                   title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                       style: TextStyle(color: Colors.white)),
-                                  subtitle: Text('${children[index].grade != null ? children[index].grade : 'No Grade'}', style: TextStyle(color: Colors.white)),
+                                  subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                   onTap: ()
                                   {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(profile: widget.profile, child: children[index])));
@@ -568,6 +636,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       [
                         Flexible(
                           child: TextField(
+                            onChanged: (value) {
+                              filterSuspendedResults(value);
+                            },
                             textAlign: TextAlign.left,
                             decoration: InputDecoration(
                                 labelText: "Search",
@@ -586,7 +657,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                   future: storage.readToken().then((value) {
                     return GetSuspendedChildren(value);
                   }),
-                  builder: (BuildContext context, AsyncSnapshot<ReadSuspensions> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<List<SuspendedChild>> snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.none:
                         return new Text('Issue Posting Data');
@@ -596,9 +667,11 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                         return new Text('');
                       case ConnectionState.done:
                         if (snapshot.hasError) {
+                          suspended = null;
                           return Text("Unable to Fetch Roster (May be an unassigned route!)");
                         } else {
-                          suspended = snapshot.data.suspended;
+                          suspendedData = snapshot.data;
+                          suspended = displaySuspended.length > 0 ? displaySuspended : snapshot.data;
                           return Expanded(
                             child: new ListView.builder(
                               itemCount: suspended.length,
