@@ -241,31 +241,32 @@ class NoteViewState extends State<NoteViewPage>
   Widget build (BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        AppBar appBar = AppBar(
+          title: Text("Note Edit/Deletion"),
+        );
         return Scaffold (
-          appBar: new AppBar(
-            title: new Text('Note Edit/Deletion'),
-          ),
+          appBar: appBar,
           body: SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: 200,
+                minHeight: viewportConstraints.maxHeight - appBar.preferredSize.height*2,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          buildNoteRow(),
-                          buildAuthorRow(),
-                          buildEditNoteButton(context),
-                          buildDeleteNodeButton(context),
-                        ],
-                      )
-                  ),
-                ],
+              child: IntrinsicHeight(
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            buildNoteRow(),
+                            buildAuthorRow(),
+                          ],
+                        )
+                    ),
+                    buildEditNoteButton(context),
+                    buildDeleteNodeButton(context),
+                  ],
+                ),
               ),
             ),
           ),

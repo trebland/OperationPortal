@@ -116,29 +116,19 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
   String dropdownValue = 'One';
 
-  bool accessProfileNotes = false;
-
-  void _onAccessProfileNotesChanged(bool newValue) => setState(() {
-    accessProfileNotes = newValue;
-
-    if (accessProfileNotes) {
-      // TODO: Here goes your functionality that remembers the user.
-    } else {
-      // TODO: Forget the user
-    }
-  });
-
-  bool editProfileNotes = false;
-
-  void _onEditProfileNotesChanged(bool newValue) => setState(() {
-    editProfileNotes = newValue;
-
-    if (editProfileNotes) {
-      // TODO: Here goes your functionality that remembers the user.
-    } else {
-      // TODO: Forget the user
-    }
-  });
+  Widget buildRefreshButton ()
+  {
+     return IconButton(
+       icon: Icon(
+         Icons.refresh,
+         color: Colors.black,
+       ),
+       onPressed: () {
+         setState(() {
+         });
+       },
+     );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +136,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
       appBar: AppBar(
         title: Text('Dashboard'),
         actions: <Widget>[
+          buildRefreshButton(),
           buildProfileButton(context, widget.profile),
           buildLogoutButton(context),
         ],

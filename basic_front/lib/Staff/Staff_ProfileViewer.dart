@@ -176,21 +176,30 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 28, color: Colors.white),
                       ),
-                      Container(
-                        child: FlatButton(
-                          child: Text("Add Note", style: TextStyle(color: Colors.white)),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.profile, child: widget.child)));
-                          },
-                        ),
-                        decoration: new BoxDecoration(
+                      decoration: new BoxDecoration(
                           color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                            Radius.circular(20),
-                          ),
+                          borderRadius: new BorderRadius.only(
+                            topRight: new Radius.circular(20), topLeft: new Radius.circular(20),
+                          )
+                      ),
+                      padding: EdgeInsets.all(20),
+                    ),
+                    Container(
+                      child: FlatButton(
+                        child: Text("Add Note", style: TextStyle(color: Colors.white)),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.profile, child: widget.child)));
+                        },
+                      ),
+                      decoration: new BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: new BorderRadius.all(
+                          Radius.circular(20),
                         ),
                       ),
-                    ]
+                      margin: EdgeInsets.only(left: 20),
+                    ),
+                  ]
                 ),
               ),
               margin: EdgeInsets.only(top: 10, left: 10),
@@ -239,52 +248,6 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                   }
                 }
             ),
-            margin: EdgeInsets.only(top: 10, left: 10),
-          ),
-          FutureBuilder(
-              future: storage.readToken().then((value) {
-                return RetrieveNotes(value, widget.child.id);
-              }),
-              builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                    return new Text('Issue Posting Data');
-                  case ConnectionState.waiting:
-                    return new Center(child: new CircularProgressIndicator());
-                  case ConnectionState.active:
-                    return new Text('');
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Text("Press 'Scan QR' to begin!");
-                    } else {
-                      return Expanded(
-                        child: new ListView.builder(
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              child: ListTile(
-                                title: Text('${snapshot.data[index].content}',
-                                    style: TextStyle(color: Colors.white)),
-                                dense: false,
-                                onTap: ()
-                                {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => NoteViewPage(note: snapshot.data[index])));
-                                },
-                              ),
-                              color: Colors.blue[colorCodes[index%2]],
-
-                              margin: EdgeInsets.only(left: 10, right: 10),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                    break;
-                  default:
-                    return null;
-                }
-              }
-          ),
         ],
       ),
     );
