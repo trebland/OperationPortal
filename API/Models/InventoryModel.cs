@@ -11,5 +11,7 @@ namespace API.Models
         public string Name { get; set; }
         public int Count { get; set; }
         public bool Resolved { get; set; }
+        public string AddedBy { get; set; }
     }
 }
+

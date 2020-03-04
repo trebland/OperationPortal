@@ -151,5 +151,99 @@ namespace API.Controllers
                 Error = ""
             });
         }
+
+        /// <summary>
+        /// Updates maintenance information about a bus
+        /// </summary>
+        /// <param name="model">A BusModel object with an id, last maintenance, last oil change, and last tire change</param>
+        /// <returns>An error message, if applicable</returns>
+        [HttpPost]
+        [Route("~/api/bus-edit")]
+        public async Task<IActionResult> BusEdit(BusModel model)
+        {
+            BusRepository repo = new BusRepository(configModel.ConnectionString);
+            BusModel bus;
+            var user = await userManager.GetUserAsync(User);
+
+            // Make sure the user is a maintenance worker
+            if (!await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusMaintenance.ToString()))
+            {
+                return Utilities.ErrorJson("Unauthorized");
+            }
+
+            // Validate the input
+            bus = repo.GetBus(model.Id);
+
+            if (bus == null)
+            {
+                return Utilities.ErrorJson("Invalid bus id");
+            }
+
+            try
+            {
+                repo.UpdateBus(model.Id, model.LastMaintenance, model.LastOilChange, model.LastTireChange);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+
+        }
+
+        /// <summary>
+        /// Assigns a bus driver to a bus
+        /// </summary>
+        /// <param name="model">A BusModel with the id of the bus and a DriverId with the id of the driver</param>
+        /// <returns>An error message, if applicable</returns>
+        [HttpPost]
+        [Route("~/api/bus-driver-assignment")]
+        public async Task<IActionResult> AssignBusDriver(BusModel model)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            BusRepository busRepo = new BusRepository(configModel.ConnectionString);
+            BusModel bus;
+            VolunteerModel profile;
+            var user = await userManager.GetUserAsync(User);
+
+            /// Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            // Validate the inputs
+            bus = busRepo.GetBus(model.Id);
+
+            if (bus == null)
+            {
+                return Utilities.ErrorJson("Invalid bus id");
+            }
+
+            profile = repo.GetVolunteer(model.DriverId);
+
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Invalid driver id");
+            }
+
+            if (profile.Role != UserHelpers.UserRoles.BusDriver.ToString())
+            {
+                return Utilities.ErrorJson("That user is not a bus driver");
+            }
+
+            // Update in the database
+            try
+            {
+                busRepo.AssignDriver(model.Id, model.DriverId);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+        }
     }
 }

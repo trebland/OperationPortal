@@ -26,7 +26,7 @@ namespace API.Data
             NpgsqlDataAdapter da;
             List<BusModel> buses = new List<BusModel>();
             DataTable dt = new DataTable();
-            string sql = "SELECT * FROM Bus";
+            string sql = "SELECT B.*, V.PreferredName, V.LastName FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id";
 
             // Connect to the database
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -46,6 +46,8 @@ namespace API.Data
                 buses.Add(new BusModel
                 {
                     Id = (int)dr["id"],
+                    DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
+                    DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
                     Name = dr["name"].ToString(),
                     Route = dr["route"].ToString(),
                     LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
@@ -57,12 +59,33 @@ namespace API.Data
             return buses;
         }
 
+        public void UpdateBus(int id, DateTime LastMaintenance, DateTime LastOilChange, DateTime LastTireChange)
+        {
+            string sql = "UPDATE Bus SET LastMaintenance = @maint, LastOilChange = @oil, LastTireChange = @tire WHERE id = @id";
+
+            // Connect to the database
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create the sql command
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    // Add the id parameter
+                    cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
         public BusModel GetBus(int id)
         {
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = "SELECT * FROM Bus WHERE id = @id LIMIT 1";
+            string sql = "SELECT B.*, V.PreferredName, V.LastName FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id WHERE B.id = @id LIMIT 1";
 
             // Connect to the database
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -90,6 +113,8 @@ namespace API.Data
 
             return new BusModel { 
                 Id = (int)dr["id"],
+                DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
+                DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
                 Name = dr["name"].ToString(),
                 Route = dr["route"].ToString(),
                 LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
@@ -137,6 +162,29 @@ namespace API.Data
                 {
                     cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = name;
                     cmd.Parameters.Add("@route", NpgsqlTypes.NpgsqlDbType.Varchar).Value = route;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Assigns a driver to a bus
+        /// </summary>
+        /// <param name="busId">The id of the bus</param>
+        /// <param name="driverId">The id of the driver</param>
+        public void AssignDriver (int busId, int driverId)
+        {
+            string sql = "UPDATE Bus SET driverId = @driverId WHERE id = @busId";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
+                    cmd.Parameters.Add("@busId", NpgsqlTypes.NpgsqlDbType.Integer).Value = busId;
 
                     con.Open();
                     cmd.ExecuteNonQuery();

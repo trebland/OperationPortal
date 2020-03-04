@@ -46,15 +46,19 @@ namespace API.Controllers
         /// <param name="model">An InventoryModel object that must include name and count</param>
         /// <returns>An error message if an error occurred, or an empty string otherwise.</returns>
         [HttpPost]
-        [Route("~api/inventory-create")]
+        [Route("~/api/inventory-create")]
         public async Task<IActionResult> InventoryCreate(InventoryModel model)
         {
-            //InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
+            InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
             bool authorized = false;
             var user = await userManager.GetUserAsync(User);
+            VolunteerModel profile;
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
+
+            profile = volunteerRepo.GetVolunteer(user.VolunteerId);
 
             // Verify that the user has permissions to create an inventory item
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
@@ -80,7 +84,7 @@ namespace API.Controllers
             }
 
             // Send to database
-            //repo.CreateInventory(model.Name, model.Text);
+            repo.CreateInventory(model.Name, model.Count, profile.PreferredName + " " + profile.LastName);
 
             return Utilities.NoErrorJson();
         }
@@ -91,16 +95,16 @@ namespace API.Controllers
         /// <param name="model">An InventoryModel object that must include name, count, and resolved</param>
         /// <returns>An error message if an error occurred, or an empty string otherwise.</returns>
         [HttpPost]
-        [Route("~api/inventory-edit")]
+        [Route("~/api/inventory-edit")]
         public async Task<IActionResult> InventoryEdit(InventoryModel model)
         {
-            //InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
+            InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
             InventoryModel dbModel = null;
             bool authorized = false;
             var user = await userManager.GetUserAsync(User);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
@@ -125,14 +129,14 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Count must be a non-negative integer");
             }
 
-            //dbModel = repo.GetInventoryItem(model.Id);
+            dbModel = repo.GetInventoryItem(model.Id);
             if (dbModel == null)
             {
                 return Utilities.ErrorJson("Invalid id");
             }
             
             // Send to database
-            //repo.UpdateInventory(model.Id, model.Name, model.Text, Model.Resolved);
+            repo.UpdateInventory(model.Id, model.Name, model.Count, model.Resolved);
 
             return Utilities.NoErrorJson();
         }
@@ -145,13 +149,13 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> Inventory(bool resolved = false)
         {
-            //InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
+            InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
             List<InventoryModel> items = null;
             bool authorized = false;
             var user = await userManager.GetUserAsync(User);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
             {
                 authorized = true;
             }
@@ -166,7 +170,7 @@ namespace API.Controllers
             }
 
             // Get the appropriate inventory items
-            // items = repo.GetInventory(resolved)
+            items = repo.GetInventory(resolved);
 
             return new JsonResult(new
             {

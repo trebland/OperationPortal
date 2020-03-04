@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:basic_front/Structs/Volunteer.dart';
+import 'package:basic_front/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<Volunteer> RetrieveUser (String token, BuildContext context) async {
+Future<User> RetrieveUser (String token, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/auth/user";
 
   var response = await http.get(mUrl,
@@ -14,7 +14,7 @@ Future<Volunteer> RetrieveUser (String token, BuildContext context) async {
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
-    Volunteer mPost = Volunteer.fromJson(json.decode(response.body));
+    User mPost = User.fromJson(json.decode(response.body));
 
     return mPost;
   } else {

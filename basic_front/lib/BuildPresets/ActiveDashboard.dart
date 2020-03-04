@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../ChildAddition/AddChild.dart';
 import '../Structs/Choice.dart';
-import '../Structs/Volunteer.dart';
 
 
 final List<int> colorCodes = <int>[600, 500];

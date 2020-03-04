@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:basic_front/Structs/Profile.dart';
-import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

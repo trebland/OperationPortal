@@ -8,6 +8,8 @@ namespace API.Models
     public class BusModel
     {
         public int Id { get; set; }
+        public int DriverId { get; set; }
+        public string DriverName { get; set; }
         public string Name { get; set; }
         public string Route { get; set; }
         public DateTime LastOilChange { get; set; }

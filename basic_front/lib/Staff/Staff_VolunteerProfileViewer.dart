@@ -1,10 +1,11 @@
 import 'package:basic_front/BuildPresets/Volunteer_ProfileViewer.dart';
+import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
 
 class Staff_VolunteerProfileViewer_Page extends StatefulWidget {
-  Staff_VolunteerProfileViewer_Page({Key key, this.title}) : super(key: key);
+  Staff_VolunteerProfileViewer_Page({Key key, this.volunteer}) : super(key: key);
 
-  final String title;
+  final Volunteer volunteer;
 
   @override
   Staff_VolunteerProfileViewer_State createState() => Staff_VolunteerProfileViewer_State();
@@ -20,13 +21,13 @@ class Staff_VolunteerProfileViewer_State extends State<Staff_VolunteerProfileVie
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Volunteer Profile'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          buildPictureNameRow_Volunteer(widget.title),
+          buildPictureNameRow_Volunteer(widget.volunteer.firstName + " " + widget.volunteer.lastName),
           buildFirstRowInfo(),
         ],
       ),

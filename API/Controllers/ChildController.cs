@@ -95,8 +95,8 @@ namespace API.Controllers
 
         [Route("~/api/child-creation")]
         [HttpPost]
-        // Required input: first name, last name, bus, class
-        public async Task<IActionResult> CreateChild(ChildModel child)
+        // Required input: contact number, parent name, child first name
+        public async Task<IActionResult> CreateChild(PostChildCreationModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -108,24 +108,19 @@ namespace API.Controllers
             }
 
             List<String> missingParameters = new List<String>();
-            if (child.FirstName == null)
+            if (model.FirstName == null)
             {
                 missingParameters.Add("first name");
             }
 
-            if (child.LastName == null)
+            if (model.ParentName == null)
             {
-                missingParameters.Add("last name");
+                missingParameters.Add("parent name");
             }
 
-            if (child.Bus == null || child.Bus.Id == null)
+            if (model.ContactNumber == null)
             {
-                missingParameters.Add("bus id");
-            }
-
-            if (child.Class == null || child.Class.Id == null)
-            {
-                missingParameters.Add("class id");
+                missingParameters.Add("contact number");
             }
 
             if (missingParameters.Count != 0)
@@ -138,7 +133,7 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 return new JsonResult(new
                 {
-                    Message = repo.CreateChild(child)
+                    Message = repo.CreateChild(model)
                 });
             }
             catch (Exception exc)
@@ -152,7 +147,7 @@ namespace API.Controllers
 
         [Route("~/api/child-edit")]
         [HttpPost]
-        public async Task<IActionResult> EditChild(ChildModel child)
+        public async Task<IActionResult> EditChild(PostChildEditModel child)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
@@ -171,19 +166,27 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                ChildModel updatedChild = repo.EditChild(child);
-                return new JsonResult(new ChildModel
+                PostChildEditModel updatedChild = repo.EditChild(child);
+                return new JsonResult(new PostChildEditModel
                 {
                     Id = updatedChild.Id,
                     // Fields that can be updated:
                     FirstName = updatedChild.FirstName,
                     LastName = updatedChild.LastName,
+                    PreferredName = updatedChild.LastName,
+                    ContactNumber = updatedChild.ContactNumber,
+                    ParentName = updatedChild.ParentName,
+                    BusId = updatedChild.BusId,
+                    Birthday = updatedChild.Birthday,
                     Gender = updatedChild.Gender,
                     Grade = updatedChild.Grade,
-                    Birthday = updatedChild.Birthday,
-                    Bus = updatedChild.Bus,
-                    Class = updatedChild.Class,
-                    Picture = updatedChild.Picture
+                    ParentalWaiver = updatedChild.ParentalWaiver,
+                    ClassId = updatedChild.ClassId,
+                    Picture = updatedChild.Picture,
+                    BusWaiver = updatedChild.BusWaiver,
+                    HaircutWaiver = updatedChild.HaircutWaiver,
+                    ParentalEmailOptIn = updatedChild.ParentalEmailOptIn,
+                    OrangeShirtStatus = updatedChild.OrangeShirtStatus
                 });
             }
             catch (Exception exc)
@@ -216,18 +219,60 @@ namespace API.Controllers
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                ChildModel child = repo.GetChild(model.Id);
-                return new JsonResult(new ChildModel
+                PostChildEditModel child = repo.GetChild(model.Id);
+                return new JsonResult(new PostChildEditModel
                 {
                     Id = child.Id,
                     FirstName = child.FirstName,
                     LastName = child.LastName,
+                    PreferredName = child.LastName,
+                    ContactNumber = child.ContactNumber,
+                    ParentName = child.ParentName,
+                    BusId = child.BusId,
+                    Birthday = child.Birthday,
                     Gender = child.Gender,
                     Grade = child.Grade,
-                    Birthday = child.Birthday,
-                    Bus = child.Bus,
-                    Class = child.Class,
-                    //Picture = child.Picture
+                    ParentalWaiver = child.ParentalWaiver,
+                    ClassId = child.ClassId,
+                    Picture = child.Picture,
+                    BusWaiver = child.BusWaiver,
+                    HaircutWaiver = child.HaircutWaiver,
+                    ParentalEmailOptIn = child.ParentalEmailOptIn,
+                    OrangeShirtStatus = child.OrangeShirtStatus
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/child")]
+        [HttpDelete]
+        public async Task<IActionResult> ChildDeletion([FromQuery]IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteChild(model.Id)
                 });
             }
             catch (Exception exc)
@@ -432,7 +477,6 @@ namespace API.Controllers
             }
         }
 
-        // TODO: Change to occ's email
         [Route("~/api/note")]
         [HttpPost]
         public async Task<IActionResult> Note(PostNoteModel model)
@@ -471,7 +515,7 @@ namespace API.Controllers
             {
                 Utilities.GenerateMissingInputMessage(missingParameters);
             }
-            
+
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
@@ -485,8 +529,11 @@ namespace API.Controllers
                     " note was written by " + model.Author + ".";
 
                 String subject = "New note: " + childName + " in class " + className + " - " + model.Priority + ".";
-                await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
-                
+
+
+                // TODO: Change to occ's email
+                // await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
+
                 repo.AddNote(model.Author, model.ChildId, model.Content);
 
                 return new JsonResult(new
@@ -571,38 +618,181 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Lists all classes stored in the system
-        /// </summary>
-        /// <returns>If an error occurred, an error message.  Otherwise, a blank error message and a JSON-formatted array of classes.</returns>
-        [Route("~/api/class-list")]
-        [HttpGet]
-        public async Task<IActionResult> ClassList()
+        [Route("~/api/note")]
+        [HttpDelete]
+        public async Task<IActionResult> NoteDeletion([FromQuery]IdModel model)
         {
             var user = await userManager.GetUserAsync(User);
-            ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-            List<ClassModel> classes;
-
-            // Ensure that ONLY staff accounts have access to this API endpoint
-            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
-                return Utilities.ErrorJson("Not authorized");
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("note id");
             }
 
             try
             {
-                classes = repo.GetClasses();
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteNote(model.Id)
+                });
             }
-            catch (Exception e)
+            catch (Exception exc)
             {
-                return Utilities.ErrorJson(e.Message);
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relation")]
+        [HttpPost]
+        public async Task<IActionResult> Relation(RelationModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
             }
 
-            return new JsonResult(new
+            List<String> missingParameters = new List<String>();
+            int missingIds = 0;
+            if (model.ChildId1 == 0)
             {
-                Error = "",
-                classes = classes
-            });
+                missingIds++;
+            }
+
+            if (model.ChildId2 == 0)
+            {
+                missingIds++;
+            }
+
+            if (model.Relation == null)
+            {
+                missingParameters.Add("relationship");
+            }
+
+            if (missingIds > 0)
+            {
+                missingParameters.Add(missingIds + " more child id" + (missingIds == 2 ? "s" : ""));
+            }
+
+            if (missingParameters.Count > 0)
+            {
+                return Utilities.GenerateMissingInputMessage(missingParameters);
+            }
+
+            if (model.ChildId1 == model.ChildId2)
+            {
+                return new JsonResult(new
+                {
+                    Error = "Children ids cannot be the same."
+                });
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.AddRelation(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relations")]
+        [HttpGet]
+        public async Task<IActionResult> Relations([FromQuery] IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("child id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Relatives = repo.GetRelations(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/relation")]
+        [HttpDelete]
+        public async Task<IActionResult> Relation(DeleteRelationModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model.ChildId1 == 0 && model.ChildId2 == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("2 more child ids are required.");
+            }
+
+            if (model.ChildId1 == 0 || model.ChildId2 == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("1 more child id is required.");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Message = repo.DeleteRelation(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
         }
 
         /// <summary>
