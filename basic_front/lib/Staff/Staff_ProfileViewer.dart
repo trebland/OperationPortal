@@ -30,9 +30,6 @@ class Staff_ProfileViewer_Page extends StatefulWidget {
 class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
   final suspensionController = TextEditingController();
-  bool isAddingNote = false;
-
-  List<String> notes = ["Doesn't play well with Henry", "Loves Juice", "Dislikes Soccer", "Likes Monopoly"];
 
   Storage storage;
 

@@ -46,7 +46,7 @@ DateTime parseBirthday (String birthday)
 
 int calculateBirthday(String birthday)
 {
-  return (DateTime.now().difference(parseBirthday(birthday.split(' ')[0])).inDays / 365.25).round();
+  return (DateTime.now().difference(parseBirthday(birthday.split(' ')[0])).inDays ~/ 365.25);
 }
 
 Widget buildBirthdayAndGradeRow (String birthday, int grade)

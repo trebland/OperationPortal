@@ -5,6 +5,8 @@ import 'package:basic_front/BuildPresets/ActiveDashboard.dart';
 import 'package:basic_front/BuildPresets/AppBar.dart';
 import 'package:basic_front/ItemAddition.dart';
 import 'package:basic_front/ItemView.dart';
+import 'package:basic_front/REST/Get_RetrieveBuses.dart';
+import 'package:basic_front/REST/Get_RetrieveClasses.dart';
 import 'package:basic_front/REST/Get_RetrieveInventory.dart';
 import 'package:basic_front/REST/Get_RetrieveRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
@@ -13,7 +15,9 @@ import 'package:basic_front/REST/Get_RetrieveVolunteers.dart';
 import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
 import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
 import 'package:basic_front/Staff/Staff_VolunteerProfileViewer.dart';
+import 'package:basic_front/Structs/Bus.dart';
 import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/Class.dart';
 import 'package:basic_front/Structs/Item.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
@@ -165,6 +169,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   Storage storage;
   String token;
 
+  List<String> busIds = new List<String>();
+  List<String> classIds = new List<String>();
+
   List<Volunteer> displayVolunteers = new List<Volunteer>();
   List<Volunteer> volunteers = new List<Volunteer>();
   List<Volunteer> volunteerData = new List<Volunteer>();
@@ -181,6 +188,38 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   List<Item> items = new List<Item>();
   List<Item> itemData = new List<Item>();
 
+  void call_GetRetrieveBuses ()
+  {
+    List<String> tempList = new List<String>();
+    tempList.add("Select Route");
+    storage.readToken().then((value){
+      RetrieveBuses(value).then((value) {
+        for(Bus b in value)
+          tempList.add('${b.id}');
+
+        setState(() {
+          busIds = tempList;
+        });
+      });
+    });
+  }
+
+  void call_GetRetrieveClasses ()
+  {
+    List<String> tempList = new List<String>();
+    tempList.add("Select Class");
+    storage.readToken().then((value){
+      RetrieveClasses(value).then((value) {
+        for(Class c in value)
+          tempList.add('${c.id}');
+
+        setState(() {
+          classIds = tempList;
+        });
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -196,6 +235,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     storage.readToken().then((value) {
       token = value;
     });
+
+    call_GetRetrieveBuses();
+    call_GetRetrieveClasses();
   }
 
   @override
@@ -215,6 +257,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
        ),
        onPressed: () {
          setState(() {
+           call_GetRetrieveBuses();
+           call_GetRetrieveClasses();
          });
        },
      );
@@ -229,7 +273,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
   int calculateBirthday(Child child)
   {
-    return (DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays / 365.25).round();
+    return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
   }
 
   @override
@@ -504,7 +548,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                               busRouteController.text = newValue;
                             });
                           },
-                          items: <String>["Select Route", "1", "2", "3", "4"]
+                          items: busIds
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -556,7 +600,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                               classIdController.text = newValue;
                             });
                           },
-                          items: <String>["Select Class", "1", "2", "3"]
+                          items: classIds
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
