@@ -6,11 +6,14 @@ import 'package:basic_front/BuildPresets/AppBar.dart';
 import 'package:basic_front/REST/Get_RetrieveRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveUser.dart';
+import 'package:basic_front/REST/Get_RetrieveVolunteers.dart';
 import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
 import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
+import 'package:basic_front/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:basic_front/Structs/Child.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
+import 'package:basic_front/Structs/User.dart';
 import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +81,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   TabController _tabController;
   Storage storage;
   String token;
+
+  List<Volunteer> displayVolunteers = new List<Volunteer>();
+  List<Volunteer> volunteers = new List<Volunteer>();
+  List<Volunteer> volunteerData = new List<Volunteer>();
 
   List<Child> displayChildren = new List<Child>();
   List<Child> children = new List<Child>();
@@ -194,7 +201,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                 ),
                 FutureBuilder(
                     future: RetrieveUser(barcode, context),
-                    builder: (BuildContext context, AsyncSnapshot<Volunteer> snapshot) {
+                    builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:
                           return new Text('Issue Posting Data');
@@ -328,8 +335,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                             );
                           }
                           break;
-                      default:
-                        return null;
+                        default:
+                          return null;
                       }
                     }
                 ),
@@ -337,8 +344,88 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ),
           );
         else if(tab.text == "Volunteers")
-          return Center(
-              child: buildVolunteerList(),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                child: IntrinsicHeight(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>
+                      [
+                        Flexible(
+                          child: TextField(
+                            onChanged: (value) {
+                              filterSearchResults(value);
+                            },
+                            controller: searchController,
+                            decoration: InputDecoration(
+                                labelText: "Search",
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                          ),
+                        ),
+                      ]
+                  ),
+                ),
+                margin: EdgeInsets.all(10),
+              ),
+              FutureBuilder(
+                  future: storage.readToken().then((value) {
+                    return RetrieveVolunteers(value, "${DateTime.now().toLocal()}".split(' ')[0]);
+                  }),
+                  builder: (BuildContext context, AsyncSnapshot<List<Volunteer>> snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                        return new Text('Issue Posting Data');
+                      case ConnectionState.waiting:
+                        return new Center(child: new CircularProgressIndicator());
+                      case ConnectionState.active:
+                        return new Text('');
+                      case ConnectionState.done:
+                        if (snapshot.hasError) {
+                          volunteers = null;
+                          return Center(
+                            child: Text("Unable to Fetch Volunteers"),
+                          );
+                        } else {
+                          volunteerData = snapshot.data;
+                          volunteers = displayVolunteers.length > 0 ? displayVolunteers : snapshot.data;
+                          return Expanded(
+                            child: new ListView.builder(
+                              itemCount: volunteers.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  child: ListTile(
+                                    leading: Container(
+                                      child: CircleAvatar(
+                                        backgroundImage: AssetImage('OCC_LOGO.png'),
+                                      ),
+                                    ),
+                                    title: Text('${volunteers[index].firstName} ' + '${volunteers[index].lastName}',
+                                        style: TextStyle(color: Colors.white)),
+                                    onTap: ()
+                                    {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_VolunteerProfileViewer_Page(volunteer: volunteers[index],)));
+                                    },
+                                    dense: false,
+                                  ),
+                                  color: Colors.blue[colorCodes[index%2]],
+                                );
+                              },
+                            ),
+                          );
+                        }
+                        break;
+                      default:
+                        return null;
+                    }
+                  }
+              ),
+            ],
           );
         else if(tab.text == "Roster")
           return Column(
