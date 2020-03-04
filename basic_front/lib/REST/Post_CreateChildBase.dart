@@ -8,21 +8,29 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> CreateChildBase (String token, String firstName, String lastName, int classId, int busId, String childImagePath, BuildContext context) async {
+Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
   Uint8List bytes = (await File(childImagePath).readAsBytes());
-  print(await File(childImagePath).readAsBytes());
-  // Image image = await decodeImageFromList(bytes);
+  var body;
 
-  var body = json.encode({
-    'FirstName': firstName,
-    'LastName': lastName,
-    'Class': { 'Id': '$classId' },
-    'Bus': { 'Id': '$busId' },
-    'Picture': bytes,
-  });
-
+  if (lastName.isEmpty)
+    body = json.encode({
+      'FirstName': firstName,
+      'ParentName': parentName,
+      'ContactNumber': contactNumber,
+      //'Bus': { 'Id': '$busId' },
+      'Picture': bytes,
+    });
+  else
+    body = json.encode({
+      'FirstName': firstName,
+      'LastName': lastName,
+      'ParentName': parentName,
+      'ContactNumber': contactNumber,
+      //'Bus': { 'Id': '$busId' },
+      'Picture': bytes,
+    });
 
 
   var response = await http.post(mUrl,

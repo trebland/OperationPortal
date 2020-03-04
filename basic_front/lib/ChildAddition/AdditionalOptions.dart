@@ -9,7 +9,7 @@ import '../REST/Post_CreateChildFull.dart';
 import '../Storage.dart';
 
 class AdditionalOptionsPage extends StatefulWidget {
-  AdditionalOptionsPage({Key key, this.firstName, this.lastName, this.classId, this.routeId}) : super(key: key);
+  AdditionalOptionsPage({Key key, this.firstName, this.lastName, this.parentName, this.contactNumber, this.imagePath}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,21 +22,24 @@ class AdditionalOptionsPage extends StatefulWidget {
 
   final String firstName;
   final String lastName;
-  final int classId;
-  final int routeId;
+  final String parentName;
+  final String contactNumber;
+  final String imagePath;
 
   @override
   AdditionalOptionsState createState() => AdditionalOptionsState();
 }
 
-enum SingingCharacter { lafayette, jefferson }
 enum Gender { male, female, other}
+
 
 class AdditionalOptionsState extends State<AdditionalOptionsPage> {
 
+
+  final preferredNameController = new TextEditingController();
   final genderController = new TextEditingController();
   final birthdayController = new TextEditingController();
-  final gradeController = new TextEditingController();
+  final busController = new TextEditingController();
 
   DateTime selectedDate;
   int currentYear;
@@ -44,7 +47,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
 
   Storage storage;
 
-  String gradeDropdownValue;
+  String busDropdownValue;
 
   Gender _gender;
 
@@ -54,7 +57,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     currentYear = DateTime.now().year;
     previousYears = currentYear - 25;
 
-    gradeDropdownValue = "Select Grade";
+    busDropdownValue = "Select Bus Id";
 
     selectedDate = DateTime.now();
   }
@@ -89,6 +92,56 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
       return true;
     else
       return false;
+  }
+
+  Widget buildPreferredNameRow()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.person_outline,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  controller: preferredNameController,
+                  decoration: new InputDecoration(
+                    labelText: 'Parent Name',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
   }
 
   Widget buildGenderColumn ()
@@ -254,7 +307,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     }
   });
 
-  Widget buildGradeRow()
+  Widget buildBusRow()
   {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -268,7 +321,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                 [
                   Container(
                     child: Icon(
-                      Icons.grade,
+                      Icons.directions_bus,
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
@@ -283,10 +336,10 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   Flexible(
                     child: TextField(
                       textAlign: TextAlign.left,
-                      controller: gradeController,
+                      controller: busController,
                       decoration: new InputDecoration(
-                        labelText: "Grade",
-                        hintText: "Grade " + '$gradeDropdownValue',
+                        labelText: "Bus Id",
+                        hintText: "Bus Id: " + '$busDropdownValue',
                         border: new OutlineInputBorder(
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(20),
@@ -309,7 +362,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
         ),
         Container(
           child: DropdownButton<String>(
-            value: gradeDropdownValue,
+            value: busDropdownValue,
             icon: Icon(Icons.arrow_downward),
             iconSize: 24,
             elevation: 16,
@@ -322,12 +375,12 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
             ),
             onChanged: (String newValue) {
               setState(() {
-                gradeDropdownValue = newValue;
+                busDropdownValue = newValue;
               });
-              if (gradeDropdownValue != "Select Grade")
-                gradeController.text = gradeDropdownValue;
+              if (busDropdownValue != "Select Grade")
+                busController.text = busDropdownValue;
               else
-                gradeController.text = "";
+                busController.text = "";
             },
             items: <String>["Select Grade", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
                 .map<DropdownMenuItem<String>>((String value) {
@@ -358,7 +411,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           onPressed: ()
           {
             storage.readToken().then((value) {
-              CreateChildFull(value, widget.firstName, widget.lastName, widget.classId, widget.routeId, genderController.text, gradeController.text, birthdayController.text, context);
+              CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber, widget.imagePath, genderController.text, busController.text, birthdayController.text, context);
             });
           },
           color: Colors.amber,
@@ -386,7 +439,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                 children: <Widget>[
                   buildBirthdayColumn(),
                   buildGenderColumn(),
-                  buildGradeRow(),
+                  buildBusRow(),
                   buildButtonBar(context),
                 ],
               ),

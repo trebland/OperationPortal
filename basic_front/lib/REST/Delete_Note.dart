@@ -7,31 +7,32 @@ import 'package:http/http.dart' as http;
 
 Future<void> DeleteNote (String token, int id, BuildContext context)
 async {
-  var mUrl = "https://www.operation-portal.com/api/note" + "?id=" + '$id';
+  final url = Uri.parse("https://www.operation-portal.com/api/note");
 
-  Map<String, String> headers = {
+  final request = http.Request("DELETE", url);
+
+  request.headers.addAll(<String, String>{
     'Content-type': 'application/json',
     'Authorization': 'Bearer ' + token,
-  };
+  });
+  request.body = jsonEncode({"id": id});
 
-  var response = await http.delete(mUrl,
-      headers: headers);
+  final response = await request.send();
 
-  if (response.statusCode == 200) {
-
-    Fluttertoast.showToast(
-        msg: "Note Deleted",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
-    Navigator.pop(context);
-  } else {
-
+  if (response.statusCode != 200)
     return null;
-  }
+  else
+    {
+      Fluttertoast.showToast(
+          msg: "Note Deleted",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      Navigator.pop(context);
+    }
 }

@@ -151,6 +151,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
         ],
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           tabs: myTabs,
         ),
       ),
@@ -243,66 +244,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                               textAlign: TextAlign.center,
                                               style: TextStyle(fontSize: 28, color: Colors.white),
                                             ),
-                                          ),
-                                        ]
-                                    ),
-                                  ),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: new BorderRadius.all(
-                                        new Radius.circular(20)
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(10),
-                                  margin: EdgeInsets.all(10),
-                                ),
-                                Container(
-                                  child: IntrinsicHeight(
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: <Widget>
-                                        [
-                                          Container(
-                                            child: Text(
-                                              "Access Profile Notes",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(fontSize: 20, color: Colors.white),
-                                            ),
-                                          ),
-                                          Checkbox(
-                                              value: accessProfileNotes,
-                                              onChanged: _onAccessProfileNotesChanged
-                                          ),
-                                        ]
-                                    ),
-                                  ),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: new BorderRadius.all(
-                                        new Radius.circular(20)
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(10),
-                                  margin: EdgeInsets.all(10),
-                                ),
-                                Container(
-                                  child: IntrinsicHeight(
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: <Widget>
-                                        [
-                                          Container(
-                                            child: Text(
-                                              "Edit Profile Notes",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(fontSize: 20, color: Colors.white),
-                                            ),
-                                          ),
-                                          Checkbox(
-                                              value: editProfileNotes,
-                                              onChanged: _onEditProfileNotesChanged
                                           ),
                                         ]
                                     ),
@@ -604,7 +545,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                   subtitle: Text('${children[index].grade != null ? children[index].grade : 'No Grade'}', style: TextStyle(color: Colors.white)),
                                   onTap: ()
                                   {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(child: children[index])));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(profile: widget.profile, child: children[index])));
                                   },
                                   dense: false,
                                 ),
