@@ -58,7 +58,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     Tab(text: 'Volunteers'),
     Tab(text: 'Roster'),
     Tab(text: 'Suspended'),
-    Tab(text: 'Inventory'),
+    Tab(text: 'Inventory Request'),
   ];
 
   void filterVolunteerResults(String query) {
