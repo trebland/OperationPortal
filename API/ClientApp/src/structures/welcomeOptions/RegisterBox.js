@@ -10,7 +10,8 @@ export class RegisterBox extends Component {
         firstname: "",
         lastname: "",
         email: "",
-        password: ""
+        password: "",
+        redirectDash: false
         // redirect: false,
         // result: ""
       };
@@ -28,36 +29,53 @@ export class RegisterBox extends Component {
     }
 
     onSubmit = (e) => {
-      try{
-        fetch('https://www.operation-portal.com' + '/api/auth/register' , {
-        method: "POST",
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(this.state)
-        })
-        .then((response) => {
-          console.log(response.status)
-          if((response.status === 200 || response.status === 201)) {
-            console.log(":)")
-            this.setState({redirect: true})
-            return response.text()
-          } else if ((response.status === 401 || response.status === 400 || response.status === 500 )) {
-            console.log('hit else if')
-            // return this.setState({
-            //   redirect: false,
-            //   result: 'Username already exists.'
-            // })
-          }
-        })
-      }catch(e) {
-        console.log("Did not connect")
-      }
+        try{
+            fetch('https://www.operation-portal.com/api/auth/register' , {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.state)
+            })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                },
+                (error) => {
+                    this.setState({
+                      isLoaded: true,
+                      error
+                    });
+                }
+            )
+        }
+        catch(e) {
+            console.log("Did not connect")
+        }
     }
+
+    setRedirectDash = () => {
+        this.setState({
+            redirectDash: true
+        })
+    }
+
 
     renderRedirect = () => {
       if (this.state.redirect) {
-        return <Redirect to='/login' />
+        return <Redirect to={{
+            pathname: '/login',
+            state: {
+
+            }
+        }}/>
+      }
+      else if(this.state.redirectDash) {
+          return <Redirect to={{
+              pathname: '/'
+          }}/>
       }
     }
 
@@ -91,9 +109,12 @@ export class RegisterBox extends Component {
   
     render() {
       return (
-        <div className="inner-container">
-          <div className="header">
-            <h1 style={{textAlign: "center"}}>Register</h1>
+        <div>
+            <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDash}>
+                Back to Dashboard
+            </Button>
+          <div>
+            <h1 style={styling.header}>Register</h1>
           </div>
           <div style={styling.outerDiv}>
 
@@ -119,11 +140,12 @@ export class RegisterBox extends Component {
                 </FormGroup>
 
                 <div>
-                  {this.renderRedirect()}
-                  <Button type="submit" size="lg" onClick={this.onSubmit} >
-                    Submit
-                  </Button>
-                  <p>{this.state.result}</p>
+                    <center>
+                        {this.renderRedirect()}
+                        <Button type="submit" size="lg" onClick={this.onSubmit} >
+                            Submit
+                        </Button>
+                    </center>
                 </div>
 
               </Form>
@@ -136,11 +158,20 @@ export class RegisterBox extends Component {
 
   const styling = {
     formDiv: {
-      width: '50%',
+        width: '50%',
     },
     outerDiv: {
-      display: 'flex',
-      justifyContent: 'center',
-      margin: '8%'
+        display: 'flex',
+        justifyContent: 'center',
+        margin: '8%'
+    },
+    butt: {
+        marginTop: '15px',
+        marginLeft: '15px'
+    },
+    header: {
+        textAlign: 'center',
+        justifyContent: 'center',
+        marginTop: '40px'
     }
 }

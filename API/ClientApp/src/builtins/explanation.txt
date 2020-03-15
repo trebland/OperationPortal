@@ -1,0 +1,3 @@
+create-react-app provided examples of how to fetch data on the api and I did not want to delete the premades.
+
+moved everything that was a component into the builtins folder so everything wouldnt get so cluttered 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
+import { Form, FormControl, FormGroup, FormLabel, Button, Container } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
 export class LoginBox extends Component {
@@ -12,7 +12,8 @@ export class LoginBox extends Component {
       result: "",
       redirect: false,
       jwt: "",
-      loggedin: false
+      loggedin: false,
+      redirectDash: false
     };
     this.handleUserNameChange = this.handleUserNameChange.bind(this)
     this.handlePasswordChange = this.handlePasswordChange.bind(this)
@@ -79,6 +80,12 @@ export class LoginBox extends Component {
     })
   }
 
+  setRedirectDash = () => {
+    this.setState({
+      redirectDash: true,
+    })
+  }
+
   renderRedirect = () => {
     if (this.state.redirect && this.state.username === "admin") {
       return <Redirect to={{
@@ -100,6 +107,13 @@ export class LoginBox extends Component {
         }}/>
       )
     }
+    else if(this.state.redirectDash) {
+      return (
+        <Redirect to={{
+          pathname: '/',
+        }}/>
+      )
+    }
   }
 
   componentWillUnmount() {
@@ -113,46 +127,56 @@ export class LoginBox extends Component {
 
   render() {
     return (
-      <div>
-        <div style={styling.header}>
-          <h1>Login</h1>
-        </div>
-        <div className="box" style={styling.outerDiv}>
-          <Form style={styling.formDiv}>
-            <FormGroup>
-              <FormLabel>Username</FormLabel>
-              <FormControl type="username" placeholder="username" value={this.state.username} onChange={this.handleUserNameChange} />
-            </FormGroup>
+        <div>
+          <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDash}>
+            Back to Dashboard
+          </Button>
+          <div style={styling.header}>
+            <h1>Login</h1>
+          </div>
+          <div className="box" style={styling.outerDiv}>
+              <Form style={styling.formDiv}>
+                  <FormGroup>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl type="username" placeholder="username" value={this.state.username} onChange={this.handleUserNameChange} />
+                  </FormGroup>
 
-            <FormGroup controlId="formBasicPassword">
-              <FormLabel>Password</FormLabel>
-              <Form.Control type="password" placeholder="password"  value={this.state.password} onChange={this.handlePasswordChange}/>
-            </FormGroup>
-            <p>{this.state.result}</p>
-            <div>
-              {this.renderRedirect()}
-              <Button type="submit" size="lg" onClick={this.setRedirect} >
-                Submit
-              </Button>
-            </div>
-          </Form>
+                  <FormGroup controlId="formBasicPassword">
+                      <FormLabel>Password</FormLabel>
+                      <Form.Control type="password" placeholder="password"  value={this.state.password} onChange={this.handlePasswordChange}/>
+                  </FormGroup>
+                  <p>{this.state.result}</p>
+                  <div>
+                      <center>
+                          {this.renderRedirect()}
+                          <Button type="submit" size="lg" onClick={this.setRedirect} style={{justifyContent: 'center'}}>
+                              Submit
+                          </Button>
+                      </center>
+                  </div>
+              </Form>
+          </div>
         </div>
-      </div>
     );
   }
 }
 
 const styling = {
   formDiv: {
-    width: '50%',
+      width: '50%',
   },
   outerDiv: {
-    display: 'flex',
-    justifyContent: 'center',
-    margin: '8%'
+      display: 'flex',
+      justifyContent: 'center',
+      margin: '8%'
   },
   header: {
-    justifyContent: 'center',
-    marginTop: '30px'
+      textAlign: 'center',
+      justifyContent: 'center',
+      marginTop: '40px'
+  },
+  butt: {
+    marginTop: '15px',
+    marginLeft: '15px'
   }
 }
