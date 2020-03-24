@@ -4,10 +4,10 @@ import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:http/http.dart' as http;
 
 
-Future<ReadVolunteers> GetVolunteers (String token, String currentDay)
+Future<List<Volunteer>> RetrieveVolunteers (String token, String currentDay)
 async {
 
-  var mUrl = "https://www.operation-portal.com/api/volunteers-for-day" + "?Day=" + currentDay;
+  var mUrl = "https://www.operation-portal.com/api/volunteers-for-day?Day=2020-03-04&CheckedIn=true";
 
 
   Map<String, String> headers = {
@@ -25,7 +25,7 @@ async {
   if (response.statusCode == 200) {
     ReadVolunteers mPost = ReadVolunteers.fromJson(json.decode(response.body));
 
-    return mPost;
+    return mPost.volunteers;
 
   } else {
 
@@ -40,7 +40,7 @@ class ReadVolunteers {
 
   factory ReadVolunteers.fromJson(Map<String, dynamic> json) {
     return ReadVolunteers(
-      volunteers: json['busRoster'].map<Volunteer>((value) => new Volunteer.fromJson(value)).toList(),
+      volunteers: (json['volunteers'] != null) ? (json['volunteers'].map<Volunteer>((value) => new Volunteer.fromJson(value)).toList()) : (List<Volunteer>()),
     );
   }
 }

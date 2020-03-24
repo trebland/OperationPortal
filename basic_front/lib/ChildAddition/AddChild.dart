@@ -37,8 +37,10 @@ class AddChildState extends State<AddChildPage>
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  final classIdController = TextEditingController();
-  final busIdController = TextEditingController();
+  final parentNameController = TextEditingController();
+  final contactNumberController = TextEditingController();
+
+  final _phoneFormatter = _UsNumberTextInputFormatter();
 
   Storage storage;
   String childImagePath;
@@ -71,9 +73,23 @@ class AddChildState extends State<AddChildPage>
      storage = new Storage();
   }
 
+  String parseNumber (String number)
+  {
+    String parsedNumber = "";
+    number.runes.forEach((int rune) {
+      var character=new String.fromCharCode(rune);
+      if (rune > 9)
+      {
+        character = "";
+      }
+      parsedNumber = parsedNumber + character;
+    });
+    return parsedNumber;
+  }
+
   bool filledOut()
   {
-    if (firstNameController.text == "")
+    if (firstNameController.text.isEmpty)
       {
         Fluttertoast.showToast(
             msg: 'First Name is mandatory',
@@ -87,10 +103,10 @@ class AddChildState extends State<AddChildPage>
 
         return false;
       }
-    else if (lastNameController.text == "")
+    else if (parentNameController.text.isEmpty)
       {
         Fluttertoast.showToast(
-            msg: 'Last Name is mandatory',
+            msg: 'Parent name is mandatory',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIos: 1,
@@ -101,24 +117,10 @@ class AddChildState extends State<AddChildPage>
 
         return false;
       }
-    else if (classIdController.text == "")
+    else if (contactNumberController.text.length != 14)
       {
         Fluttertoast.showToast(
-            msg: 'Class Id is mandatory',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIos: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0
-        );
-
-        return false;
-      }
-    else if (busIdController.text == "")
-      {
-        Fluttertoast.showToast(
-            msg: 'Bus Id is mandatory',
+            msg: 'Contact number is mandatory',
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIos: 1,
@@ -132,7 +134,7 @@ class AddChildState extends State<AddChildPage>
     else if (childImagePath == null)
     {
       Fluttertoast.showToast(
-          msg: 'Child image is mandatory',
+          msg: 'Child Image is mandatory',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -248,7 +250,7 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
-  Widget buildClassRow()
+  Widget buildParentNameRow()
   {
     return Container(
       child: IntrinsicHeight(
@@ -259,7 +261,7 @@ class AddChildState extends State<AddChildPage>
             [
               Container(
                 child: Icon(
-                  Icons.class_,
+                  Icons.person_outline,
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
@@ -274,12 +276,9 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
-                  controller: classIdController,
-                  inputFormatters: [
-                    WhitelistingTextInputFormatter.digitsOnly,
-                  ],
+                  controller: parentNameController,
                   decoration: new InputDecoration(
-                    labelText: 'Class',
+                    labelText: 'Parent Name',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -301,7 +300,7 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
-  Widget buildRouteRow()
+  Widget buildContactNumberRow()
   {
     return Container(
       child: IntrinsicHeight(
@@ -312,7 +311,7 @@ class AddChildState extends State<AddChildPage>
             [
               Container(
                 child: Icon(
-                  Icons.directions_bus,
+                  Icons.phone,
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
@@ -327,12 +326,14 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
-                  controller: busIdController,
+                  controller: contactNumberController,
                   inputFormatters: [
                     WhitelistingTextInputFormatter.digitsOnly,
+                    _phoneFormatter,
+                    LengthLimitingTextInputFormatter(14),
                   ],
                   decoration: new InputDecoration(
-                    labelText: 'Bus Route',
+                    labelText: 'Contact Number',
                     border: new OutlineInputBorder(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
@@ -415,7 +416,7 @@ class AddChildState extends State<AddChildPage>
           {
             if (filledOut())
               Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
-                lastName: lastNameController.text, classId: int.parse(classIdController.text), routeId: int.parse(busIdController.text),)));
+                lastName: lastNameController.text, parentName: parentNameController.text, contactNumber: parseNumber(contactNumberController.text),)));
           },
         ),
         RaisedButton(
@@ -424,7 +425,7 @@ class AddChildState extends State<AddChildPage>
           {
             if (filledOut())
               storage.readToken().then((value) {
-                CreateChildBase(value, firstNameController.text, lastNameController.text, int.parse(classIdController.text), int.parse(busIdController.text), childImagePath, context);
+                CreateChildBase(value, firstNameController.text, lastNameController.text, parentNameController.text, parseNumber(contactNumberController.text), childImagePath, context);
               });
           },
           color: Colors.amber,
@@ -452,8 +453,8 @@ class AddChildState extends State<AddChildPage>
                 children: <Widget>[
                   buildFirstNameRow(),
                   buildLastNameRow(),
-                  buildClassRow(),
-                  buildRouteRow(),
+                  buildParentNameRow(),
+                  buildContactNumberRow(),
                   buildTakePicture(),
                   buildButtonBar(),
                 ],
@@ -462,6 +463,47 @@ class AddChildState extends State<AddChildPage>
           ),
         );
       },
+    );
+  }
+}
+
+/// Format incoming numeric text to fit the format of (###) ###-#### ##...
+class _UsNumberTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final int newTextLength = newValue.text.length;
+    int selectionIndex = newValue.selection.end;
+    int usedSubstringIndex = 0;
+    final StringBuffer newText = StringBuffer();
+    if (newTextLength >= 1) {
+      newText.write('(');
+      if (newValue.selection.end >= 1)
+        selectionIndex++;
+    }
+    if (newTextLength >= 4) {
+      newText.write(newValue.text.substring(0, usedSubstringIndex = 3) + ') ');
+      if (newValue.selection.end >= 3)
+        selectionIndex += 2;
+    }
+    if (newTextLength >= 7) {
+      newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
+      if (newValue.selection.end >= 6)
+        selectionIndex++;
+    }
+    if (newTextLength >= 11) {
+      newText.write(newValue.text.substring(6, usedSubstringIndex = 10) + ' ');
+      if (newValue.selection.end >= 10)
+        selectionIndex++;
+    }
+    // Dump the rest.
+    if (newTextLength >= usedSubstringIndex)
+      newText.write(newValue.text.substring(usedSubstringIndex));
+    return TextEditingValue(
+      text: newText.toString(),
+      selection: TextSelection.collapsed(offset: selectionIndex),
     );
   }
 }

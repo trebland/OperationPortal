@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:http/http.dart' as http;
 
-Future<ReadSuspensions> GetSuspendedChildren (String token)
+Future<List<SuspendedChild>> GetSuspendedChildren (String token)
 async {
   var mUrl = "https://www.operation-portal.com/api/suspensions";
 
@@ -18,7 +18,7 @@ async {
   if (response.statusCode == 200) {
     ReadSuspensions mGet = ReadSuspensions.fromJson(json.decode(response.body));
 
-    return mGet;
+    return mGet.suspended;
 
   } else {
 

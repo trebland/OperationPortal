@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:basic_front/Bus_Driver/BusDriver_ActiveDashboard.dart';
 import 'package:basic_front/Bus_Driver/BusDriver_InactiveDashboard.dart';
 import 'package:basic_front/Staff/Staff_ActiveDashboard.dart';
-import 'package:basic_front/Structs/Volunteer.dart';
+import 'package:basic_front/Structs/User.dart';
 import 'package:basic_front/Volunteer/Volunteer_ActiveDashboard.dart';
 import 'package:basic_front/Volunteer/Volunteer_InactiveDashboard.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
@@ -13,7 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<Volunteer> RetrieveUserAndPush (String token, BuildContext context) async {
+Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/auth/user";
 
   var response = await http.get(mUrl,
@@ -21,7 +21,7 @@ Future<Volunteer> RetrieveUserAndPush (String token, BuildContext context) async
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
-    Volunteer mPost = Volunteer.fromJson(json.decode(response.body));
+    User mPost = User.fromJson(json.decode(response.body));
 
     Fluttertoast.showToast(
         msg: mPost.profile.role,

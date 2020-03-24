@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:basic_front/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -7,7 +8,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../Bus_Driver/BusDriver_ActiveDashboard.dart';
 import '../REST/Get_RetrieveUser.dart';
 import '../Storage.dart';
-import '../Structs/Volunteer.dart';
 import '../Volunteer/Volunteer_ActiveDashboard.dart';
 import '../Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
 
@@ -27,10 +27,10 @@ class QRState extends State<QRPage>
 
   Future<void> checkStatus()
   async {
-    Volunteer volunteer = await RetrieveUser(widget.token, context);
+    User user = await RetrieveUser(widget.token, context);
     setState(() {
       Fluttertoast.showToast(
-          msg: 'Is Checked In?: ${volunteer.checkedIn}',
+          msg: 'Is Checked In?: ${user.checkedIn}',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -39,15 +39,15 @@ class QRState extends State<QRPage>
           fontSize: 16.0
       );
 
-      print(volunteer.profile.role);
-      if (volunteer.checkedIn)
+      print(user.profile.role);
+      if (user.checkedIn)
       {
-        if (volunteer.profile.role == "BusDriver")
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: volunteer.profile,)), (Route<dynamic> route) => false);
-        else if (volunteer.profile.role == "VolunteerCaptain")
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: volunteer.profile,)), (Route<dynamic> route) => false);
+        if (user.profile.role == "BusDriver")
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: user.profile,)), (Route<dynamic> route) => false);
+        else if (user.profile.role == "VolunteerCaptain")
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: user.profile,)), (Route<dynamic> route) => false);
         else
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: volunteer.profile,)),(Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: user.profile,)),(Route<dynamic> route) => false);
       }
     });
   }

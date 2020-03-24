@@ -23,7 +23,7 @@ class Volunteer_ProfileViewer_State extends State<Volunteer_ProfileViewer_Page> 
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildPictureNameRow_Child(widget.title),
-            buildBirthdayAndGradeRow(),
+            buildBirthdayAndGradeRow("", null),
           ],
         ),
     );

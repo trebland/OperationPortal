@@ -39,17 +39,13 @@ Future<List<Child>> RetrieveRoster (String token, String busId, String classId) 
   if (response.statusCode == 200) {
     ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
 
-    List<Child> children = new List<Child>();
+    if (mPost.intersectedChildren == null)
+      if (mPost.busChildren == null)
+        return mPost.classChildren;
+      else
+        return mPost.busChildren;
 
-    if (mPost.busChildren != null)
-      for (Child c in mPost.busChildren)
-        children.add(c);
-
-    if (mPost.classChildren != null)
-      for (Child c in mPost.classChildren)
-        children.add(c);
-
-    return children;
+    return mPost.intersectedChildren;
 
   } else {
 
@@ -61,13 +57,15 @@ class ReadChildren {
 
   List<Child> busChildren;
   List<Child> classChildren;
+  List<Child> intersectedChildren;
 
-  ReadChildren({this.busChildren, this.classChildren});
+  ReadChildren({this.busChildren, this.classChildren, this.intersectedChildren});
 
   factory ReadChildren.fromJson(Map<String, dynamic> json) {
     return ReadChildren(
       busChildren: json['busRoster'] != null ? json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
       classChildren: json['classRoster'] != null ? json['classRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
+      intersectedChildren: json['intersectionRoster'] != null ? json['intersectionRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
     );
   }
 }

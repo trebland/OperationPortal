@@ -5,9 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> CreateNote (String token, String author, int childId, String content, String priority, BuildContext context)
+Future<void> CreateInventory (String token, String name, int count, BuildContext context)
 async {
-  var mUrl = "https://www.operation-portal.com/api/note";
+  var mUrl = "https://www.operation-portal.com/api/inventory-create";
 
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -15,10 +15,8 @@ async {
   };
 
   var body = json.encode({
-    'author': author,
-    'childId': childId,
-    'content': content,
-    'priority': priority,
+    'name': name,
+    'count': count,
   });
 
   var response = await http.post(mUrl,
@@ -28,7 +26,7 @@ async {
   if (response.statusCode == 200) {
 
     Fluttertoast.showToast(
-        msg: "Note Added",
+        msg: "Item Added",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,

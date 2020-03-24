@@ -37,7 +37,7 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildPictureNameRow_Child(widget.title),
-            buildBirthdayAndGradeRow(),
+            buildBirthdayAndGradeRow("", null),
             Flexible(
               child: TextField(
                 textAlign: TextAlign.left,
