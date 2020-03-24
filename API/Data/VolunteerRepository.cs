@@ -515,6 +515,55 @@ namespace API.Data
         #region Volunteer job database access
 
         /// <summary>
+        /// Checks if volunteer jobs have been enabled in the database
+        /// </summary>
+        /// <returns>True or false</returns>
+        public bool AreVolunteerJobsEnabled()
+        {
+            string sql = "SELECT JobsEnabled FROM Settings LIMIT 1";
+            object result;
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    // Make the query
+                    con.Open();
+                    result = cmd.ExecuteScalar();
+                    con.Close();
+                }
+            }
+
+            if (result == null)
+            {
+                throw new Exception("JobsEnabled has not been set in the database.  Please ensure app settings have been properly set.");
+            }
+
+            return (bool)result;
+        }
+
+        /// <summary>
+        /// Toggles whether or not volunteer jobs are enabled in the database
+        /// </summary>
+        public void ToggleVolunteerJobs()
+        {
+            string sql = "UPDATE Settings SET JobsEnabled = NOT JobsEnabled";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates a job that volunteers can sign up for specifically
         /// </summary>
         /// <param name="job">A VolunteerJobModel object with the name, min, and max</param>

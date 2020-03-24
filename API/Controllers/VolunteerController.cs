@@ -958,7 +958,7 @@ namespace API.Controllers
 
             try
             {
-                 //enabled = repo.AreVolunteerJobsEnabled();
+                 enabled = repo.AreVolunteerJobsEnabled();
             }
             catch(Exception e)
             {
@@ -990,7 +990,7 @@ namespace API.Controllers
 
             try
             {
-                //enabled = repo.ToggleVolunteerJobs();
+                repo.ToggleVolunteerJobs();
             }
             catch (Exception e)
             {
