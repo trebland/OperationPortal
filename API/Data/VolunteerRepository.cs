@@ -20,6 +20,74 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Inserts a guest volunteer into the database
+        /// </summary>
+        /// <param name="guest">A GuestModel object containing the information to be inserted</param>
+        public void CreateGuestVolunteer(GuestVolunteerModel guest)
+        {
+            string sql = @"INSERT INTO Guest_Volunteers (FirstName, LastName, Email, Affiliation, Date) 
+                           VALUES (@fname, @lname, @email, @affiliation, @date) ";
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@fname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = guest.FirstName;
+                    cmd.Parameters.Add("@lname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = guest.LastName;
+                    cmd.Parameters.Add("@email", NpgsqlTypes.NpgsqlDbType.Varchar).Value = guest.Email;
+                    cmd.Parameters.Add("@affiliation", NpgsqlTypes.NpgsqlDbType.Varchar).Value = guest.Affiliation;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = guest.Date;
+
+
+                    // Make the query
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+        public List<GuestVolunteerModel> GetGuestVolunteers(DateTime date)
+        {
+            string sql = "SELECT * FROM Guest_Volunteers WHERE Date = @date";
+            DataTable dt = new DataTable();
+            NpgsqlDataAdapter da;
+            List<GuestVolunteerModel> list = new List<GuestVolunteerModel>();
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    // Make the query
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                list.Add(new GuestVolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["FirstName"].ToString(),
+                    LastName = dr["LastName"].ToString(),
+                    Email = dr["Email"].ToString(),
+                    Affiliation = dr["Affiliation"].ToString(),
+                    Date = Convert.ToDateTime(dr["Date"])
+                });
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Gets a specific volunteer by id
         /// </summary>
         /// <param name="id">The volunteer's id</param>
@@ -209,6 +277,39 @@ namespace API.Data
             return volunteers;
         }
 
+
+        /// <summary>
+        /// Checks if a user is registered as the teacher for some class
+        /// </summary>
+        /// <param name="id">The id of the volunteer to check</param>
+        /// <returns>True or false</returns>
+        public bool VolunteerIsClassTeacher(int id)
+        {
+            string sql = "SELECT id FROM Class_List WHERE TeacherId = @tid";
+            object result;
+
+            // Connect to DB
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                // Create and run Postgres command.
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@tid", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
+
+                    con.Open();
+                    result = cmd.ExecuteScalar();
+                    con.Close();
+                }
+            }
+
+            if (result == null || (int)result == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Gets the list of those whose role is above volunteer who have said they will not be present on a given day
         /// </summary>
@@ -222,7 +323,13 @@ namespace API.Data
             string sql = @"SELECT V.* 
                            FROM Volunteers AS V INNER JOIN 
                            Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
-                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit) AND V.Role <> @volRole"; // TODO: change this to also support getting class teachers
+                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit) AND V.Role <> @volRole
+                           UNION 
+                           SELECT V.* 
+                           FROM Volunteers AS V INNER JOIN 
+                           Volunteer_Attendance AS VA ON VA.volunteerId = V.id INNER JOIN 
+                           Class_List AS CL ON CL.teacherId = V.id 
+                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit)";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))

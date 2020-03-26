@@ -90,7 +90,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> VolunteerProfileEdit(VolunteerModel volunteer) 
         {
-            //TODO: discuss making email immutable
             var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
             VolunteerModel currentModel = repo.GetVolunteer(volunteer.Id);
@@ -322,7 +321,7 @@ namespace API.Controllers
 
                 if (model.CheckedIn)
                 {
-                    // guests = repo.GetGuestVolunteers(model.Day);
+                    guests = repo.GetGuestVolunteers(model.Day);
                 }
 
                 return new JsonResult(new
@@ -374,11 +373,12 @@ namespace API.Controllers
                 return Utilities.ErrorJson("A valid email address is required");
             }
 
+            guest.Date = DateTime.Now.Date;
+
             // Add to database
             try
             {
-                // TODO: Add db integration
-                //repo.CreateGuestVolunteer(guest);
+                repo.CreateGuestVolunteer(guest);
             }
             catch(Exception e)
             {
@@ -926,7 +926,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not currently signed up for this job");
             }
 
-            if (job.CurrentNumber == job.Min)
+            if (job.CurrentNumber <= job.Min)
             {
                 await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date} - {job.Name} may be understaffed", 
                     $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up.", configModel.EmailOptions);

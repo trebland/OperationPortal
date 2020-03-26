@@ -104,7 +104,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="date">The date to get details for</param>
         /// <returns>
-        /// A list of events, a list of groups, whether the user is scheduled to volunteer, and a list of scheduled volunteers.
+        /// A list of events, a list of groups, whether the user is scheduled to volunteer, a list of absences, and a list of scheduled volunteers.
         /// Depending on the user's level of permissions, some of the above may be null or less detailed
         /// </returns>
         [AllowAnonymous]
@@ -173,13 +173,20 @@ namespace API.Controllers
                 });
             }
 
-            try
+            if (volunteerRepo.AreVolunteerJobsEnabled())
             {
-                jobs = volunteerRepo.GetVolunteerJobs(dateTime, staff);
+                try
+                {
+                    jobs = volunteerRepo.GetVolunteerJobs(dateTime, staff);
+                }
+                catch (Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
+                }
             }
-            catch (Exception e)
+            else
             {
-                return Utilities.ErrorJson(e.Message);
+                jobs = null;
             }
 
             // If the user is a volunteer, check if they are scheduled on this day.  Bus drivers, volunteer captains, and staff are considered scheduled by default
@@ -197,7 +204,15 @@ namespace API.Controllers
             }
             else
             {
-                scheduled = true;
+                attendance = calendarRepo.GetSingleAttendance(user.VolunteerId, dateTime);
+                if (attendance != null && !attendance.Scheduled)
+                {
+                    scheduled = false;
+                }
+                else
+                {
+                    scheduled = true;
+                }
             }
 
             // If the user is not staff, we now want to return
@@ -317,7 +332,6 @@ namespace API.Controllers
 
             if (User.IsInRole(UserHelpers.UserRoles.BusDriver.ToString()))
             {
-                // TODO: Add in code to email staff if a bus driver cancels
                 try
                 {
                     profile = volunteerRepo.GetVolunteer(user.VolunteerId);
@@ -330,9 +344,9 @@ namespace API.Controllers
                     return Utilities.ErrorJson(e.Message);
                 }
             }
-
-            // TODO: add check for if user is a class teacher
-            else if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && (attendance == null || !attendance.Scheduled))
+            // If the user is a volunteer, has not previously scheduled themselves for this day, and is not a class teacher, no need to hit the DB,
+            // Since volunteers are assumed to not be present until they indicate otherwise
+            else if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && (attendance == null || !attendance.Scheduled) && !volunteerRepo.VolunteerIsClassTeacher(user.VolunteerId))
             {
                 return Utilities.ErrorJson("You are not currently scheduled on this date");
             }
