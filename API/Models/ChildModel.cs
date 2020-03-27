@@ -29,5 +29,6 @@ namespace API.Models
         public DateTime? SuspendedStart { get; set; }
         public DateTime? SuspendedEnd { get; set; }
         public bool IsSuspended { get; set; }
+        public bool IsCheckedIn { get; set; }
     }
 }

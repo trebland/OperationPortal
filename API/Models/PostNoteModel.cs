@@ -8,5 +8,6 @@ namespace API.Models
         public int ChildId { get; set; }
         public string Content { get; set; }
         public string Priority { get; set; }
+        public DateTime Date { get; set; }
     }
 }
