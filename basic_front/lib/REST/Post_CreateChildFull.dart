@@ -7,39 +7,37 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> CreateChildFull (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, String gender, String grade, String birthday, BuildContext context) async {
+Future<void> CreateChildFull (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, String birthday, String gender, String preferredName, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
   // Implement Changes
   int gradeAdj;
 
-  bool addGender = true;
-  bool addGrade = true;
   bool addBirthday = true;
+  bool addGender = true;
+  bool addPreferredName = true;
 
-  if (gender == "")
+  if (birthday.isEmpty)
     addGender = false;
 
-  if (grade == "")
-    addGrade = false;
-  else
-    gradeAdj = int.parse(grade);
+  if (gender.isEmpty)
+    addGender = false;
 
-  if (birthday == "")
-    addBirthday = false;
+  if (preferredName.isEmpty)
+    addPreferredName = false;
+
 
   Uint8List bytes = (await File(childImagePath).readAsBytes());
   var body;
 
   if (!addGender)
-    if (!addGrade)
-      if(!addBirthday)
+    if (!addBirthday)
+      if(!addPreferredName)
         body = json.encode({
           'FirstName': firstName,
           'LastName': lastName,
           'ParentName': parentName,
           'ContactNumber': contactNumber,
-          //'Bus': { 'Id': '$busId' },
           'Picture': bytes,
         });
       else
@@ -48,11 +46,10 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
           'LastName': lastName,
           'ParentName': parentName,
           'ContactNumber': contactNumber,
-          //'Bus': { 'Id': '$busId' },
           'Picture': bytes,
-          'Birthday': birthday,
+          'PreferredName': preferredName,
         });
-    else if (!addBirthday)
+    else if (!addPreferredName)
       body = json.encode({
         'FirstName': firstName,
         'LastName': lastName,
@@ -60,7 +57,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
         'ContactNumber': contactNumber,
         //'Bus': { 'Id': '$busId' },
         'Picture': bytes,
-        'Grade': '$gradeAdj',
+        'Birthday': birthday,
       });
     else
       body = json.encode({
@@ -70,32 +67,32 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
         'ContactNumber': contactNumber,
         //'Bus': { 'Id': '$busId' },
         'Picture': bytes,
-        'Grade': '$gradeAdj',
         'Birthday': birthday,
-      });
-  else if(!addGrade)
-    if(!addBirthday)
-      body = json.encode({
-        'FirstName': firstName,
-        'LastName': lastName,
-        'ParentName': parentName,
-        'ContactNumber': contactNumber,
-        //'Bus': { 'Id': '$busId' },
-        'Picture': bytes,
-        'Gender': gender,
-      });
-    else
-      body = json.encode({
-        'FirstName': firstName,
-        'LastName': lastName,
-        'ParentName': parentName,
-        'ContactNumber': contactNumber,
-        //'Bus': { 'Id': '$busId' },
-        'Picture': bytes,
-        'Gender': gender,
-        'Birthday': birthday,
+        'PreferredName': preferredName,
       });
   else if(!addBirthday)
+    if(!addPreferredName)
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
+        'Gender': gender,
+      });
+    else
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
+        'Gender': gender,
+        'PreferredName': preferredName,
+      });
+  else if(!addPreferredName)
     body = json.encode({
       'FirstName': firstName,
       'LastName': lastName,
@@ -103,8 +100,8 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
       'ContactNumber': contactNumber,
       //'Bus': { 'Id': '$busId' },
       'Picture': bytes,
+      'Birthday': birthday,
       'Gender': gender,
-      'Grade': '$gradeAdj',
     });
   else
     body = json.encode({
@@ -114,9 +111,9 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
       'ContactNumber': contactNumber,
       //'Bus': { 'Id': '$busId' },
       'Picture': bytes,
-      'Gender': gender,
-      'Grade': '$gradeAdj',
       'Birthday': birthday,
+      'Gender': gender,
+      'PreferredName': preferredName,
     });
 
 

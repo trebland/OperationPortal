@@ -87,10 +87,7 @@ Widget buildSuspendedRoster ()
               child: ListTile(
                 title: Text('${suspendedNames[index]}',
                     style: TextStyle(color: Colors.white)),
-                onTap: ()
-                {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(title: '${suspendedNames[index]}')));
-                },
+                onTap: () => null,
                 dense: false,
               ),
               color: Colors.blue[colorCodes[index%2]],
@@ -317,10 +314,7 @@ Widget buildFlexRoster (BuildContext context)
                     return ReturnDummyList();
                   },
                 ),
-                onTap: ()
-                {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(title: '${names[index]}')));
-                },
+                onTap: () => null,
                 dense: false,
               ),
               color: Colors.blue[colorCodes[index%2]],
@@ -426,10 +420,7 @@ Widget buildStaticRoster (BuildContext context)
                     return ReturnDummyList();
                   },
                 ),
-                onTap: ()
-                {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(title: '${names[index]}')));
-                },
+                onTap: () => null,
                 dense: false,
               ),
               color: Colors.blue[colorCodes[index%2]],

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
-import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

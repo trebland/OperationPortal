@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 import 'REST/Post_SuspendChild.dart';
 import 'Storage.dart';
-import 'Structs/Child.dart';
+import 'Structs/RosterChild.dart';
 
 class SuspensionScreen extends StatefulWidget {
   SuspensionScreen({Key key, this.child}) : super(key: key);
 
-  Child child;
+  RosterChild child;
 
   @override
   SuspensionState createState() => new SuspensionState();
@@ -210,7 +210,7 @@ class SuspensionState extends State<SuspensionScreen> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         AppBar appBar = AppBar(
-          title: Text("Register Account"),
+          title: Text("Suspension View"),
         );
         return Scaffold (
           appBar: appBar,

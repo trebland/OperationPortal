@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'BuildPresets/InactiveDashboard.dart';
 import 'REST/Post_CreateNote.dart';
 import 'Storage.dart';
-import 'Structs/Child.dart';
+import 'Structs/RosterChild.dart';
 import 'Structs/Profile.dart';
 
 class ItemAdditionPage extends StatefulWidget {

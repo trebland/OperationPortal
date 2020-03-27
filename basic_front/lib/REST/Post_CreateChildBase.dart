@@ -10,27 +10,44 @@ import 'package:http/http.dart' as http;
 
 Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
-
-  Uint8List bytes = (await File(childImagePath).readAsBytes());
   var body;
+  Uint8List bytes;
 
-  if (lastName.isEmpty)
+  if (lastName.isEmpty && childImagePath == null)
     body = json.encode({
       'FirstName': firstName,
       'ParentName': parentName,
       'ContactNumber': contactNumber,
-      //'Bus': { 'Id': '$busId' },
+    });
+  else if (lastName.isEmpty) {
+    bytes = (await File(childImagePath).readAsBytes());
+    body = json.encode({
+      'FirstName': firstName,
+      'ParentName': parentName,
+      'ContactNumber': contactNumber,
       'Picture': bytes,
     });
-  else
+  }
+  else if (childImagePath == null)
     body = json.encode({
       'FirstName': firstName,
       'LastName': lastName,
       'ParentName': parentName,
       'ContactNumber': contactNumber,
-      //'Bus': { 'Id': '$busId' },
-      'Picture': bytes,
     });
+  else
+    {
+      bytes = (await File(childImagePath).readAsBytes());
+      body = json.encode({
+        'FirstName': firstName,
+        'LastName': lastName,
+        'ParentName': parentName,
+        'ContactNumber': contactNumber,
+        //'Bus': { 'Id': '$busId' },
+        'Picture': bytes,
+      });
+    }
+
 
 
   var response = await http.post(mUrl,
@@ -39,8 +56,6 @@ Future<void> CreateChildBase (String token, String firstName, String lastName, S
 
   if (response.statusCode == 200)
   {
-
-
     Fluttertoast.showToast(
         msg: "Success",
         toastLength: Toast.LENGTH_SHORT,
