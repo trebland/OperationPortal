@@ -29,6 +29,7 @@ namespace API.Models
         public bool NameTag { get; set; }
         public bool PersonalInterviewCompleted { get; set; }
         public int YearStarted { get; set; }
+        public bool CanEditInventory { get; set; }
         public DateTime Birthday { get; set; }
         public byte[] Picture { get; set; }
         public Pair Bus { get; set; }

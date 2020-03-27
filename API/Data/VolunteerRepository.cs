@@ -144,6 +144,7 @@ namespace API.Data
                 NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                 PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                 YearStarted = (int)dr["yearstarted"],
+                CanEditInventory = (bool)dr["caneditinventory"],
                 Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                 Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                 Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
@@ -200,6 +201,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
+                    CanEditInventory = (bool)dr["caneditinventory"],
                     Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
@@ -267,6 +269,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
+                    CanEditInventory = (bool)dr["caneditinventory"],
                     Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
@@ -371,6 +374,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
+                    CanEditInventory = (bool)dr["caneditinventory"],
                     Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
@@ -1061,8 +1065,8 @@ namespace API.Data
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, yearStarted, Picture) 
-                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, @year, @picture ) 
+            string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, yearStarted, CanEditInventory, Picture) 
+                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, @year, false, @picture ) 
                            RETURNING id";
 
             // Connect to DB
@@ -1156,10 +1160,12 @@ namespace API.Data
         {
             string sql = @"UPDATE Volunteers 
                            SET orientation = @orientation,
+                               backgroundcheck = @background,
                                blueshirt = @shirt,
                                nametag = @nametag,
                                personalinterviewcompleted = @interview,
-                               yearstarted = @year
+                               yearstarted = @year,
+                               canEditInventory = @inventory
                            WHERE id = @id";
 
             // Connect to DB
@@ -1170,10 +1176,12 @@ namespace API.Data
                 {
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
                     cmd.Parameters.Add("@orientation", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Orientation;
-                    cmd.Parameters.Add("@shirt", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.BlueShirt;
-                    cmd.Parameters.Add("@nametag", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.NameTag;
-                    cmd.Parameters.Add("@interview", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.PersonalInterviewCompleted;
+                    cmd.Parameters.Add("@background", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BackgroundCheck;
+                    cmd.Parameters.Add("@shirt", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BlueShirt;
+                    cmd.Parameters.Add("@nametag", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.NameTag;
+                    cmd.Parameters.Add("@interview", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.PersonalInterviewCompleted;
                     cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.YearStarted;
+                    cmd.Parameters.Add("@inventory", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.CanEditInventory;
 
                     con.Open();
                     cmd.ExecuteNonQuery();

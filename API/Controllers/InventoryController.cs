@@ -58,7 +58,7 @@ namespace API.Controllers
             profile = volunteerRepo.GetVolunteer(user.VolunteerId);
 
             // Verify that the user has permissions to create an inventory item
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) || profile.CanEditInventory) 
             {
                 authorized = true;
             }
@@ -99,12 +99,14 @@ namespace API.Controllers
         public async Task<IActionResult> InventoryEdit(InventoryModel model)
         {
             InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
             InventoryModel dbModel = null;
             bool authorized = false;
             var user = await userManager.GetUserAsync(User);
+            VolunteerModel profile = volunteerRepo.GetVolunteer(user.VolunteerId);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) || profile.CanEditInventory) 
             {
                 authorized = true;
             }
@@ -150,12 +152,14 @@ namespace API.Controllers
         public async Task<IActionResult> Inventory(bool resolved = false)
         {
             InventoryRepository repo = new InventoryRepository(configModel.ConnectionString);
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
             List<InventoryModel> items = null;
             bool authorized = false;
             var user = await userManager.GetUserAsync(User);
+            VolunteerModel profile = volunteerRepo.GetVolunteer(user.VolunteerId);
 
             // Verify the user has permissions to edit inventory
-            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) /* || repo.UserHasInventoryRights(user.VolunteerId)*/) // TODO: implement checking user permissions
+            if (User.IsInRole(UserHelpers.UserRoles.Staff.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()) || profile.CanEditInventory) 
             {
                 authorized = true;
             }

@@ -138,7 +138,7 @@ namespace API.Controllers
         /// <summary>
         /// Allows for updating the administrative records for a volunteer.  Does not update trainings, which are separate
         /// </summary>
-        /// <param name="v">A VolunteerModel object.  Should contain id, Orientation, BlueShirt, Nametag, PersonalInterviewCompleted, and YearStarted</param>
+        /// <param name="v">A VolunteerModel object.  Should contain id, Orientation, BlueShirt, Nametag, PersonalInterviewCompleted, YearStarted, and CanEditInventory</param>
         /// <returns>An indication of any errors that occurred and the updated profile</returns>
         [Route("~/api/volunteer-records-edit")]
         [HttpPost]
