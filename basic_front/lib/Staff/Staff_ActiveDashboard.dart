@@ -12,11 +12,11 @@ import 'package:basic_front/REST/Get_RetrieveRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveUser.dart';
 import 'package:basic_front/REST/Get_RetrieveVolunteers.dart';
-import 'package:basic_front/REST/Post_ConfirmAttendance.dart';
+import 'package:basic_front/REST/Post_ConfirmVolunteerAttendance.dart';
 import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
 import 'package:basic_front/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:basic_front/Structs/Bus.dart';
-import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/Class.dart';
 import 'package:basic_front/Structs/Item.dart';
 import 'package:basic_front/Structs/Profile.dart';
@@ -93,10 +93,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
     query = query.toUpperCase();
 
-    List<Child> dummySearchList = List<Child>();
+    List<RosterChild> dummySearchList = List<RosterChild>();
     dummySearchList.addAll(childrenData);
     if(query.isNotEmpty) {
-      List<Child> dummyListData = List<Child>();
+      List<RosterChild> dummyListData = List<RosterChild>();
       dummySearchList.forEach((item) {
         if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
           dummyListData.add(item);
@@ -176,9 +176,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   List<Volunteer> volunteers = new List<Volunteer>();
   List<Volunteer> volunteerData = new List<Volunteer>();
 
-  List<Child> displayChildren = new List<Child>();
-  List<Child> children = new List<Child>();
-  List<Child> childrenData = new List<Child>();
+  List<RosterChild> displayChildren = new List<RosterChild>();
+  List<RosterChild> children = new List<RosterChild>();
+  List<RosterChild> childrenData = new List<RosterChild>();
 
   List<SuspendedChild> displaySuspended = new List<SuspendedChild>();
   List<SuspendedChild> suspended = new List<SuspendedChild>();
@@ -271,7 +271,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
     return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
   }
 
-  int calculateBirthday(Child child)
+  int calculateBirthday(RosterChild child)
   {
     return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
   }
@@ -398,7 +398,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     child: FlatButton(
                                       child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
                                       onPressed: () {
-                                        ConfirmAttendance(token, snapshot.data.profile, context);
+                                        ConfirmVolunteerAttendance(token, snapshot.data.profile, context);
                                       },
                                     ),
                                     decoration: new BoxDecoration(
@@ -557,6 +557,20 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           }).toList(),
                         ),
                       ),
+                      Container(
+                        child: FlatButton(
+                          onPressed: () => null,
+                          child: Text("Info", style: TextStyle(color: Colors.white)),
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.only(left: 10),
+                      ),
                     ]
                 ),
               ),
@@ -609,6 +623,20 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                           }).toList(),
                         ),
                       ),
+                      Container(
+                        child: FlatButton(
+                          onPressed: () => null,
+                          child: Text("Info", style: TextStyle(color: Colors.white)),
+                        ),
+                        decoration: new BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: new BorderRadius.all(
+                              new Radius.circular(20)
+                          ),
+                        ),
+                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.only(left: 10),
+                      ),
                     ]
                 ),
               ),
@@ -650,7 +678,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                 future: storage.readToken().then((value) {
                   return RetrieveRoster(value, busRouteController.text, classIdController.text);
                 }),
-                builder: (BuildContext context, AsyncSnapshot<List<Child>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                       return new Text('Issue Posting Data');

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'BuildPresets/InactiveDashboard.dart';
 import 'REST/Post_CreateNote.dart';
 import 'Storage.dart';
-import 'Structs/Child.dart';
+import 'Structs/RosterChild.dart';
 import 'Structs/Profile.dart';
 
 class NoteAdditionPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class NoteAdditionPage extends StatefulWidget {
   // always marked "final".
 
   final Profile profile;
-  final Child child;
+  final RosterChild child;
 
   @override
   NoteAdditionState createState() => NoteAdditionState();

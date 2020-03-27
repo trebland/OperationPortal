@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:basic_front/Structs/Note.dart';
 import 'package:http/http.dart' as http;
-import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 
 Future<List<Note>> RetrieveNotes (String token, int childId) async {
 

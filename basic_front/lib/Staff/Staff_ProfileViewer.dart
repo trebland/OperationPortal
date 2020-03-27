@@ -5,7 +5,7 @@ import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
 import 'package:basic_front/NoteAddition.dart';
 import 'package:basic_front/NoteView.dart';
 import 'package:basic_front/REST/Get_RetrieveNotes.dart';
-import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/Note.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class Staff_ProfileViewer_Page extends StatefulWidget {
   Staff_ProfileViewer_Page({Key key, this.profile, this.child}) : super(key: key);
 
   final Profile profile;
-  final Child child;
+  final RosterChild child;
 
   @override
   Staff_ProfileViewer_State createState() => Staff_ProfileViewer_State();
@@ -283,8 +283,5 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
       child: Text("Edit"),
     ));
     return list;
-  }
-
-  void _select(Choice value) {
   }
 }

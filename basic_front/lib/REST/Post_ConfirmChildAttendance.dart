@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-import 'package:basic_front/Structs/Profile.dart';
+import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> ConfirmAttendance (String token, Profile toConfirm, BuildContext context) async {
-  var mUrl = "https://www.operation-portal.com/api/check-in/volunteer";
+Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext context) async {
+  var mUrl = "https://www.operation-portal.com/api/check-in/child";
 
   var body = json.encode({
     'Id': '${toConfirm.id}'
