@@ -173,6 +173,13 @@ namespace API.Data
                     columns.Append($"@birthday,");
                     updated[parm] = true;
                 }
+                parm++;
+
+                if (child.Picture != null)
+                {
+                    columns.Append($"@picture,");
+                    updated[parm] = true;
+                }
 
                 columns.Length = columns.Length - 1;
                 sql = @"INSERT INTO Child (" + Regex.Replace(columns.ToString(), "@" , "")  + @") 
@@ -214,7 +221,12 @@ namespace API.Data
                     {
                         cmd.Parameters.Add($"@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
                     }
-                    
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                    }
+
                     cmd.ExecuteNonQuery();
                 }
 
@@ -589,7 +601,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"SELECT id, content, author
+                string sql = @"SELECT id, content, author, datewritten
                                FROM Notes 
                                WHERE childid = @childId";
 
@@ -606,7 +618,7 @@ namespace API.Data
             List<NoteModel> notes = new List<NoteModel>();
             foreach (DataRow dr in dt.Rows)
             {
-                notes.Add(new NoteModel((int)dr["id"], dr["content"].ToString(), dr["author"].ToString()));
+                notes.Add(new NoteModel((int)dr["id"], dr["content"].ToString(), dr["author"].ToString(), (DateTime)dr["datewritten"]));
             }
 
             return notes;

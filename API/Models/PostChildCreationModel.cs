@@ -11,5 +11,6 @@ namespace API.Models
         public string PreferredName { get; set; }
         public int BusId { get; set; }
         public string Birthday { get; set; }
+        public byte[] Picture { get; set; }
     }
 }
