@@ -269,6 +269,7 @@ namespace OCCTest.Controllers
             VolunteerModel profile;
             var user = await userManager.GetUserAsync(User);
             bool checkedIn = false;
+            bool isTeacher = false;
 
             profile = repo.GetVolunteer(user.VolunteerId);
 
@@ -279,10 +280,18 @@ namespace OCCTest.Controllers
 
             if (configModel.DebugMode || DateTime.Now.DayOfWeek == DayOfWeek.Saturday)
             {
-                attendance = calendarRepo.GetSingleAttendance(profile.Id, DateTime.Now.Date);
-                if (attendance != null && attendance.Attended == true)
+                try
                 {
-                    checkedIn = true;
+                    attendance = calendarRepo.GetSingleAttendance(profile.Id, DateTime.Now.Date);
+                    if (attendance != null && attendance.Attended == true)
+                    {
+                        checkedIn = true;
+                    }
+                    isTeacher = repo.VolunteerIsClassTeacher(user.VolunteerId);
+                }
+                catch(Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
                 }
             }
 
@@ -290,7 +299,8 @@ namespace OCCTest.Controllers
             {
                 Error = "",
                 Profile = profile,
-                CheckedIn = checkedIn
+                CheckedIn = checkedIn,
+                IsTeacher = isTeacher
             });
 
         }
