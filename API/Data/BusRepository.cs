@@ -21,7 +21,7 @@ namespace API.Data
         /// Get the list of buses
         /// </summary>
         /// <returns>A list of BusModel objects</returns>
-        public List<BusModel> GetBusList()
+        public List<BusModel> GetBusList(bool details = false)
         {
             NpgsqlDataAdapter da;
             List<BusModel> buses = new List<BusModel>();
@@ -43,17 +43,28 @@ namespace API.Data
 
             foreach (DataRow dr in dt.Rows)
             {
-                buses.Add(new BusModel
+                if (details)
                 {
-                    Id = (int)dr["id"],
-                    DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
-                    DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
-                    Name = dr["name"].ToString(),
-                    Route = dr["route"].ToString(),
-                    LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
-                    LastTireChange = dr["lasttirechange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lasttirechange"]),
-                    LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"])
-                });
+                    buses.Add(new BusModel
+                    {
+                        Id = (int)dr["id"],
+                        DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
+                        DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
+                        Name = dr["name"].ToString(),
+                        Route = dr["route"].ToString(),
+                        LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
+                        LastTireChange = dr["lasttirechange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lasttirechange"]),
+                        LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"])
+                    });
+                }
+                else
+                {
+                    buses.Add(new BusModel
+                    {
+                        Id = (int)dr["id"],
+                        Name = dr["name"].ToString()
+                    });
+                }
             }
 
             return buses;

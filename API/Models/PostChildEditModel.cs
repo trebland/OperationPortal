@@ -20,5 +20,6 @@ namespace API.Models
         public bool? HaircutWaiver { get; set; }
         public bool? ParentalEmailOptIn { get; set; }
         public int OrangeShirtStatus { get; set; }
+        public DateTime StartDate { get; set; }
     }
 }

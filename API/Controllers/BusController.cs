@@ -41,6 +41,50 @@ namespace API.Controllers
             this.configModel = configModel.Value;
         }
 
+        /// <summary>
+        /// Gets the details about a particular bus
+        /// </summary>
+        /// <param name="vm">A BusModel that serves as a viewmodel.  Must have an "id" field with the bus' id</param>
+        /// <returns>An error string, if applicable, or the bus in JSON form</returns>
+        [Route("~/api/bus-info")]
+        [HttpGet]
+        public async Task<IActionResult> BusInfo(BusModel vm)
+        {
+            var user = await userManager.GetUserAsync(User);
+            BusRepository busRepo = new BusRepository(configModel.ConnectionString);
+            BusModel bus;
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (vm.Id == 0)
+            {
+                return Utilities.ErrorJson("Must include a bus id");
+            }
+
+            try
+            {
+                bus = busRepo.GetBus(vm.Id);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            if (bus == null)
+            {
+                return Utilities.ErrorJson("That bus does not exist");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Bus = bus
+            });
+        }
 
         /// <summary>
         /// Gets the list of all buses
@@ -54,15 +98,11 @@ namespace API.Controllers
             BusRepository busRepo = new BusRepository(configModel.ConnectionString);
             List<BusModel> buses;
 
-            // Ensure that ONLY staff accounts have access to this API endpoint
-            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
-            {
-                return Utilities.ErrorJson("Not authorized");
-            }
+            bool staff = await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString());
 
             try
             {
-                buses = busRepo.GetBusList();
+                buses = busRepo.GetBusList(staff);
             }
             catch(Exception e)
             {

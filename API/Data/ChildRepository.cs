@@ -34,8 +34,11 @@ namespace API.Data
             {
                 string sql = @"SELECT c.*,
                                       cl.description,
-                                      b.name AS busname
+                                      b.name AS busname,
+                                      s.childid, s.startdate, s.enddate
                               FROM Child c
+                              LEFT JOIN Child_Suspensions s
+                              ON c.id = s.childid
                               LEFT JOIN Class_List cl
                               ON c.classid = cl.id
                               LEFT JOIN Bus b
@@ -538,16 +541,15 @@ namespace API.Data
         /// <summary>
         /// Saves a note about a child and sends an email indicating a note has been added
         /// </summary>
-        /// <param name="authorId">Writer of the note</param>
+        /// <param name="author">Writer of the note</param>
         /// <param name="childId">Child the note is about</param>
-        /// <param name="priority">Sends email to staff member(s) based on priority</param>
         /// <returns></returns>
-        public void AddNote(string author, int childId, string content)
+        public void AddNote(string author, int childId, string content, DateTime date)
         {
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"INSERT INTO Notes (childid, content, author)
-                        VALUES (@childid, @content, @author)";
+                string sql = @"INSERT INTO Notes (childid, content, author, datewritten)
+                        VALUES (@childid, @content, @author, @date)";
 
                 DataTable dt = new DataTable();
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -556,6 +558,7 @@ namespace API.Data
                     cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
                     cmd.Parameters.Add("@content", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = content;
                     cmd.Parameters.Add("@author", NpgsqlTypes.NpgsqlDbType.Varchar, 300).Value = author;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
                     cmd.ExecuteNonQuery();
                     con.Close();
                 }            
@@ -845,12 +848,19 @@ namespace API.Data
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 string sql = @"SELECT s.childid, s.startdate, s.enddate,
-                                      c.firstname, c.lastname, c.picture
+                                      c.*,
+                                      cl.description,
+                                      b.name AS busname
                                FROM Child_Suspensions s
                                RIGHT JOIN Child c
                                ON s.childid = c.id
+                               LEFT JOIN Class_List cl
+                               ON c.classid = cl.id
+                               LEFT JOIN Bus b
+                               ON c.busid = b.id
                                WHERE s.startdate <= @now
-                               AND s.enddate >= @now";
+                               AND s.enddate >= @now
+                               AND c.busid = @busid";
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
@@ -862,7 +872,13 @@ namespace API.Data
                 }
             }
 
-            return GetSuspendedChildModels(dt);
+            List<ChildModel> children = new List<ChildModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                children.Add(GetBasicChildModel(new ChildModel(), dr));
+            }
+
+            return children;
         }
 
         /// <summary>
@@ -919,11 +935,6 @@ namespace API.Data
             return children;
         }
 
-        /// <summary>
-        /// Fills out all the information from a row retrieved from the Child table to the 
-        /// given child model
-        /// </summary>
-        /// TODO: relatives
         private ChildModel GetFullChildModel(DataRow dr)
         {
             ChildModel child = GetBasicChildModel(new ChildModel(), dr);
@@ -972,8 +983,40 @@ namespace API.Data
             child.Birthday = dr["birthday"].ToString();
             child.IsSuspended = IsSuspended((int)dr["id"]);
             child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
+            child.SuspendedStart = DBNull.Value.Equals(dr["startdate"]) ? DateTime.MinValue : ((DateTime)dr["startdate"]);
+            child.SuspendedEnd = DBNull.Value.Equals(dr["enddate"]) ? DateTime.MinValue : ((DateTime)dr["enddate"]);
+            child.IsCheckedIn = IsCheckedIn((int)dr["id"]);
 
             return child;
+        }
+
+        private bool IsCheckedIn(int childid)
+        {
+            DateTime now = DateTime.UtcNow;
+            bool checkedIn = false;
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                con.Open();
+                DataTable dt = new DataTable();
+
+                // Retrieve all the days the child has been in attendance, ordered by most recent first
+                string sql = "SELECT * FROM Child_Attendance WHERE childid = @childid ORDER BY dayattended DESC";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childid;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                if (dt.Rows.Count != 0 && string.Compare(dt.Rows[0]["dayattended"].ToString(), now.Date.ToString()) == 0)
+                {
+                    checkedIn = true;
+                }
+
+                con.Close();
+            }
+
+            return checkedIn;
         }
 
         private PostChildEditModel GetChildEditModel(DataRow dr)
@@ -995,8 +1038,40 @@ namespace API.Data
             child.HaircutWaiver = DBNull.Value.Equals(dr["haircutpermission"]) ? false : (bool)dr["haircutpermission"];
             child.ParentalEmailOptIn = DBNull.Value.Equals(dr["parentalemailoptin"]) ? false : (bool)dr["parentalemailoptin"];
             child.OrangeShirtStatus = DBNull.Value.Equals(dr["orangeshirt"]) ? 0 : (int)dr["orangeshirt"];
+            child.StartDate = GetStartDate((int)dr["id"]);
 
             return child;
+        }
+
+        private DateTime GetStartDate(int childid)
+        {
+            DateTime date = DateTime.MinValue;
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                con.Open();
+                DataTable dt = new DataTable();
+
+                // Retrieve all the days the child has been in attendance, ordered by oldest first
+                string sql = @"SELECT dayattended
+                               FROM Child_Attendance 
+                               WHERE childid = @childid 
+                               ORDER BY dayattended ASC";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childid;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                if (dt.Rows.Count != 0)
+                {
+                    date = (DateTime)dt.Rows[0]["dayattended"];
+                }
+
+                con.Close();
+            }
+
+            return date;
         }
 
         /// <summary>
