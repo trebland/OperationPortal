@@ -238,7 +238,8 @@ namespace API.Controllers
                     BusWaiver = child.BusWaiver,
                     HaircutWaiver = child.HaircutWaiver,
                     ParentalEmailOptIn = child.ParentalEmailOptIn,
-                    OrangeShirtStatus = child.OrangeShirtStatus
+                    OrangeShirtStatus = child.OrangeShirtStatus,
+                    StartDate = child.StartDate
                 });
             }
             catch (Exception exc)
@@ -511,6 +512,11 @@ namespace API.Controllers
                 missingParameters.Add("priority");
             }
 
+            if (model.Date.Equals(""))
+            {
+                missingParameters.Add("date");
+            }
+
             if (missingParameters.Count > 0)
             {
                 Utilities.GenerateMissingInputMessage(missingParameters);
@@ -534,7 +540,7 @@ namespace API.Controllers
                 // TODO: Change to occ's email
                 // await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
 
-                repo.AddNote(model.Author, model.ChildId, model.Content);
+                repo.AddNote(model.Author, model.ChildId, model.Content, model.Date);
 
                 return new JsonResult(new
                 {

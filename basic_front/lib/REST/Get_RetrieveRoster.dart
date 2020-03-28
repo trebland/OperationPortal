@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:basic_front/Structs/Child.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
 
-Future<List<Child>> RetrieveRoster (String token, String busId, String classId) async {
+Future<List<RosterChild>> RetrieveRoster (String token, String busId, String classId) async {
 
   int adjBusId;
   int adjClassId;
@@ -55,17 +55,17 @@ Future<List<Child>> RetrieveRoster (String token, String busId, String classId) 
 
 class ReadChildren {
 
-  List<Child> busChildren;
-  List<Child> classChildren;
-  List<Child> intersectedChildren;
+  List<RosterChild> busChildren;
+  List<RosterChild> classChildren;
+  List<RosterChild> intersectedChildren;
 
   ReadChildren({this.busChildren, this.classChildren, this.intersectedChildren});
 
   factory ReadChildren.fromJson(Map<String, dynamic> json) {
     return ReadChildren(
-      busChildren: json['busRoster'] != null ? json['busRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
-      classChildren: json['classRoster'] != null ? json['classRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
-      intersectedChildren: json['intersectionRoster'] != null ? json['intersectionRoster'].map<Child>((value) => new Child.fromJson(value)).toList() : null,
+      busChildren: json['busRoster'] != null ? json['busRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
+      classChildren: json['classRoster'] != null ? json['classRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
+      intersectedChildren: json['intersectionRoster'] != null ? json['intersectionRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
     );
   }
 }

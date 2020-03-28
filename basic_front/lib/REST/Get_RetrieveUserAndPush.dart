@@ -37,7 +37,7 @@ Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(profile: mPost.profile,)));
     else if (mPost.checkedIn)
     {
-      if (mPost.profile.role == "Bus Driver")
+      if (mPost.profile.role == "BusDriver")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: mPost.profile,)));
       else if (mPost.profile.role == "VolunteerCaptain")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: mPost.profile,)));
@@ -46,7 +46,7 @@ Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
     }
     else
     {
-      if (mPost.profile.role == "Bus Driver")
+      if (mPost.profile.role == "BusDriver")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
       else if (mPost.profile.role == "VolunteerCaptain")
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));

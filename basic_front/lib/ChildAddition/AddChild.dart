@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 import '../TakePicture.dart';
 import 'AdditionalOptions.dart';
@@ -44,6 +45,14 @@ class AddChildState extends State<AddChildPage>
 
   Storage storage;
   String childImagePath;
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      childImagePath = image.path;
+    });
+  }
 
   Future<void> checkTakePictureResponse () async {
     // Ensure that plugin services are initialized so that `availableCameras()`
@@ -134,7 +143,84 @@ class AddChildState extends State<AddChildPage>
     else if (childImagePath == null)
     {
       Fluttertoast.showToast(
-          msg: 'Child Image is mandatory',
+          msg: 'Child Image must be added later',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.orange,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return true;
+    }
+    else
+      return true;
+
+  }
+
+  bool additionalFilledOut()
+  {
+    if (firstNameController.text.isEmpty)
+    {
+      Fluttertoast.showToast(
+          msg: 'First Name is mandatory to procede to additional options',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
+    else if (lastNameController.text.isEmpty)
+    {
+      Fluttertoast.showToast(
+          msg: 'Last Name is mandatory to procede to additional options',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
+    else if (parentNameController.text.isEmpty)
+    {
+      Fluttertoast.showToast(
+          msg: 'Parent name is mandatory to procede to additional options',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
+    else if (contactNumberController.text.length != 14)
+    {
+      Fluttertoast.showToast(
+          msg: 'Contact number is mandatory to procede to additional options',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
+    else if (childImagePath == null)
+    {
+      Fluttertoast.showToast(
+          msg: 'Child Image is mandatory to procede to additional options',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -402,6 +488,46 @@ class AddChildState extends State<AddChildPage>
           ),
           margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
         ),
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.add_a_photo,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  ),
+                  Container(
+                    child: FlatButton(
+                      child: Text("Select Picture", style: TextStyle(color: Colors.white)),
+                      onPressed: getImage,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  )
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+        ),
       ],
     );
   }
@@ -414,9 +540,10 @@ class AddChildState extends State<AddChildPage>
           child: Text('Additional Options', style: TextStyle(color: Colors.deepPurple),),
           onPressed: ()
           {
-            if (filledOut())
+            if (additionalFilledOut())
               Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
-                lastName: lastNameController.text, parentName: parentNameController.text, contactNumber: parseNumber(contactNumberController.text),)));
+                lastName: lastNameController.text, parentName: parentNameController.text,
+                contactNumber: parseNumber(contactNumberController.text), imagePath: childImagePath,)));
           },
         ),
         RaisedButton(
@@ -425,7 +552,7 @@ class AddChildState extends State<AddChildPage>
           {
             if (filledOut())
               storage.readToken().then((value) {
-                CreateChildBase(value, firstNameController.text, lastNameController.text, parentNameController.text, parseNumber(contactNumberController.text), childImagePath, context);
+                CreateChildBase(value, firstNameController.text, lastNameController.text, parentNameController.text, contactNumberController.text, childImagePath, context);
               });
           },
           color: Colors.amber,

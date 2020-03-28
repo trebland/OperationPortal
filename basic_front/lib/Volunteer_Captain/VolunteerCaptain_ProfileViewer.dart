@@ -1,28 +1,82 @@
+import 'dart:convert';
+
 import 'package:basic_front/BuildPresets/Child_ProfileViewer.dart';
+import 'package:basic_front/Structs/RosterChild.dart';
+import 'package:basic_front/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
-class VolunteerCaptain_ProfileViewer_Page extends StatefulWidget {
-  VolunteerCaptain_ProfileViewer_Page({Key key, this.title}) : super(key: key);
+import '../Storage.dart';
 
-  final String title;
+class VolunteerCaptain_ProfileViewer_Page extends StatefulWidget {
+  VolunteerCaptain_ProfileViewer_Page({Key key, this.profile, this.child}) : super(key: key);
+
+  final Profile profile;
+  final RosterChild child;
 
   @override
   VolunteerCaptain_ProfileViewer_State createState() => VolunteerCaptain_ProfileViewer_State();
 }
 
 class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_ProfileViewer_Page> {
-
   final suspensionController = TextEditingController();
-  bool isSuspended = false;
+
+  Storage storage;
+
+  final List<int> colorCodes = <int>[600, 500];
+
+  Widget buildPictureNameRow(String firstName, String lastName) {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: CircleAvatar(
+                  backgroundImage: (widget.child.picture != null) ? MemoryImage(base64.decode((widget.child.picture))) : null,
+                ),
+                decoration: new BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                height: 200,
+                width: 200,
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(right: 10),
+              ),
+              Flexible(
+                child: Text(
+                  firstName + "\n" + lastName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 28),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.all(10),
+    );
+  }
+
+  updateSuspension (bool isSuspended)
+  {
+    setState(() {
+      suspensionController.text = isSuspended ? "Suspended" : "Not Suspended";
+    });
+  }
 
   String checkSuspension ()
   {
-    return isSuspended ? "Suspended" : "Not Suspended";
+    return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
   @override
   void initState() {
     suspensionController.text = checkSuspension();
+    storage = new Storage();
     super.initState();
   }
 
@@ -30,37 +84,49 @@ class VolunteerCaptain_ProfileViewer_State extends State<VolunteerCaptain_Profil
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.child.firstName +  " " + widget.child.lastName),
       ),
       body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            buildPictureNameRow_Child(widget.title),
-            buildBirthdayAndGradeRow("", null),
-            Flexible(
-              child: TextField(
-                textAlign: TextAlign.left,
-                controller: suspensionController,
-                decoration: new InputDecoration(
-                  labelText: "Suspension Status",
-                  border: new OutlineInputBorder(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildPictureNameRow(widget.child.firstName, widget.child.lastName),
+          buildBirthdayAndGradeRow(widget.child.birthday, widget.child.grade),
+          Container(
+            child: IntrinsicHeight(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>
+                  [
+                    Flexible(
+                      child: TextField(
+                        textAlign: TextAlign.left,
+                        controller: suspensionController,
+                        decoration: new InputDecoration(
+                          labelText: "Suspension Status",
+                          border: new OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20)
+                            ),
+                            borderSide: new BorderSide(
+                              color: Colors.black,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        enabled: false,
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
                     ),
-                    borderSide: new BorderSide(
-                      color: Colors.black,
-                      width: 0.5,
-                    ),
-                  ),
-                ),
-                enabled: false,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                  ]
               ),
             ),
-          ],
-        ),
+            margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+          ),
+        ],
+      ),
     );
   }
+
 }

@@ -36,10 +36,11 @@ enum Gender { male, female, other}
 class AdditionalOptionsState extends State<AdditionalOptionsPage> {
 
 
-  final preferredNameController = new TextEditingController();
   final genderController = new TextEditingController();
   final birthdayController = new TextEditingController();
-  final busController = new TextEditingController();
+  final preferredNameController = new TextEditingController();
+
+  // final busController = new TextEditingController();
 
   DateTime selectedDate;
   int currentYear;
@@ -57,7 +58,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     currentYear = DateTime.now().year;
     previousYears = currentYear - 25;
 
-    busDropdownValue = "Select Bus Id";
+    busDropdownValue = "Select Bus";
 
     selectedDate = DateTime.now();
   }
@@ -295,19 +296,62 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     );
   }
 
-  bool sendGrade = false;
+  Widget buildPreferredNameColumn ()
+  {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.person_outline,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  ),
+                  Flexible(
+                    child: TextField(
+                      textAlign: TextAlign.left,
+                      controller: preferredNameController,
+                      decoration: new InputDecoration(
+                        labelText: "Preferred Name",
+                        border: new OutlineInputBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                          borderSide: new BorderSide(
+                            color: Colors.black,
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ),
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+        ),
+      ],
+    );
+  }
 
-  void _onSendGradeChanged(bool newValue) => setState(() {
-    sendGrade = newValue;
-
-    if (sendGrade) {
-      // TODO: Here goes your functionality that remembers the user.
-    } else {
-      // TODO: Forget the user
-    }
-  });
-
-  Widget buildBusRow()
+  /*Widget buildBusRow()
   {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -338,7 +382,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       textAlign: TextAlign.left,
                       controller: busController,
                       decoration: new InputDecoration(
-                        labelText: "Bus Id",
+                        labelText: "Bus",
                         hintText: "Bus Id: " + '$busDropdownValue',
                         border: new OutlineInputBorder(
                           borderRadius: BorderRadius.only(
@@ -377,12 +421,12 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
               setState(() {
                 busDropdownValue = newValue;
               });
-              if (busDropdownValue != "Select Grade")
+              if (busDropdownValue != "Select Bus")
                 busController.text = busDropdownValue;
               else
                 busController.text = "";
             },
-            items: <String>["Select Grade", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+            items: <String>["Select Bus", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -393,7 +437,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
         ),
       ],
     );
-  }
+  }*/
 
   Widget buildButtonBar (BuildContext context)
   {
@@ -411,7 +455,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           onPressed: ()
           {
             storage.readToken().then((value) {
-              CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber, widget.imagePath, genderController.text, busController.text, birthdayController.text, context);
+              CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber, widget.imagePath, genderController.text, birthdayController.text, "", context);
             });
           },
           color: Colors.amber,
@@ -439,7 +483,8 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                 children: <Widget>[
                   buildBirthdayColumn(),
                   buildGenderColumn(),
-                  buildBusRow(),
+                  //buildBusRow(),
+                  buildPreferredNameColumn(),
                   buildButtonBar(context),
                 ],
               ),
