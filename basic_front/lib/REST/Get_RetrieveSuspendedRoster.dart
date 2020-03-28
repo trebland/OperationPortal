@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<SuspendedChild>> GetSuspendedChildren (String token)
+Future<List<RosterChild>> GetSuspendedChildren (String token)
 async {
   var mUrl = "https://www.operation-portal.com/api/suspensions";
 
@@ -27,13 +28,13 @@ async {
 }
 
 class ReadSuspensions {
-  List<SuspendedChild> suspended;
+  List<RosterChild> suspended;
 
   ReadSuspensions({this.suspended});
 
   factory ReadSuspensions.fromJson(Map<String, dynamic> json) {
     return ReadSuspensions(
-      suspended: json['suspensions'].map<SuspendedChild>((value) => new SuspendedChild.fromJson(value)).toList(),
+      suspended: json['suspensions'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList(),
     );
   }
 }

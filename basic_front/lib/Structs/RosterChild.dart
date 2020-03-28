@@ -13,8 +13,8 @@ class RosterChild {
   Bus mBus;
   String birthday;
   String picture;
-  DateTime startSuspension;
-  DateTime endSuspension;
+  String startSuspension;
+  String endSuspension;
   bool isSuspended;
 
 

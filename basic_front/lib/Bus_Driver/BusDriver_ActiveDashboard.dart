@@ -93,10 +93,10 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
 
     query = query.toUpperCase();
 
-    List<SuspendedChild> dummySearchList = List<SuspendedChild>();
+    List<RosterChild> dummySearchList = List<RosterChild>();
     dummySearchList.addAll(suspendedData);
     if(query.isNotEmpty) {
-      List<SuspendedChild> dummyListData = List<SuspendedChild>();
+      List<RosterChild> dummyListData = List<RosterChild>();
       dummySearchList.forEach((item) {
         if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
           dummyListData.add(item);
@@ -134,9 +134,9 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
   List<RosterChild> children = new List<RosterChild>();
   List<RosterChild> childrenData = new List<RosterChild>();
 
-  List<SuspendedChild> displaySuspended = new List<SuspendedChild>();
-  List<SuspendedChild> suspended = new List<SuspendedChild>();
-  List<SuspendedChild> suspendedData = new List<SuspendedChild>();
+  List<RosterChild> displaySuspended = new List<RosterChild>();
+  List<RosterChild> suspended = new List<RosterChild>();
+  List<RosterChild> suspendedData = new List<RosterChild>();
 
   DateTime parseBirthday (String birthday)
   {
@@ -479,7 +479,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                   future: storage.readToken().then((value) {
                     return GetSuspendedChildren(value);
                   }),
-                  builder: (BuildContext context, AsyncSnapshot<List<SuspendedChild>> snapshot) {
+                  builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.none:
                         return new Text('Issue Posting Data');
@@ -502,11 +502,17 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                   child: ListTile(
+                                    leading: Container(
+                                      child: CircleAvatar(
+                                        backgroundImage: (suspended[index].picture != null) ? MemoryImage(base64.decode((suspended[index].picture))) : null,
+                                      ),
+                                    ),
                                     title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
                                         style: TextStyle(color: Colors.white)),
+                                    subtitle: Text('${suspended[index].birthday != null && suspended[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(suspended[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_SuspendedProfileViewer_Page(child: suspended[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.profile, child: suspended[index])));
                                     },
                                     dense: false,
                                   ),
