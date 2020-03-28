@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/SuspendedChild.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -44,13 +45,13 @@ async {
 }
 
 class SuspendResponse {
-  List<SuspendedChild> suspended;
+  List<RosterChild> suspended;
 
   SuspendResponse({this.suspended});
 
   factory SuspendResponse.fromJson(Map<String, dynamic> json) {
     return SuspendResponse(
-      suspended: json['suspensions'].map<SuspendedChild>((value) => new SuspendedChild.fromJson(value)).toList(),
+      suspended: json['suspensions'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList(),
     );
   }
 }

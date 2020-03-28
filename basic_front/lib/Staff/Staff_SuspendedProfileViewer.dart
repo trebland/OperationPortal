@@ -15,7 +15,7 @@ import '../SuspensionView.dart';
 class Staff_SuspendedProfileViewer_Page extends StatefulWidget {
   Staff_SuspendedProfileViewer_Page({Key key, this.child}) : super(key: key);
 
-  final SuspendedChild child;
+  final RosterChild child;
 
   @override
   Staff_SuspendedProfileViewer_State createState() => Staff_SuspendedProfileViewer_State();

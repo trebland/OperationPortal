@@ -42,6 +42,44 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Gets the details about a particular class
+        /// </summary>
+        /// <param name="vm">A ClassModel that serves as a viewmodel.  Must have an "id" field with the class' id</param>
+        /// <returns>An error string, if applicable, or the class in JSON form</returns>
+        [Route("~/api/class-info")]
+        [HttpGet]
+        public async Task<IActionResult> ClassInfo(int id)
+        {
+            var user = await userManager.GetUserAsync(User);
+            ClassRepository repo = new ClassRepository(configModel.ConnectionString);
+            ClassModel classModel;
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Must include a class id");
+            }
+
+            classModel = repo.GetClass(id);
+
+            if (classModel == null)
+            {
+                return Utilities.ErrorJson("That class does not exist");
+            }
+
+            return new JsonResult(new
+            {
+                Class = classModel,
+                Error = ""
+            });
+        }
+
+        /// <summary>
         /// Lists all classes stored in the system
         /// </summary>
         /// <returns>If an error occurred, an error message.  Otherwise, a blank error message and a JSON-formatted array of classes.</returns>
@@ -105,7 +143,7 @@ namespace API.Controllers
             // Send to the database
             try
             {
-                repo.CreateClass(newClass.Name, newClass.TeacherId);
+                repo.CreateClass(newClass.Name, newClass.Location == null ? "" : newClass.Location, newClass.TeacherId);
             }
             catch(Exception e)
             {
@@ -150,7 +188,7 @@ namespace API.Controllers
             // Send to the database
             try
             {
-                repo.UpdateClass(model.Id, model.Name);
+                repo.UpdateClass(model.Id, model.Name, model.Location == null ? "" : model.Location);
             }
             catch (Exception e)
             {

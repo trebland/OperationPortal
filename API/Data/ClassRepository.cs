@@ -56,6 +56,7 @@ namespace API.Data
                         Id = (int)dr["id"],
                         Name = dr["description"].ToString(),
                         NumStudents = (int)dr["numstudents"],
+                        Location = dr["location"].ToString(),
                         TeacherId = dr["teacherid"] == DBNull.Value ? 0 : (int)dr["TeacherId"],
                         TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString()
                     });
@@ -115,6 +116,7 @@ namespace API.Data
                 Id = (int)dr["id"],
                 Name = dr["description"].ToString(),
                 NumStudents = (int)dr["numstudents"],
+                Location = dr["location"].ToString(),
                 TeacherId = dr["teacherid"] == DBNull.Value ? 0 : (int)dr["TeacherId"],
                 TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString()
             };
@@ -124,16 +126,18 @@ namespace API.Data
         /// Inserts a new class
         /// </summary>
         /// <param name="name">The name of the class</param>
+        /// <param name="location">A description of where the class is located</param>
         /// <param name="teacherId">The id of the volunteer who will teach the class</param>
-        public void CreateClass(string name, int teacherId)
+        public void CreateClass(string name, string location, int teacherId)
         {
-            string sql = "INSERT INTO Class_List (Description, NumStudents, TeacherId) VALUES (@name, 0, @tid)";
+            string sql = "INSERT INTO Class_List (Description, NumStudents, Location, TeacherId) VALUES (@name, 0, @location, @tid)";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
+                    cmd.Parameters.Add("@location", NpgsqlTypes.NpgsqlDbType.Varchar).Value = location;
                     cmd.Parameters.Add("@tid", NpgsqlTypes.NpgsqlDbType.Integer).Value = teacherId;
 
                     con.Open();
@@ -148,15 +152,17 @@ namespace API.Data
         /// </summary>
         /// <param name="name">The name of the class</param>
         /// <param name="id">The id of the class</param>
-        public void UpdateClass(int id, string name)
+        /// <param name="location">A description of where the class is located</param>
+        public void UpdateClass(int id, string name, string location)
         {
-            string sql = "UPDATE Class_List SET Description = @name WHERE id = @id";
+            string sql = "UPDATE Class_List SET Description = @name, Location = @location WHERE id = @id";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
+                    cmd.Parameters.Add("@location", NpgsqlTypes.NpgsqlDbType.Varchar).Value = location;
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
 
                     con.Open();

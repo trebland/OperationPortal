@@ -265,12 +265,24 @@ namespace OCCTest.Controllers
         {
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
             CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
+            ClassRepository classRepo = new ClassRepository(configModel.ConnectionString);
+            BusRepository busRepo = new BusRepository(configModel.ConnectionString);
             AttendanceModel attendance;
             VolunteerModel profile;
             var user = await userManager.GetUserAsync(User);
             bool checkedIn = false;
+            List<ClassModel> classes = new List<ClassModel>();
+            List<BusModel> buses = new List<BusModel>();
 
-            profile = repo.GetVolunteer(user.VolunteerId);
+            // Get the current user's profile
+            try
+            {
+                profile = repo.GetVolunteer(user.VolunteerId);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
 
             if (profile == null)
             {
@@ -279,10 +291,23 @@ namespace OCCTest.Controllers
 
             if (configModel.DebugMode || DateTime.Now.DayOfWeek == DayOfWeek.Saturday)
             {
-                attendance = calendarRepo.GetSingleAttendance(profile.Id, DateTime.Now.Date);
-                if (attendance != null && attendance.Attended == true)
+                try
                 {
-                    checkedIn = true;
+                    attendance = calendarRepo.GetSingleAttendance(profile.Id, DateTime.Now.Date);
+
+                    // determine if the current user has been checked in today
+                    if (attendance != null && attendance.Attended == true)
+                    {
+                        checkedIn = true;
+                    }
+
+                    // Get the classes the user teaches and buses the user drives
+                    classes = classRepo.GetClasses(true).Where(c => c.TeacherId == profile.Id).ToList();
+                    buses = busRepo.GetBusList(true).Where(b => b.DriverId == profile.Id).ToList();
+                }
+                catch(Exception e)
+                {
+                    return Utilities.ErrorJson(e.Message);
                 }
             }
 
@@ -290,7 +315,9 @@ namespace OCCTest.Controllers
             {
                 Error = "",
                 Profile = profile,
-                CheckedIn = checkedIn
+                CheckedIn = checkedIn,
+                Classes = classes,
+                Buses = buses
             });
 
         }
