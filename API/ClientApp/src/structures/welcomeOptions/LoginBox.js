@@ -54,7 +54,7 @@ export class LoginBox extends Component {
     formBody = formBody.join("&");
 
     try{
-        fetch('http://localhost:5000/api/auth/token' , {
+        fetch('https://operation-portal.com/api/auth/token' , {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -63,11 +63,11 @@ export class LoginBox extends Component {
         })
         .then((res) => {
             console.log(res.status)
-            if((res.status === 200 || res.status === 201)){
+            if((res.status === 200 || res.status === 201) && this.mounted === true){
                 console.log("Login successful")
                 return res.text()
             }
-            else if((res.status === 401 || res.status === 400 || res.status === 500)){
+            else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                 console.log("Failed to login")
                 this.setState({
                   redirect: false

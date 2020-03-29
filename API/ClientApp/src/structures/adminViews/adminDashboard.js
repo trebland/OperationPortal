@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
+// https://github.com/clsavino/react-shift-scheduler
+
 export class AdminDashboard extends Component {
     
     constructor(props) {
@@ -195,7 +197,7 @@ const styling = {
     header: {
         textAlign: 'center',
         justifyContent: 'center',
-        marginTop: '50px'
+        marginTop: '20px'
     },
     butt: {
         marginRight: '25px',
