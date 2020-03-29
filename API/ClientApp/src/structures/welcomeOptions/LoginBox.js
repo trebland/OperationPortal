@@ -54,7 +54,7 @@ export class LoginBox extends Component {
     formBody = formBody.join("&");
 
     try{
-        fetch('https://operation-portal.com/api/auth/token' , {
+        fetch('https://www.operation-portal.com/api/auth/token' , {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

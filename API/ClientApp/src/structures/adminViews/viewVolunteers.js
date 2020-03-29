@@ -38,7 +38,7 @@ export class ViewVolunteers extends Component {
     }
 
     getVolunteers = () => {
-        fetch('https://operation-portal.com/api/volunteer-list' , {
+        fetch('https://www.operation-portal.com/api/volunteer-list' , {
             // method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
