@@ -72,7 +72,9 @@ export class LoginBox extends Component {
                 this.setState({
                   redirect: false
                 })
-                return 
+                return <Redirect to={{
+                  pathname: '/login'
+                }}/>
             }
         })
         .then((data) => {

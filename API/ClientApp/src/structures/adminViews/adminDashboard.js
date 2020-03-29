@@ -32,7 +32,7 @@ export class AdminDashboard extends Component {
         }
         else if(this.state.redirectProfile){
             return <Redirect to={{
-                pathname: '/user-profile',
+                pathname: '/admin-profile',
                 state: {
                     loggedin: this.state.loggedin,
                     jwt: this.state.jwt
@@ -41,7 +41,7 @@ export class AdminDashboard extends Component {
         }
         else if(this.state.redirectCal){
             return <Redirect to={{
-                pathname: '/user-calendar',
+                pathname: '/admin-calendar',
                 state: {
                     loggedin: this.state.loggedin,
                     jwt: this.state.jwt

@@ -12,6 +12,10 @@ import { NotFound } from './structures/notFound'
 import { UserProfile } from './structures/userViews/userProfile'
 import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements'
 import { ViewVolunteers } from './structures/adminViews/viewVolunteers'
+import { AdminProfile } from './structures/adminViews/adminProfile'
+import { AdminCalendar } from './structures/adminViews/adminCalendar'
+import { ChildrensCalendar } from './structures/adminViews/childrensCalendar'
+import { StaffCalendar } from './structures/adminViews/staffCalendar'
 
 
 
@@ -34,6 +38,12 @@ export default class App extends Component {
             <Route exact path='/user-profile' component={UserProfile} />
             <Route exact path='/admin-announcements' component={AdminAnnouncements} />
             <Route exact path='/admin-volunteer-list' component={ViewVolunteers} />
+            <Route exact path='/admin-profile' component={AdminProfile} />
+            <Route exact path='/admin-calendar' component={AdminCalendar} />
+            <Route exact path='/child-birthday-calendar' component={ChildrensCalendar} />
+            <Route exact path='/staff-birthday-calendar' component={StaffCalendar} />
+
+            
             <Route component={NotFound} />
           </Switch>
         </Router>

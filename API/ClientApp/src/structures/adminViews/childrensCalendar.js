@@ -11,7 +11,7 @@ import { Redirect } from 'react-router-dom'
 
 const localizer = momentLocalizer(moment)
 
-export class UserCalendar extends Component {
+export class ChildrensCalendar extends Component {
 
   constructor(props) {
     super(props)
@@ -21,13 +21,11 @@ export class UserCalendar extends Component {
         redirect: false
     }
   }
-  
-  static displayName = UserCalendar.name;
 
   renderRedirect = () => {
     if(this.state.redirect){
         return <Redirect to={{
-            pathname: '/dashboard',
+            pathname: '/admin-dashboard',
             state: {
                 jwt: this.state.jwt,
                 loggedin: this.state.loggedin
@@ -50,7 +48,7 @@ export class UserCalendar extends Component {
                 Back to Dashboard
             </Button>
             <div style={styling.cal}>
-                <h1>User Calendar</h1>
+                <h1>Children's Birthday Calendar</h1>
                 <Calendar
                     localizer = {localizer}
                     events = {events}

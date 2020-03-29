@@ -2,7 +2,6 @@ import React from 'react';
 
 
 function AnnouncementCard(props) {
-    console.log(props)
     return (
         <div>
             <h3>{props.header + " - " + props.date}</h3>
