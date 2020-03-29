@@ -48,7 +48,7 @@ namespace API.Controllers
         /// <returns>An error string, if applicable, or the bus in JSON form</returns>
         [Route("~/api/bus-info")]
         [HttpGet]
-        public async Task<IActionResult> BusInfo(BusModel vm)
+        public async Task<IActionResult> BusInfo(int id)
         {
             var user = await userManager.GetUserAsync(User);
             BusRepository busRepo = new BusRepository(configModel.ConnectionString);
@@ -60,14 +60,14 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            if (vm.Id == 0)
+            if (id == 0)
             {
                 return Utilities.ErrorJson("Must include a bus id");
             }
 
             try
             {
-                bus = busRepo.GetBus(vm.Id);
+                bus = busRepo.GetBus(id);
             }
             catch (Exception e)
             {

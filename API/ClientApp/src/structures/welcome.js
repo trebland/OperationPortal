@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
-
-
 export class Welcome extends Component {
     
     constructor(props) {

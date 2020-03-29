@@ -48,7 +48,7 @@ namespace API.Controllers
         /// <returns>An error string, if applicable, or the class in JSON form</returns>
         [Route("~/api/class-info")]
         [HttpGet]
-        public async Task<IActionResult> ClassInfo(ClassModel vm)
+        public async Task<IActionResult> ClassInfo(int id)
         {
             var user = await userManager.GetUserAsync(User);
             ClassRepository repo = new ClassRepository(configModel.ConnectionString);
@@ -60,12 +60,12 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
-            if (vm.Id == 0)
+            if (id == 0)
             {
                 return Utilities.ErrorJson("Must include a class id");
             }
 
-            classModel = repo.GetClass(vm.Id);
+            classModel = repo.GetClass(id);
 
             if (classModel == null)
             {

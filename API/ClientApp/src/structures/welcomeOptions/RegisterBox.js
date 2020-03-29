@@ -11,8 +11,8 @@ export class RegisterBox extends Component {
         lastname: "",
         email: "",
         password: "",
-        redirectDash: false
-        // redirect: false,
+        redirectDash: false,
+        redirect: false
         // result: ""
       };
       this.handleFirstnameChange = this.handleFirstnameChange.bind(this);
@@ -28,6 +28,7 @@ export class RegisterBox extends Component {
       this.mounted = false
     }
 
+
     onSubmit = (e) => {
         try{
             fetch('https://www.operation-portal.com/api/auth/register' , {
@@ -38,18 +39,25 @@ export class RegisterBox extends Component {
                 },
                 body: JSON.stringify(this.state)
             })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    console.log(result)
-                },
-                (error) => {
-                    this.setState({
-                      isLoaded: true,
-                      error
-                    });
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201)){
+                    console.log("posted successfully")
+                    return this.setState({
+                        redirect: true
+                    })
+                    // this.props.history.push('/login')
+                    // return res.text()
                 }
-            )
+                else if((res.status === 401 || res.status === 400 || res.status === 500)){
+                    console.log("Email already exists.")
+                    return (
+                        this.setState({
+                            redirect: false
+                        })
+                    )
+                }
+            })
         }
         catch(e) {
             console.log("Did not connect")
@@ -64,19 +72,19 @@ export class RegisterBox extends Component {
 
 
     renderRedirect = () => {
-      if (this.state.redirect) {
-        return <Redirect to={{
-            pathname: '/login',
-            state: {
+        if (this.state.redirect) {
+            return <Redirect to={{
+                pathname: '/login',
+                state: {
 
-            }
-        }}/>
-      }
-      else if(this.state.redirectDash) {
-          return <Redirect to={{
+                }
+            }}/>
+        }
+        else if(this.state.redirectDash) {
+            return <Redirect to={{
               pathname: '/'
-          }}/>
-      }
+            }}/>
+        }
     }
 
     handleFirstnameChange = (e) => {
@@ -142,7 +150,7 @@ export class RegisterBox extends Component {
                 <div>
                     <center>
                         {this.renderRedirect()}
-                        <Button type="submit" size="lg" onClick={this.onSubmit} >
+                        <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} >
                             Submit
                         </Button>
                     </center>
