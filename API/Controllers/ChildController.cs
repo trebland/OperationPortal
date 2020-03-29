@@ -43,7 +43,7 @@ namespace API.Controllers
 
         [Route("~/api/roster")]
         [HttpGet]
-        public async Task<IActionResult> Roster([FromQuery]GetRosterModel model)
+        public async Task<ActionResult> Roster([FromQuery]GetRosterModel model)
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||

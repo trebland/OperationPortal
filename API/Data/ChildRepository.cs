@@ -34,11 +34,8 @@ namespace API.Data
             {
                 string sql = @"SELECT c.*,
                                       cl.description,
-                                      b.name AS busname,
-                                      s.childid, s.startdate, s.enddate
+                                      b.name AS busname
                               FROM Child c
-                              LEFT JOIN Child_Suspensions s
-                              ON c.id = s.childid
                               LEFT JOIN Class_List cl
                               ON c.classid = cl.id
                               LEFT JOIN Bus b
@@ -47,6 +44,7 @@ namespace API.Data
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@busid", NpgsqlTypes.NpgsqlDbType.Integer).Value = busid;
+                    cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Now;
                     NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
                     con.Open();
                     da.Fill(dt);
@@ -175,6 +173,13 @@ namespace API.Data
                     columns.Append($"@birthday,");
                     updated[parm] = true;
                 }
+                parm++;
+
+                if (child.Picture != null)
+                {
+                    columns.Append($"@picture,");
+                    updated[parm] = true;
+                }
 
                 columns.Length = columns.Length - 1;
                 sql = @"INSERT INTO Child (" + Regex.Replace(columns.ToString(), "@" , "")  + @") 
@@ -216,7 +221,12 @@ namespace API.Data
                     {
                         cmd.Parameters.Add($"@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = DateTime.Parse(child.Birthday).Date;
                     }
-                    
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                    }
+
                     cmd.ExecuteNonQuery();
                 }
 
@@ -591,7 +601,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"SELECT id, content, author
+                string sql = @"SELECT id, content, author, datewritten
                                FROM Notes 
                                WHERE childid = @childId";
 
@@ -608,7 +618,7 @@ namespace API.Data
             List<NoteModel> notes = new List<NoteModel>();
             foreach (DataRow dr in dt.Rows)
             {
-                notes.Add(new NoteModel((int)dr["id"], dr["content"].ToString(), dr["author"].ToString()));
+                notes.Add(new NoteModel((int)dr["id"], dr["content"].ToString(), dr["author"].ToString(), (DateTime)dr["datewritten"]));
             }
 
             return notes;
@@ -842,7 +852,7 @@ namespace API.Data
         /// <returns>List of ChildModel objects that are currently marked as suspended</returns>
         public List<ChildModel> ViewSuspensions()
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             DataTable dt = new DataTable();
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -886,7 +896,7 @@ namespace API.Data
         /// </summary>
         public bool IsSuspended(int childId)
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             DataTable dt = new DataTable();
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -909,6 +919,42 @@ namespace API.Data
             }
 
             return dt.Rows.Count != 0 ? true : false;
+        }
+
+        /// <summary>
+        /// Given a child ID, return current suspension timeframe, if any
+        /// </summary>
+        public DateTime[] GetSuspension(int childId)
+        {
+            DateTime now = DateTime.Now;
+            DataTable dt = new DataTable();
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT startdate, enddate, childId
+                               FROM Child_Suspensions
+                               WHERE startdate <= @now
+                               AND enddate >= @now
+                               AND childid = @childId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@now", NpgsqlTypes.NpgsqlDbType.Date).Value = now;
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            // Not suspended
+            if (dt.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            return new DateTime[2] { (DateTime)dt.Rows[0]["startdate"], (DateTime)dt.Rows[0]["enddate"] };
         }
 
         /// <summary>
@@ -981,10 +1027,34 @@ namespace API.Data
                 Name = dr["busname"].ToString()
             };
             child.Birthday = dr["birthday"].ToString();
-            child.IsSuspended = IsSuspended((int)dr["id"]);
             child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
-            child.SuspendedStart = DBNull.Value.Equals(dr["startdate"]) ? DateTime.MinValue : ((DateTime)dr["startdate"]);
-            child.SuspendedEnd = DBNull.Value.Equals(dr["enddate"]) ? DateTime.MinValue : ((DateTime)dr["enddate"]);
+
+            // Child was already found to be suspended
+            if (dr.Table.Columns.Contains("startdate"))
+            {
+                child.SuspendedStart = DBNull.Value.Equals(dr["startdate"]) ? DateTime.MinValue : ((DateTime)dr["startdate"]);
+                child.SuspendedEnd = DBNull.Value.Equals(dr["enddate"]) ? DateTime.MinValue : ((DateTime)dr["enddate"]);
+                child.IsSuspended = true;
+            } 
+            
+            // Check if child was suspended
+            else
+            {
+                DateTime[] suspension = GetSuspension((int)dr["id"]);
+                if (suspension == null)
+                {
+                    child.SuspendedStart = DateTime.MinValue;
+                    child.SuspendedEnd = DateTime.MinValue;
+                } 
+                
+                else
+                {
+                    child.SuspendedStart = suspension[0];
+                    child.SuspendedEnd = suspension[1];
+                    child.IsSuspended = true;
+                }
+            }
+            
             child.IsCheckedIn = IsCheckedIn((int)dr["id"]);
 
             return child;
@@ -992,7 +1062,7 @@ namespace API.Data
 
         private bool IsCheckedIn(int childid)
         {
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             bool checkedIn = false;
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {

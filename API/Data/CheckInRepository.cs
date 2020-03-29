@@ -26,7 +26,7 @@ namespace API.Data
         public int CheckInChild(int childid)
         {
             int numVisits = 0;
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
@@ -72,7 +72,7 @@ namespace API.Data
         public int CheckInVolunteer(int volunteerId)
         {
             int numVisits = 0;
-            DateTime now = DateTime.UtcNow;
+            DateTime now = DateTime.Now;
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 con.Open();
