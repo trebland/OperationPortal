@@ -13,6 +13,8 @@ import 'package:basic_front/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:basic_front/REST/Get_RetrieveUser.dart';
 import 'package:basic_front/REST/Get_RetrieveVolunteers.dart';
 import 'package:basic_front/REST/Post_ConfirmVolunteerAttendance.dart';
+import 'package:basic_front/Staff/Staff_BusViewer.dart';
+import 'package:basic_front/Staff/Staff_ClassViewer.dart';
 import 'package:basic_front/Staff/Staff_SuspendedProfileViewer.dart';
 import 'package:basic_front/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:basic_front/Structs/Bus.dart';
@@ -34,9 +36,9 @@ import '../Storage.dart';
 import 'Staff_ProfileViewer.dart';
 
 class Staff_ActiveDashboard_Page extends StatefulWidget {
-  Staff_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
+  Staff_ActiveDashboard_Page({Key key, this.user}) : super(key: key);
 
-  final Profile profile;
+  final User user;
 
   @override
   Staff_ActiveDashboard_State createState() => Staff_ActiveDashboard_State();
@@ -283,7 +285,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
         title: Text('Dashboard'),
         actions: <Widget>[
           buildRefreshButton(),
-          buildProfileButton(context, widget.profile),
+          buildProfileButton(context, widget.user.profile),
           buildLogoutButton(context),
         ],
         bottom: TabBar(
@@ -559,7 +561,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       ),
                       Container(
                         child: FlatButton(
-                          onPressed: () => null,
+                          onPressed: () {
+                            if(busRouteValue != "Select Route")
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_BusViewer_Page(busId: busRouteValue,)));
+                          },
                           child: Text("Info", style: TextStyle(color: Colors.white)),
                         ),
                         decoration: new BoxDecoration(
@@ -625,7 +630,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                       ),
                       Container(
                         child: FlatButton(
-                          onPressed: () => null,
+                          onPressed: () {
+                            if (classIdValue != "Select Class")
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ClassViewer_Page(classId: classIdValue,)));
+                          },
                           child: Text("Info", style: TextStyle(color: Colors.white)),
                         ),
                         decoration: new BoxDecoration(
@@ -711,7 +719,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                   subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                   onTap: ()
                                   {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(profile: widget.profile, child: children[index])));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: children[index])));
                                   },
                                   dense: false,
                                 ),
@@ -797,7 +805,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     subtitle: Text('${suspended[index].birthday != null && suspended[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(suspended[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(profile: widget.profile, child: suspended[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: suspended[index])));
                                     },
                                     dense: false,
                                   ),

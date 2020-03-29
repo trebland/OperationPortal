@@ -31,7 +31,7 @@ class Bus {
   factory Bus.fromJson(Map<String, dynamic> json) {
     return Bus(
       id: json['id'],
-      name: json['name'],
+      name: json['name'] != null ?  json['name'] : "N/A",
       driverId: json['driverId'],
       driverName: json['driverName'] != null ?  json['driverName'] : "N/A",
       route: json['route'] != null ?  json['route'] : "N/A",

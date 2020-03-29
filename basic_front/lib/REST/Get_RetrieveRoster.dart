@@ -9,12 +9,12 @@ Future<List<RosterChild>> RetrieveRoster (String token, String busId, String cla
   int adjClassId;
 
 
-  if (busId == "Select Route")
+  if (busId == "Select Route" || busId.isEmpty)
     adjBusId = 0;
   else
     adjBusId = int.parse(busId);
 
-  if (classId == "Select Class")
+  if (classId == "Select Class" || classId.isEmpty)
     adjClassId = 0;
   else
     adjClassId = int.parse(classId);

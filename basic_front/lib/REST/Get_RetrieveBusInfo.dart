@@ -15,9 +15,9 @@ Future<Bus> RetrieveBusInfo (String token, String id, BuildContext context) asyn
 
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
-    Bus mPost = Bus.fromJson(json.decode(response.body));
+    RetrieveBusInfo_Success mPost = RetrieveBusInfo_Success.fromJson(json.decode(response.body));
 
-    return mPost;
+    return mPost.bus;
   } else {
     // If that call was not successful, throw an error.
     RetrieveBusInfo_Failure mPost = RetrieveBusInfo_Failure.fromJson(json.decode(response.body));
@@ -33,6 +33,18 @@ Future<Bus> RetrieveBusInfo (String token, String id, BuildContext context) asyn
     );
 
     throw Exception('Failed to load post');
+  }
+}
+
+class RetrieveBusInfo_Success {
+  Bus bus;
+
+  RetrieveBusInfo_Success({this.bus});
+
+  factory RetrieveBusInfo_Success.fromJson(Map<String, dynamic> json) {
+    return RetrieveBusInfo_Success(
+      bus: json['bus'] != null ? Bus.fromJson(json['bus']) : null,
+    );
   }
 }
 

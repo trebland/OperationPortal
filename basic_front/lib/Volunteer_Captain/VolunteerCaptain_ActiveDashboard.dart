@@ -8,6 +8,7 @@ import 'package:basic_front/REST/Get_RetrieveVolunteers.dart';
 import 'package:basic_front/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:basic_front/Structs/Profile.dart';
 import 'package:basic_front/Structs/RosterChild.dart';
+import 'package:basic_front/Structs/User.dart';
 import 'package:basic_front/Structs/Volunteer.dart';
 import 'package:basic_front/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,9 @@ import '../Storage.dart';
 
 
 class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
-  VolunteerCaptain_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
+  VolunteerCaptain_ActiveDashboard_Page({Key key, this.user}) : super(key: key);
 
-  final Profile profile;
+  final User user;
 
   @override
   VolunteerCaptain_ActiveDashboard_State createState() => VolunteerCaptain_ActiveDashboard_State();
@@ -169,7 +170,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
           title: Text('Dashboard'),
           actions: <Widget>[
             buildRefreshButton(),
-            buildProfileButton(context, widget.profile),
+            buildProfileButton(context, widget.user.profile),
             buildLogoutButton(context),
           ],
           bottom: TabBar(
@@ -387,7 +388,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                         subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                         onTap: ()
                                         {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.profile, child: children[index])));
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: children[index])));
                                         },
                                         dense: false,
                                       ),

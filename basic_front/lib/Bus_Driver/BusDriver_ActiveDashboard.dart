@@ -31,7 +31,7 @@ import 'package:flutter/services.dart';
 import '../Storage.dart';
 
 class BusDriver_ActiveDashboard_Page extends StatefulWidget {
-  BusDriver_ActiveDashboard_Page({Key key, this.profile}) : super(key: key);
+  BusDriver_ActiveDashboard_Page({Key key, this.user}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,7 +42,7 @@ class BusDriver_ActiveDashboard_Page extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final Profile profile;
+  final User user;
 
   @override
   BusDriver_ActiveDashboard_State createState() => BusDriver_ActiveDashboard_State();
@@ -194,7 +194,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
         title: Text('Dashboard'),
         actions: <Widget>[
           buildRefreshButton(),
-          buildProfileButton(context, widget.profile),
+          buildProfileButton(context, widget.user.profile),
           buildLogoutButton(context),
         ],
         bottom: TabBar(
@@ -425,7 +425,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                     subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.profile, child: children[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: children[index])));
                                     },
                                     dense: false,
                                   ),
@@ -512,7 +512,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                     subtitle: Text('${suspended[index].birthday != null && suspended[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(suspended[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.profile, child: suspended[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: suspended[index])));
                                     },
                                     dense: false,
                                   ),

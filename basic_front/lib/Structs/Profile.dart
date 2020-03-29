@@ -3,8 +3,9 @@ class Profile {
   String firstName;
   String lastName;
   String role;
+  bool canEditInventory;
 
-  Profile ({this.id, this.firstName, this.lastName, this.role});
+  Profile ({this.id, this.firstName, this.lastName, this.role, this.canEditInventory});
 
   factory Profile.fromJson (Map<String, dynamic> json)
   {
@@ -13,6 +14,7 @@ class Profile {
       firstName: json['firstName'],
       lastName: json['lastName'],
       role: json['role'],
+      canEditInventory: json['canEditInventory'],
     );
   }
 }

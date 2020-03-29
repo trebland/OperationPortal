@@ -29,25 +29,15 @@ class QRState extends State<QRPage>
   async {
     User user = await RetrieveUser(widget.token, context);
     setState(() {
-      Fluttertoast.showToast(
-          msg: 'Is Checked In?: ${user.checkedIn}',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-
       print(user.profile.role);
       if (user.checkedIn)
       {
         if (user.profile.role == "BusDriver")
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: user.profile,)), (Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(user: user,)), (Route<dynamic> route) => false);
         else if (user.profile.role == "VolunteerCaptain")
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: user.profile,)), (Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(user: user,)), (Route<dynamic> route) => false);
         else
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: user.profile,)),(Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(user: user,)),(Route<dynamic> route) => false);
       }
     });
   }

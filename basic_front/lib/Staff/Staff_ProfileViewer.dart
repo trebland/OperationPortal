@@ -8,6 +8,7 @@ import 'package:basic_front/REST/Get_RetrieveNotes.dart';
 import 'package:basic_front/Structs/RosterChild.dart';
 import 'package:basic_front/Structs/Note.dart';
 import 'package:basic_front/Structs/Profile.dart';
+import 'package:basic_front/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -18,9 +19,9 @@ import '../Structs/Choice.dart';
 import '../SuspensionView.dart';
 
 class Staff_ProfileViewer_Page extends StatefulWidget {
-  Staff_ProfileViewer_Page({Key key, this.profile, this.child}) : super(key: key);
+  Staff_ProfileViewer_Page({Key key, this.user, this.child}) : super(key: key);
 
-  final Profile profile;
+  final User user;
   final RosterChild child;
 
   @override
@@ -76,10 +77,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SuspensionScreen(child: widget.child)),
-    ).then((value) {
-      setState(() {
-      });
-    });
+    );
 
     updateSuspension (result);
   }
@@ -190,7 +188,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       child: FlatButton(
                         child: Text("Add Note", style: TextStyle(color: Colors.white)),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.profile, child: widget.child))).then((value) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.user.profile, child: widget.child))).then((value) {
                             setState(() {
                             });
                           });
@@ -273,15 +271,5 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
         ],
       ),
     );
-  }
-
-  List<PopupMenuItem<Choice>> ReturnDummyList ()
-  {
-    List<PopupMenuItem<Choice>> list = new List<PopupMenuItem<Choice>>();
-    list.add(PopupMenuItem<Choice>(
-      value: new Choice("Edit"),
-      child: Text("Edit"),
-    ));
-    return list;
   }
 }

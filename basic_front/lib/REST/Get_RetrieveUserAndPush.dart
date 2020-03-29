@@ -23,26 +23,16 @@ Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
     // If the call to the server was successful, parse the JSON.
     User mPost = User.fromJson(json.decode(response.body));
 
-    Fluttertoast.showToast(
-        msg: mPost.profile.role,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-
     if (mPost.profile.role == "Staff")
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(profile: mPost.profile,)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Staff_ActiveDashboard_Page(user: mPost,)));
     else if (mPost.checkedIn)
     {
       if (mPost.profile.role == "BusDriver")
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(profile: mPost.profile,)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_ActiveDashboard_Page(user: mPost,)));
       else if (mPost.profile.role == "VolunteerCaptain")
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(profile: mPost.profile,)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ActiveDashboard_Page(user: mPost,)));
       else
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(profile: mPost.profile,)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_ActiveDashboard_Page(user: mPost,)));
     }
     else
     {
