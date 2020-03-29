@@ -201,7 +201,7 @@ namespace API.Data
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     YearStarted = (int)dr["yearstarted"],
-                    CanEditInventory = (bool)dr["caneditinventory"],
+                    CanEditInventory = dr["caneditinventory"] == null ? false : (bool)dr["caneditinventory"],
                     Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"]),
                     Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
