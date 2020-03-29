@@ -47,11 +47,18 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
-               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
-               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
-               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
+            }
+
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
+            // Volunteers must be teachers to have roster access
+            if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && !volunteerRepo.VolunteerIsClassTeacher(user.VolunteerId))
+            {
+               return Utilities.ErrorJson("Not authorized.");
             }
 
             if (model == null || (model.Busid == 0 && model.Classid == 0))
