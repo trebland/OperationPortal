@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Folder for the University images
 wwwroot/universityImages/
+basic_front/android/key.properties
