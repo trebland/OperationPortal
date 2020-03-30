@@ -28,6 +28,8 @@ export class RegisterBox extends Component {
       this.mounted = false
     }
 
+    // https://www.operation-portal.com/api/auth/register
+    // http://localhost:5000/api/auth/register
 
     onSubmit = (e) => {
         try{
@@ -46,8 +48,6 @@ export class RegisterBox extends Component {
                     return this.setState({
                         redirect: true
                     })
-                    // this.props.history.push('/login')
-                    // return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500)){
                     console.log("Email already exists.")

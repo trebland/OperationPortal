@@ -90,15 +90,14 @@ namespace API.Controllers
 
         [Route("~/api/check-in/volunteer")]
         [HttpPost]
-        [AllowAnonymous]
-        public IActionResult CheckInVolunteer(IdModel model)
-        {/*
+        public async Task<IActionResult> CheckInVolunteer(IdModel model)
+        {
             var user = await userManager.GetUserAsync(User);
             if (user == null ||
                 !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
             {
                 return Utilities.ErrorJson("Not authorized.");
-            }*/
+            }
 
             if (model == null || model.Id == 0)
             {

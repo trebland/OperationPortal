@@ -53,6 +53,9 @@ export class LoginBox extends Component {
     }
     formBody = formBody.join("&");
 
+    // https://www.operation-portal.com/api/auth/token
+    // http://localhost:5000/api/auth/token
+
     try{
         fetch('https://www.operation-portal.com/api/auth/token' , {
             method: "POST",

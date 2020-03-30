@@ -224,7 +224,7 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                        cmd.Parameters.Add($"@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
                     }
 
                     cmd.ExecuteNonQuery();
