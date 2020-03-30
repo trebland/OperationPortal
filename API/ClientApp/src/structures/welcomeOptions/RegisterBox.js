@@ -29,10 +29,11 @@ export class RegisterBox extends Component {
     }
 
     // https://www.operation-portal.com/api/auth/register
+    // http://localhost:5000/api/auth/register
 
     onSubmit = (e) => {
         try{
-            fetch('http://localhost:5000/api/auth/register' , {
+            fetch('https://www.operation-portal.com/api/auth/register' , {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
