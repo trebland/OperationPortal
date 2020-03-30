@@ -109,6 +109,20 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
     classIds = tempList;
   }
 
+  bool filterCheckedIn;
+
+  List<RosterChild> FilterChildren (List<RosterChild> children)
+  {
+    List<RosterChild> newList = new List<RosterChild>();
+    for (RosterChild c in children)
+    {
+      if (c.isCheckedIn)
+        newList.add(c);
+    }
+
+    return newList;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -116,6 +130,8 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
     myTabs = new List<Tab>();
     storage = new Storage();
     classIds = new List<String>();
+
+    filterCheckedIn = false;
 
     if (widget.user.isTeacher)
       myTabs.add(Tab(text: "Roster"));
@@ -239,6 +255,16 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
                   margin: EdgeInsets.all(10),
                 ),
                 Container(
+                  child: CheckboxListTile(
+                    title: const Text('Filter Checked In'),
+                    value: filterCheckedIn,
+                    onChanged: (bool value) {
+                      setState(() { filterCheckedIn = !filterCheckedIn; });
+                    },
+                    secondary: const Icon(Icons.filter_tilt_shift),
+                  ),
+                ),
+                Container(
                   child: IntrinsicHeight(
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -291,6 +317,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
                           } else {
                             childrenData = snapshot.data;
                             children = displayChildren.length > 0 ? displayChildren : snapshot.data;
+                            filterCheckedIn ? children = FilterChildren(children) : children;
                             return Expanded(
                               child: new ListView.builder(
                                 itemCount: children.length,

@@ -87,7 +87,7 @@ class AddChildState extends State<AddChildPage>
     String parsedNumber = "";
     number.runes.forEach((int rune) {
       var character=new String.fromCharCode(rune);
-      if (rune > 9)
+      if (rune < 48 || rune > 57)
       {
         character = "";
       }

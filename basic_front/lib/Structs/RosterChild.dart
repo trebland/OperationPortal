@@ -16,11 +16,12 @@ class RosterChild {
   String startSuspension;
   String endSuspension;
   bool isSuspended;
+  bool isCheckedIn;
 
 
   RosterChild({this.id, this.firstName, this.lastName,
     this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.picture,
-    this.startSuspension, this.endSuspension, this.isSuspended});
+    this.startSuspension, this.endSuspension, this.isSuspended, this.isCheckedIn});
 
   factory RosterChild.fromJson(Map<String, dynamic> json) {
     return RosterChild(
@@ -36,6 +37,7 @@ class RosterChild {
       startSuspension: json['suspendedStart'] == null ? null : json['suspendedStart'],
       endSuspension: json['suspendedEnd'] == null ? null : json['suspendedEnd'],
       isSuspended: json['isSuspended'],
+      isCheckedIn: json['isCheckedIn'],
     );
   }
 }

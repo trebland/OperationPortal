@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:basic_front/REST/Get_RetrieveBuses.dart';
+import 'package:basic_front/Structs/Bus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -39,8 +41,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
   final genderController = new TextEditingController();
   final birthdayController = new TextEditingController();
   final preferredNameController = new TextEditingController();
-
-  // final busController = new TextEditingController();
+  final busController = new TextEditingController();
 
   DateTime selectedDate;
   int currentYear;
@@ -52,15 +53,28 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
 
   Gender _gender;
 
+  List<String> busIds = new List<String>();
+
+  List<String> RetrieveBusIds (List<Bus> buses)
+  {
+    List<String> tempList = new List<String>();
+    tempList.add("Select Bus");
+    for (Bus b in buses)
+      {
+        tempList.add('${b.id}');
+      }
+    return tempList;
+  }
+
   @override
   void initState() {
     storage = new Storage();
     currentYear = DateTime.now().year;
     previousYears = currentYear - 25;
 
-    busDropdownValue = "Select Bus";
-
     selectedDate = DateTime.now();
+    busDropdownValue = "Select Bus";
+    super.initState();
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -351,7 +365,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     );
   }
 
-  /*Widget buildBusRow()
+  Widget buildBusRow()
   {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -404,40 +418,94 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           ),
           margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
         ),
-        Container(
-          child: DropdownButton<String>(
-            value: busDropdownValue,
-            icon: Icon(Icons.arrow_downward),
-            iconSize: 24,
-            elevation: 16,
-            style: TextStyle(
-                color: Colors.deepPurple
+        FutureBuilder(
+            future: storage.readToken().then((value) {
+              return RetrieveBuses(value);
+            }),
+            builder: (BuildContext context, AsyncSnapshot<List<Bus>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return new Text('Issue Posting Data');
+                case ConnectionState.waiting:
+                  return new Center(child: new CircularProgressIndicator());
+                case ConnectionState.active:
+                  return new Text('');
+                case ConnectionState.done:
+                  if (snapshot.hasError) {
+                    return Text("Bus Ids failed to load");
+                  } else {
+                    return Container(
+                      child: DropdownButton<String>(
+                        value: busDropdownValue,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(
+                            color: Colors.deepPurple
+                        ),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String newValue) {
+                          setState(() {
+                            busDropdownValue = newValue;
+                            if (busDropdownValue == "Select Bus")
+                              busController.text = "";
+                            else
+                              busController.text = busDropdownValue;
+                          });
+                        },
+                        items: RetrieveBusIds(snapshot.data)
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text('$value'),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                  break;
+                default:
+                  return null;
+              }
+            }
+          /*Container(
+            child: DropdownButton<String>(
+              value: busDropdownValue,
+              icon: Icon(Icons.arrow_downward),
+              iconSize: 24,
+              elevation: 16,
+              style: TextStyle(
+                  color: Colors.deepPurple
+              ),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  busDropdownValue = newValue;
+                  if (busDropdownValue == "Select Bus")
+                    busController.text = "";
+                  else
+                    busController.text = busDropdownValue;
+                });
+              },
+              items: busIds
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text('$value'),
+                );
+              }).toList(),
             ),
-            underline: Container(
-              height: 2,
-              color: Colors.deepPurpleAccent,
-            ),
-            onChanged: (String newValue) {
-              setState(() {
-                busDropdownValue = newValue;
-              });
-              if (busDropdownValue != "Select Bus")
-                busController.text = busDropdownValue;
-              else
-                busController.text = "";
-            },
-            items: <String>["Select Bus", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text('$value'),
-              );
-            }).toList(),
-          ),
-        ),
+          ),*/
+        )
       ],
     );
-  }*/
+  }
 
   Widget buildButtonBar (BuildContext context)
   {
@@ -455,7 +523,9 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           onPressed: ()
           {
             storage.readToken().then((value) {
-              CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber, widget.imagePath, genderController.text, birthdayController.text, "", context);
+              CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber,
+                  widget.imagePath, genderController.text, birthdayController.text, preferredNameController.text,
+                  busController.text, context);
             });
           },
           color: Colors.amber,
@@ -463,6 +533,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
       ],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -483,8 +554,8 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                 children: <Widget>[
                   buildBirthdayColumn(),
                   buildGenderColumn(),
-                  //buildBusRow(),
                   buildPreferredNameColumn(),
+                  buildBusRow(),
                   buildButtonBar(context),
                 ],
               ),

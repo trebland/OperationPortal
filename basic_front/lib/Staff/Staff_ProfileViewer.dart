@@ -94,6 +94,90 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
+  /*Widget buildContactInformationRow()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Contact Number",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        widget.child != null && birthday.isNotEmpty ? '${calculateBirthday(birthday)}' : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Birthday",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        birthday != null && birthday.isNotEmpty ? birthday.split(' ')[0] : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Grade",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          grade != null ? '$grade' : "N/A",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.all(10),
+    );
+  }*/
+
   @override
   void initState() {
     suspensionController.text = checkSuspension();

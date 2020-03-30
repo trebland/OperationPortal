@@ -171,6 +171,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   Storage storage;
   String token;
 
+  bool filterCheckedIn;
+
   List<String> busIds = new List<String>();
   List<String> classIds = new List<String>();
 
@@ -229,6 +231,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 
     busRouteValue = "Select Route";
     classIdValue = "Select Class";
+    filterCheckedIn = false;
 
     busRouteController.text = busRouteValue;
     classIdController.text = classIdValue;
@@ -276,6 +279,18 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   int calculateBirthday(RosterChild child)
   {
     return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
+  }
+
+  List<RosterChild> FilterChildren (List<RosterChild> children)
+  {
+    List<RosterChild> newList = new List<RosterChild>();
+    for (RosterChild c in children)
+      {
+        if (c.isCheckedIn)
+          newList.add(c);
+      }
+
+    return newList;
   }
 
   @override
@@ -340,7 +355,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                   margin: EdgeInsets.all(10),
                 ),
                 FutureBuilder(
-                    future: RetrieveUser(barcode, context),
+                    future: barcode.isNotEmpty ? RetrieveUser(barcode, context) : null,
                     builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.none:
@@ -651,6 +666,16 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
               margin: EdgeInsets.all(10),
             ),
             Container(
+              child: CheckboxListTile(
+                title: const Text('Filter Checked In'),
+                value: filterCheckedIn,
+                onChanged: (bool value) {
+                  setState(() { filterCheckedIn = !filterCheckedIn; });
+                },
+                secondary: const Icon(Icons.filter_tilt_shift),
+              ),
+            ),
+            Container(
               child: IntrinsicHeight(
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -702,7 +727,8 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                         );
                       } else {
                         childrenData = snapshot.data;
-                        children = displayChildren.length > 0 ? displayChildren : snapshot.data;
+                        children = displayChildren.length > 0 ? displayChildren : childrenData;
+                        filterCheckedIn ? children = FilterChildren(children) : children;
                         return Expanded(
                           child: new ListView.builder(
                             itemCount: children.length,
@@ -802,7 +828,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     ),
                                     title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
                                         style: TextStyle(color: Colors.white)),
-                                    subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension}' + ' to ' + 'End of Suspension: ' + '${suspended[index].endSuspension}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
+                                    subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension.split('T')[0]}' + '\n' + 'End of Suspension: ' + '${suspended[index].endSuspension.split('T')[0]}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: suspended[index])));
@@ -887,11 +913,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                   child: ListTile(
-                                    leading: Icon(
-                                        items[index].resolved ? Icons.check_circle : Icons.cancel,
-                                      color: items[index].resolved ? Colors.green : Colors.red,
-                                      size: 40,
-                                    ),
                                     title: Text('${items[index].name}',
                                         style: TextStyle(color: Colors.white)),
                                     subtitle: Text('Count: ' + '${items[index].count}',

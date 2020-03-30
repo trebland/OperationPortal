@@ -116,6 +116,8 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
   Storage storage;
   String token;
 
+  bool filterCheckedIn;
+
   String barcode;
 
   String busRouteValue;
@@ -164,6 +166,18 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
     );
   }
 
+  List<RosterChild> FilterChildren (List<RosterChild> children)
+  {
+    List<RosterChild> newList = new List<RosterChild>();
+    for (RosterChild c in children)
+    {
+      if (c.isCheckedIn)
+        newList.add(c);
+    }
+
+    return newList;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -171,6 +185,8 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
 
     busRouteValue = "3";
     classIdValue = "Select Class";
+
+    filterCheckedIn = false;
 
     busRouteController.text = busRouteValue;
     classIdController.text = classIdValue;
@@ -357,6 +373,16 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                 margin: EdgeInsets.all(10),
               ),
               Container(
+                child: CheckboxListTile(
+                  title: const Text('Filter Checked In'),
+                  value: filterCheckedIn,
+                  onChanged: (bool value) {
+                    setState(() { filterCheckedIn = !filterCheckedIn; });
+                  },
+                  secondary: const Icon(Icons.filter_tilt_shift),
+                ),
+              ),
+              Container(
                 child: IntrinsicHeight(
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -409,6 +435,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                         } else {
                           childrenData = snapshot.data;
                           children = displayChildren.length > 0 ? displayChildren : snapshot.data;
+                          filterCheckedIn ? children = FilterChildren(children) : children;
                           return Expanded(
                             child: new ListView.builder(
                               itemCount: children.length,
