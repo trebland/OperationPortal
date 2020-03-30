@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.operation-portal"
+        applicationId "org.orlandochildrenschurch.operationportal"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
@@ -63,7 +63,7 @@ android {
         release {
             signingConfig signingConfigs.release
         }
-    }}
+    }
 }
 
 flutter {

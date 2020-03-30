@@ -802,7 +802,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                     ),
                                     title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
                                         style: TextStyle(color: Colors.white)),
-                                    subtitle: Text('${suspended[index].birthday != null && suspended[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(suspended[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
+                                    subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension}' + ' to ' + 'End of Suspension: ' + '${suspended[index].endSuspension}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: suspended[index])));
