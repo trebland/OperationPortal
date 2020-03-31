@@ -21,10 +21,9 @@ import '../Structs/Choice.dart';
 import '../SuspensionView.dart';
 
 class Staff_BusViewer_Page extends StatefulWidget {
-  Staff_BusViewer_Page({Key key, this.user, this.busId}) : super(key: key);
+  Staff_BusViewer_Page({Key key, this.bus}) : super(key: key);
 
-  final User user;
-  final String busId;
+    final Bus bus;
 
   @override
   Staff_BusViewer_State createState() => Staff_BusViewer_State();
@@ -74,50 +73,25 @@ class Staff_BusViewer_State extends State<Staff_BusViewer_Page> {
             "lastTireChange": DateTime,
             "lastMaintenance": DateTime
           */
-          FutureBuilder(
-              future: storage.readToken().then((value) {
-                return RetrieveBusInfo(value, widget.busId, context);
-              }),
-              builder: (BuildContext context, AsyncSnapshot<Bus> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                    return new Text('Issue Posting Data');
-                  case ConnectionState.waiting:
-                    return new Center(child: new CircularProgressIndicator());
-                  case ConnectionState.active:
-                    return new Text('');
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text("Unable to Fetch Bus Info"),
-                      );
-                    } else {
-                      return Center(
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              child: Text("Name:\n${snapshot.data.driverName}", textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white),),
-                              decoration: new BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: new BorderRadius.all(
-                                    new Radius.circular(20)
-                                ),
-                              ),
-                              margin: EdgeInsets.only(
-                                top: 20,
-                              ),
-                              padding: EdgeInsets.all(20),
-                            ),
-                          ],
-                        )
-                      );
-                    }
-                    break;
-                  default:
-                    return null;
-                }
-              }
+          Center(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text("Name:\n${widget.bus.driverName}", textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.all(
+                          new Radius.circular(20)
+                      ),
+                    ),
+                    margin: EdgeInsets.only(
+                      top: 20,
+                    ),
+                    padding: EdgeInsets.all(20),
+                  ),
+                ],
+              )
           ),
         ],
       ),
