@@ -127,6 +127,8 @@ namespace OCCTest.Controllers
             }.Intersect(requestModel.GetScopes());
 
             ticket.SetScopes(scope);
+            ticket.SetAccessTokenLifetime(new TimeSpan(3, 0, 0));
+            ticket.SetAuthorizationCodeLifetime(new TimeSpan(3, 0, 0));
 
             // Sign in the user
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);

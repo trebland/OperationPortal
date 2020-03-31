@@ -47,12 +47,56 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Gets information about a specific volunteer
+        /// </summary>
+        /// <param name="id">The id of the volunteer</param>
+        /// <returns>The volunteer's profile, or an error message if applicable</returns>
+        [Route("~/api/volunteer-info")]
+        [HttpGet]
+        public async Task<IActionResult> VolunteerInfo(int id)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel volunteer;
+
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Must include an id");
+            }
+
+            try
+            {
+                volunteer = repo.GetVolunteer(id);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(configModel.DebugMode ? e.Message : "An error occurred while accessing the database.");
+            }
+
+            if (volunteer == null)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Volunteer = volunteer
+            });
+        }
+
+        /// <summary>
         /// Gets a list of all registered volunteers
         /// </summary>
         /// <returns>All registered volunteers</returns>
         [Route("~/api/volunteer-list")]
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> VolunteerList()
         {
             var user = await userManager.GetUserAsync(User);
