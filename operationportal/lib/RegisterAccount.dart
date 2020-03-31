@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:image_picker/image_picker.dart';
 import 'package:operationportal/Login.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 import 'REST/Post_RegisterAccount.dart';
+import 'TakePicture.dart';
 
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);
@@ -37,6 +39,50 @@ class RegisterAccountState extends State<RegisterAccountPage> {
   TextEditingController _lastNameController = new TextEditingController();
   TextEditingController _passwordController = new TextEditingController();
   TextEditingController _confirmPasswordController = new TextEditingController();
+
+  bool passwordsMatch;
+  String volunteerImagePath;
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      volunteerImagePath = image.path;
+    });
+  }
+
+  Future<void> checkTakePictureResponse (BuildContext context) async {
+    // Ensure that plugin services are initialized so that `availableCameras()`
+    // can be called before `runApp()`
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Obtain a list of the available cameras on the device.
+    final cameras = await availableCameras();
+
+    // Get a specific camera from the list of available cameras.
+    final firstCamera = cameras.first;
+
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PicturePage(camera: firstCamera,)),
+    );
+
+    volunteerImagePath = result;
+    print(File(volunteerImagePath).readAsBytesSync());
+    setState(() {
+    });
+  }
+
+
+
+  @override
+  void initState() {
+    passwordsMatch = false;
+    volunteerImagePath = null;
+
+    super.initState();
+  }
 
   Widget buildEmailRow () {
     return Container(
@@ -218,6 +264,11 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                   inputFormatters: [
                     BlacklistingTextInputFormatter(RegExp(" ")),
                   ],
+                  onChanged: (String newValue) {
+                    setState(() {
+                      passwordsMatch = _confirmPasswordController.text == newValue ? true : false;
+                    });
+                  },
                   decoration: new InputDecoration(
                     labelText: 'Password',
                     border: new OutlineInputBorder(
@@ -233,6 +284,14 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                   ),
                   style: TextStyle(fontSize: 16),
                 ),
+              ),
+              Container(
+                  child: IconButton(
+                    icon: new Icon(Icons.info_outline),
+                    tooltip: "\nPassword must be a minimum of 8 characters and contain each of the following:\n"
+                        "At least 1 Special Character\nAt least 1 Uppercase Letter\nAt least 1 Lowercase Letter\nAt least 1 Number\n",
+                  ),
+                margin: EdgeInsets.only(left: 10),
               ),
             ]
         ),
@@ -271,6 +330,11 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                   inputFormatters: [
                     BlacklistingTextInputFormatter(RegExp(" ")),
                   ],
+                  onChanged: (String newValue) {
+                    setState(() {
+                      passwordsMatch = _passwordController.text == newValue ? true : false;
+                    });
+                  },
                   decoration: new InputDecoration(
                     labelText: 'Confirm Password',
                     border: new OutlineInputBorder(
@@ -287,6 +351,14 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
+              Container(
+                child: IconButton(
+                  icon: passwordsMatch ? Icon(Icons.check_box, color: Colors.green,) : Icon(Icons.check_box_outline_blank),
+                  tooltip: "Password Requirements:\n Password must be a minimum of 8 characters and contain each of the following:\n"
+                      ">=1 Special Character, >=1 Uppercase Letter, >=1 Lowercase Letter, >=1 Number",
+                ),
+                margin: EdgeInsets.only(left: 10),
+              ),
             ]
         ),
       ),
@@ -294,46 +366,94 @@ class RegisterAccountState extends State<RegisterAccountPage> {
     );
   }
 
-  Widget buildPictureButton () {
-    return Container(
-      child: IntrinsicHeight(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>
-            [
-              Container(
-                child: Icon(
-                  Icons.camera_alt,
-                  size: 40,
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: new BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
+  Widget buildTakePicture (BuildContext context)
+  {
+    return Column(
+      children: <Widget>[
+        volunteerImagePath != null ? Container(child: Image.memory(File(volunteerImagePath).readAsBytesSync()), margin: EdgeInsets.all(20),) : Container(),
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
                   ),
-                ),
-                padding: EdgeInsets.only(left: 5),
-              ),
-              Container(
-                child: FlatButton(
-                  child: Text("Take Picture", style: TextStyle(color: Colors.white)),
-                  onPressed: () => null,
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: new BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                  Container(
+                    child: FlatButton(
+                      child: Text("Take Picture", style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        checkTakePictureResponse(context);
+                      },
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
                   ),
-                ),
-                padding: EdgeInsets.only(left: 5),
-              ),
-            ]
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
         ),
-      ),
-      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.add_a_photo,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  ),
+                  Container(
+                    child: FlatButton(
+                      child: Text("Select Picture", style: TextStyle(color: Colors.white)),
+                      onPressed: getImage,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  )
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+        ),
+      ],
     );
   }
 
@@ -395,7 +515,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                           buildLastNameRow(),
                           buildPasswordRow(),
                           buildConfirmPasswordRow(),
-                          buildPictureButton(),
+                          buildTakePicture(context),
                         ],
                       )
                     ),
