@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:operationportal/Widget/Roster.dart';
 import 'package:operationportal/BuildPresets/ActiveDashboard.dart';
 import 'package:operationportal/BuildPresets/AppBar.dart';
 import 'package:operationportal/ItemAddition.dart';
@@ -48,11 +49,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
 {
   String barcode = "";
 
-  String busRouteValue;
-  String classIdValue;
-
-  final busRouteController = TextEditingController();
-  final classIdController = TextEditingController();
   final searchController = TextEditingController();
 
   final List<Tab> myTabs = <Tab>[
@@ -84,32 +80,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
       });
     } else {
       displayVolunteers.clear();
-      setState(() {
-      });
-    }
-  }
-
-  void filterRosterResults(String query) {
-    if (children == null || childrenData == null)
-      return;
-
-    query = query.toUpperCase();
-
-    List<RosterChild> dummySearchList = List<RosterChild>();
-    dummySearchList.addAll(childrenData);
-    if(query.isNotEmpty) {
-      List<RosterChild> dummyListData = List<RosterChild>();
-      dummySearchList.forEach((item) {
-        if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      displayChildren.clear();
-      displayChildren.addAll(dummyListData);
-      setState(() {
-      });
-    } else {
-      displayChildren.clear();
       setState(() {
       });
     }
@@ -171,18 +141,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   Storage storage;
   String token;
 
-  bool filterCheckedIn;
-
-  List<String> busIds = new List<String>();
-  List<String> classIds = new List<String>();
-
   List<Volunteer> displayVolunteers = new List<Volunteer>();
   List<Volunteer> volunteers = new List<Volunteer>();
   List<Volunteer> volunteerData = new List<Volunteer>();
-
-  List<RosterChild> displayChildren = new List<RosterChild>();
-  List<RosterChild> children = new List<RosterChild>();
-  List<RosterChild> childrenData = new List<RosterChild>();
 
   List<RosterChild> displaySuspended = new List<RosterChild>();
   List<RosterChild> suspended = new List<RosterChild>();
@@ -192,57 +153,15 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   List<Item> items = new List<Item>();
   List<Item> itemData = new List<Item>();
 
-  void call_GetRetrieveBuses ()
-  {
-    List<String> tempList = new List<String>();
-    tempList.add("Select Route");
-    storage.readToken().then((value){
-      RetrieveBuses(value).then((value) {
-        for(Bus b in value)
-          tempList.add('${b.id}');
-
-        setState(() {
-          busIds = tempList;
-        });
-      });
-    });
-  }
-
-  void call_GetRetrieveClasses ()
-  {
-    List<String> tempList = new List<String>();
-    tempList.add("Select Class");
-    storage.readToken().then((value){
-      RetrieveClasses(value).then((value) {
-        for(Class c in value)
-          tempList.add('${c.id}');
-
-        setState(() {
-          classIds = tempList;
-        });
-      });
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: myTabs.length);
 
-    busRouteValue = "Select Route";
-    classIdValue = "Select Class";
-    filterCheckedIn = false;
-
-    busRouteController.text = busRouteValue;
-    classIdController.text = classIdValue;
-
     storage = new Storage();
     storage.readToken().then((value) {
       token = value;
     });
-
-    call_GetRetrieveBuses();
-    call_GetRetrieveClasses();
   }
 
   @override
@@ -262,35 +181,9 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
        ),
        onPressed: () {
          setState(() {
-           call_GetRetrieveBuses();
-           call_GetRetrieveClasses();
          });
        },
      );
-  }
-
-  DateTime parseBirthday (String birthday)
-  {
-    List<String> dateBreak = new List<String>();
-    dateBreak = birthday.split('/');
-    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
-  }
-
-  int calculateBirthday(RosterChild child)
-  {
-    return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
-  }
-
-  List<RosterChild> FilterChildren (List<RosterChild> children)
-  {
-    List<RosterChild> newList = new List<RosterChild>();
-    for (RosterChild c in children)
-      {
-        if (c.isCheckedIn)
-          newList.add(c);
-      }
-
-    return newList;
   }
 
   @override
@@ -497,7 +390,6 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
                                   child: ListTile(
                                     leading: Container(
                                       child: CircleAvatar(
-                                        backgroundImage: AssetImage('OCC_LOGO.png'),
                                       ),
                                     ),
                                     title: Text('${volunteers[index].firstName} ' + '${volunteers[index].lastName}',
@@ -523,246 +415,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
             ],
           );
         else if(tab.text == "Roster")
-          return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Text("Bus Route", textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        margin: EdgeInsets.only(right: 20),
-                      ),
-                      Container(
-                        child: DropdownButton<String>(
-                          value: busRouteValue,
-                          icon: Icon(Icons.arrow_downward),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(
-                              color: Colors.deepPurple
-                          ),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String newValue) {
-                            setState(() {
-                              busRouteValue = newValue;
-                              busRouteController.text = newValue;
-                            });
-                          },
-                          items: busIds
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text('$value'),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      Container(
-                        child: FlatButton(
-                          onPressed: () {
-                            if(busRouteValue != "Select Route")
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_BusViewer_Page(busId: busRouteValue,)));
-                          },
-                          child: Text("Info", style: TextStyle(color: Colors.white)),
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.only(left: 10),
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.all(10),
-            ),
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>
-                    [
-                      Container(
-                        child: Text("Class Id", textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        margin: EdgeInsets.only(right: 20),
-                      ),
-                      Container(
-                        child: DropdownButton<String>(
-                          value: classIdValue,
-                          icon: Icon(Icons.arrow_downward),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(
-                              color: Colors.deepPurple
-                          ),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (String newValue) {
-                            setState(() {
-                              classIdValue = newValue;
-                              classIdController.text = newValue;
-                            });
-                          },
-                          items: classIds
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text('$value'),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      Container(
-                        child: FlatButton(
-                          onPressed: () {
-                            if (classIdValue != "Select Class")
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ClassViewer_Page(classId: classIdValue,)));
-                          },
-                          child: Text("Info", style: TextStyle(color: Colors.white)),
-                        ),
-                        decoration: new BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: new BorderRadius.all(
-                              new Radius.circular(20)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(5),
-                        margin: EdgeInsets.only(left: 10),
-                      ),
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.all(10),
-            ),
-            Container(
-              child: CheckboxListTile(
-                title: const Text('Filter Checked In'),
-                value: filterCheckedIn,
-                onChanged: (bool value) {
-                  setState(() { filterCheckedIn = !filterCheckedIn; });
-                },
-                secondary: const Icon(Icons.filter_tilt_shift),
-              ),
-            ),
-            Container(
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>
-                    [
-                      Flexible(
-                        child: TextField(
-                          onChanged: (value) {
-                            filterRosterResults(value);
-                          },
-                          controller: searchController,
-                          decoration: InputDecoration(
-                              labelText: "Search",
-                              prefixIcon: Icon(Icons.search),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(25.0)))
-                          ),
-                        ),
-                      ),
-                      Container(
-                          child: FlatButton(
-                              child: Text("Add Child"),
-                              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
-                          )
-                      )
-                    ]
-                ),
-              ),
-              margin: EdgeInsets.only(left: 10, bottom: 10),
-            ),
-            FutureBuilder(
-                future: storage.readToken().then((value) {
-                  return RetrieveRoster(value, busRouteController.text, classIdController.text);
-                }),
-                builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return new Text('Issue Posting Data');
-                    case ConnectionState.waiting:
-                      return new Center(child: new CircularProgressIndicator());
-                    case ConnectionState.active:
-                      return new Text('');
-                    case ConnectionState.done:
-                      if (snapshot.hasError) {
-                        children = null;
-                        return Center(
-                          child: Text("Unable to Fetch Roster (May be an unassigned route!)"),
-                        );
-                      } else {
-                        childrenData = snapshot.data;
-                        children = displayChildren.length > 0 ? displayChildren : childrenData;
-                        filterCheckedIn ? children = FilterChildren(children) : children;
-                        return Expanded(
-                          child: new ListView.builder(
-                            itemCount: children.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                child: ListTile(
-                                  leading: Container(
-                                    child: CircleAvatar(
-                                      backgroundImage: (children[index].picture != null) ? MemoryImage(base64.decode((children[index].picture))) : null,
-                                    ),
-                                  ),
-                                  title: Text('${children[index].firstName} ' + '${children[index].lastName}',
-                                      style: TextStyle(color: Colors.white)),
-                                  subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
-                                  onTap: ()
-                                  {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: children[index])));
-                                  },
-                                  dense: false,
-                                ),
-                                color: Colors.blue[colorCodes[index%2]],
-                              );
-                            },
-                          ),
-                        );
-                      }
-                      break;
-                    default:
-                      return null;
-                  }
-                }
-            ),
-          ],
-        );
+          return RosterWidgetPage(storage: storage, user: widget.user, futureBuses: null, futureClasses: null,);
         else if(tab.text == "Suspended")
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
