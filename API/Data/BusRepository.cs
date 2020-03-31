@@ -26,7 +26,7 @@ namespace API.Data
             NpgsqlDataAdapter da;
             List<BusModel> buses = new List<BusModel>();
             DataTable dt = new DataTable();
-            string sql = "SELECT B.*, V.PreferredName, V.LastName FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id";
+            string sql = "SELECT B.*, V.PreferredName, V.LastName, V.Picture FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id";
 
             // Connect to the database
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -50,6 +50,7 @@ namespace API.Data
                         Id = (int)dr["id"],
                         DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
                         DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
+                        DriverPicture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                         Name = dr["name"].ToString(),
                         Route = dr["route"].ToString(),
                         LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),
@@ -96,7 +97,7 @@ namespace API.Data
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = "SELECT B.*, V.PreferredName, V.LastName FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id WHERE B.id = @id LIMIT 1";
+            string sql = "SELECT B.*, V.PreferredName, V.LastName, V.Picture FROM Bus AS B LEFT OUTER JOIN Volunteers AS V ON B.driverId = V.id WHERE B.id = @id LIMIT 1";
 
             // Connect to the database
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -126,6 +127,7 @@ namespace API.Data
                 Id = (int)dr["id"],
                 DriverId = dr["DriverId"] == DBNull.Value ? 0 : (int)dr["DriverId"],
                 DriverName = dr["DriverId"] == DBNull.Value ? "" : dr["preferredName"].ToString() + " " + dr["lastName"].ToString(),
+                DriverPicture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
                 Name = dr["name"].ToString(),
                 Route = dr["route"].ToString(),
                 LastOilChange = dr["lastoilchange"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastoilchange"]),

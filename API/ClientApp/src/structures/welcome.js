@@ -9,7 +9,8 @@ export class Welcome extends Component {
         this.state = {
             redirectLogin: false,
             redirectSign: false,
-            redirectCal: false
+            redirectCal: false,
+            redirectPriv: false
         }
     }
     
@@ -38,7 +39,21 @@ export class Welcome extends Component {
                 }
             }}/>
         }
+        else if(this.state.redirectPriv) {
+            return <Redirect to={{
+                pathname: '/privacy-policy',
+                state: {
+                    loggedin: false
+                }
+            }}/>
+        }
         
+    }
+
+    setRedirectPriv = () => {
+        this.setState({
+            redirectPriv: true
+        })
     }
 
     setRedirectLogin = () => {
@@ -82,6 +97,9 @@ export class Welcome extends Component {
                     View Calendar
                 </Button>
             </center>  
+            <Button variant="primary" size="lg" style={styling.private} onClick={this.setRedirectPriv}>
+                    Privacy Policy
+            </Button>
         </div>
     )
   }
@@ -99,6 +117,11 @@ const styling = {
         marginTop: '75px',
         width: '200px',
         height: '200px'
+    },
+    private: {
+        marginLeft: '15px',
+        marginTop: '290px',
+        marginBottom: '15px'
     }
 }
 
