@@ -246,7 +246,8 @@ namespace API.Controllers
                     HaircutWaiver = child.HaircutWaiver,
                     ParentalEmailOptIn = child.ParentalEmailOptIn,
                     OrangeShirtStatus = child.OrangeShirtStatus,
-                    StartDate = child.StartDate
+                    StartDate = child.StartDate,
+                    IsSuspended = repo.IsSuspended(model.Id)
                 });
             }
             catch (Exception exc)
