@@ -247,25 +247,13 @@ class ItemViewState extends State<ItemViewPage>
         ),
         ListTile(
           title: const Text('Yes'),
+          enabled: itemControllerEditable,
           leading: Radio(
             value: Resolved.Yes,
             groupValue: _resolved,
             onChanged: (Resolved value) {
               setState(() {
                 _resolvedController.text = 'Yes';
-                _resolved = value;
-              });
-            },
-          ),
-        ),
-        ListTile(
-          title: const Text('No'),
-          leading: Radio(
-            value: Resolved.No,
-            groupValue: _resolved,
-            onChanged: (Resolved value) {
-              setState(() {
-                _resolvedController.text = 'No';
                 _resolved = value;
               });
             },
