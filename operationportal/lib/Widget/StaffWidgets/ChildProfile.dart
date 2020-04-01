@@ -262,6 +262,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
       appBar: AppBar(
         title: Text(widget.child.firstName +  " " + widget.child.lastName),
       ),
+      resizeToAvoidBottomPadding: false,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
