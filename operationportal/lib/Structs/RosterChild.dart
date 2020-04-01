@@ -5,6 +5,9 @@ class RosterChild {
   int id;
   String firstName;
   String lastName;
+  String preferredName;
+  String parentName;
+  String contactNumber;
   int grade;
   String gender;
   Class mClass;
@@ -17,8 +20,8 @@ class RosterChild {
   bool isCheckedIn;
 
 
-  RosterChild({this.id, this.firstName, this.lastName,
-    this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.picture,
+  RosterChild({this.id, this.firstName, this.lastName, this.preferredName, this.parentName,
+    this.contactNumber, this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.picture,
     this.startSuspension, this.endSuspension, this.isSuspended, this.isCheckedIn});
 
   factory RosterChild.fromJson(Map<String, dynamic> json) {
@@ -26,6 +29,9 @@ class RosterChild {
       id: json['id'],
       firstName: json['firstName'],
       lastName: json['lastName'],
+      preferredName: json['preferredName'],
+      parentName: json['parentName'],
+      contactNumber: json['contactNumber'],
       grade: json['grade'],
       gender: json['gender'],
       mClass: Class.fromJson(json['class']),

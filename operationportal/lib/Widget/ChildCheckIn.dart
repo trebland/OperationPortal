@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/REST/Get_RetrieveChild.dart';
@@ -117,7 +118,19 @@ class ChildCheckInState extends State<ChildCheckInPage>
                             padding: EdgeInsets.all(10),
                             margin: EdgeInsets.all(10),
                           ),
+                          snapshot.data.isSuspended ?
                           Container(
+                              child: Text("Suspended", style: TextStyle(fontSize: 20, color: Colors.white),),
+                              decoration: new BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: new BorderRadius.all(
+                                    new Radius.circular(20)
+                                ),
+                              ),
+                              margin: EdgeInsets.only(top: 20),
+                            padding: EdgeInsets.all(20),
+                          )
+                              : Container(
                               child: FlatButton(
                                 child: Text("Confirm Attendance", style: TextStyle(fontSize: 20, color: Colors.white),),
                                 onPressed: () {

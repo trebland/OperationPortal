@@ -20,12 +20,14 @@ class Child {
   bool haircutWaiver;
   bool parentalEmailOptIn;
   String picture;
+  bool isSuspended;
 
 
   Child({this.id, this.firstName, this.lastName, this.preferredName,
     this.contactNumber, this.parentName, this.busId, this.classId,
     this.grade, this.gender, this.birthday, this.picture,
-    this.parentalWaiver, this.busWaiver, this.haircutWaiver, this.parentalEmailOptIn});
+    this.parentalWaiver, this.busWaiver, this.haircutWaiver, this.parentalEmailOptIn,
+    this.isSuspended});
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
@@ -45,6 +47,7 @@ class Child {
       busWaiver: json['busWaiver'],
       haircutWaiver: json['haircutWaiver'],
       parentalEmailOptIn: json['parentalEmailOptIn'],
+      isSuspended: json['isSuspended'],
     );
   }
 }
