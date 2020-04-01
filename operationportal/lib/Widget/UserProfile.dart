@@ -44,7 +44,7 @@ class UserProfileState extends State<UserProfilePage>
                 child: Text(
                   firstName + "\n" + lastName,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 40),
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ]
