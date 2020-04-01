@@ -4,12 +4,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> CreateChildFull (String token, String firstName, String lastName, String parentName,
     String contactNumber, String childImagePath, String birthday, String gender,
     String preferredName, String busId, BuildContext context) async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Adding Child",)));
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
   Uint8List bytes = (await File(childImagePath).readAsBytes());
@@ -79,7 +80,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
     CreateChild_Failure mPost = CreateChild_Failure.fromJson(json.decode(response.body));
 
     Fluttertoast.showToast(
-        msg: mPost.error,
+        msg: "Unable to add child",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -88,6 +89,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
         fontSize: 16.0
     );
 
+    Navigator.pop(context);
     throw Exception('Failed to load post');
   }
 }

@@ -1,18 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:image_picker/image_picker.dart';
-import 'package:operationportal/Login.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 import 'REST/Post_RegisterAccount.dart';
-import 'TakePicture.dart';
+import 'Widget/TakePicture.dart';
 
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);

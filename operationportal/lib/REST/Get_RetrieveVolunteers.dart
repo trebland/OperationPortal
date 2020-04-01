@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Volunteer.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Volunteer.dart';
 
 
 Future<List<Volunteer>> RetrieveVolunteers (String token, String currentDay)

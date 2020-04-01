@@ -1,10 +1,9 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/User.dart';
 
 Future<User> RetrieveUser (String token, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/auth/user";
