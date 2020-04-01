@@ -1,12 +1,7 @@
-import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:operationportal/Structs/Bus.dart';
 
 import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
-import 'package:operationportal/Structs/Bus.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:http/http.dart' as http;
 
 
 class BusProfilePage extends StatefulWidget {
@@ -19,18 +14,6 @@ class BusProfilePage extends StatefulWidget {
 }
 
 class BusProfileState extends State<BusProfilePage> {
-
-/*
-  “bus”:
-  {"id": int,
-  "driverId": int,
-  "driverName": "string",
-  "name": "string",
-  "route": "string",
-  "lastOilChange": DateTime,
-  "lastTireChange": DateTime,
-  "lastMaintenance": DateTime
-*/
   Storage storage;
   Bus bus;
 

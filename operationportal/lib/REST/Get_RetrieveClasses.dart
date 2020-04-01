@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Class.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Class.dart';
 
 Future<List<Class>> RetrieveClasses (String token) async {
 

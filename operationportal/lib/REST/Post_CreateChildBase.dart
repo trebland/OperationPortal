@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
 
 Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, BuildContext context) async {

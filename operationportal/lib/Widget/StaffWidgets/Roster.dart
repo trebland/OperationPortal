@@ -1,16 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:operationportal/ChildAddition/AddChild.dart';
 import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Get_RetrieveClasses.dart';
+import 'package:operationportal/REST/Get_RetrieveRoster.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Class.dart';
+import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
-import 'package:operationportal/ChildAddition/AddChild.dart';
-import 'package:operationportal/REST/Get_RetrieveRoster.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
-
-import 'package:flutter/material.dart';
 import 'package:operationportal/Widget/StaffWidgets/BusProfile.dart';
 import 'package:operationportal/Widget/StaffWidgets/ClassProfile.dart';
 
@@ -31,8 +32,6 @@ class RosterWidgetPage extends StatefulWidget {
 
 class RosterWidgetState extends State<RosterWidgetPage>
 {
-  final List<int> colorCodes = <int>[600, 500];
-
   final busRouteController = TextEditingController();
   final classIdController = TextEditingController();
   final searchController = TextEditingController();
@@ -48,18 +47,6 @@ class RosterWidgetState extends State<RosterWidgetPage>
   List<RosterChild> displayChildren;
   List<RosterChild> children;
   List<RosterChild> childrenData;
-
-  DateTime parseBirthday (String birthday)
-  {
-    List<String> dateBreak = new List<String>();
-    dateBreak = birthday.split('/');
-    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
-  }
-
-  int calculateBirthday(RosterChild child)
-  {
-    return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
-  }
   
   void filterRosterResults(String query) {
     if (children == null || childrenData == null)

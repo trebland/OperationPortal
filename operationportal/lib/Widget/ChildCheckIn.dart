@@ -1,25 +1,24 @@
+import 'dart:convert';
+
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
-import 'package:operationportal/REST/Get_RetrieveUser.dart';
-import 'package:operationportal/REST/Get_RetrieveVolunteerInfo.dart';
-import 'package:operationportal/REST/Post_ConfirmVolunteerAttendance.dart';
-
 import 'package:flutter/services.dart';
+import 'package:operationportal/REST/Get_RetrieveChild.dart';
+import 'package:operationportal/REST/Post_ConfirmChildAttendance.dart';
+import 'package:operationportal/Structs/Child.dart';
 import 'package:operationportal/Structs/Storage.dart';
-import 'package:operationportal/Structs/User.dart';
-import 'package:operationportal/Structs/Volunteer.dart';
 
-class CheckInWidgetPage extends StatefulWidget
+class ChildCheckInPage extends StatefulWidget
 {
-  CheckInWidgetPage({Key key, this.storage}) : super(key: key);
+  ChildCheckInPage({Key key, this.storage}) : super(key: key);
 
   final Storage storage;
 
   @override
-  CheckInWidgetState createState() => CheckInWidgetState();
+  ChildCheckInState createState() => ChildCheckInState();
 }
 
-class CheckInWidgetState extends State<CheckInWidgetPage>
+class ChildCheckInState extends State<ChildCheckInPage>
 {
   String barcode = "";
 
@@ -38,7 +37,7 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                   children: <Widget>
                   [
                     Flexible(
-                      child: Text("Recent Volunteer", style: TextStyle(fontSize: 30, color: Colors.white),),
+                      child: Text("Recent Child", style: TextStyle(fontSize: 30, color: Colors.white),),
                     ),
                     Container(
                       child: FlatButton(
@@ -65,12 +64,11 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.all(10),
           ),
-          barcode == null ? Container() :
           FutureBuilder(
-              future: widget.storage.readToken().then((value){
-                return RetrieveVolunteerInfo(value, barcode, context);
+              future: widget.storage.readToken().then((value) {
+                return RetrieveChild(value, barcode, context);
               }),
-              builder: (BuildContext context, AsyncSnapshot<Volunteer> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<Child> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                     return new Text('Issue Posting Data');
@@ -93,6 +91,7 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                                   [
                                     Container(
                                       child: CircleAvatar(
+                                        backgroundImage: (snapshot.data.picture != null) ? MemoryImage(base64.decode((snapshot.data.picture))) : null,
                                       ),
                                       height: 200,
                                       width: 200,
@@ -101,7 +100,7 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                                     ),
                                     Flexible(
                                       child: Text(
-                                        (snapshot.data.firstName) + "\n" + (snapshot.data.lastName),
+                                        snapshot.data.firstName + "\n" + snapshot.data.lastName,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontSize: 28, color: Colors.white),
                                       ),
@@ -120,10 +119,10 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                           ),
                           Container(
                               child: FlatButton(
-                                child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                child: Text("Confirm Attendance", style: TextStyle(fontSize: 20, color: Colors.white),),
                                 onPressed: () {
                                   widget.storage.readToken().then((value) {
-                                    ConfirmVolunteerAttendance(value, snapshot.data.id, context);
+                                    ConfirmChildAttendance(value, snapshot.data, context);
                                   });
                                 },
                               ),

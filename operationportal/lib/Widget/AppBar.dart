@@ -1,5 +1,5 @@
-import 'package:operationportal/Structs/Profile.dart';
 import 'package:flutter/material.dart';
+import 'package:operationportal/Structs/Profile.dart';
 
 import '../Login.dart';
 import 'UserProfile.dart';

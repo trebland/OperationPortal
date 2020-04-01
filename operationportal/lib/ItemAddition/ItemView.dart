@@ -1,14 +1,8 @@
-import 'package:operationportal/REST/Delete_Note.dart';
-import 'package:operationportal/REST/Post_EditInventory.dart';
-import 'package:operationportal/REST/Post_EditNote.dart';
 import 'package:flutter/material.dart';
+import 'package:operationportal/REST/Post_EditInventory.dart';
 
-import '../REST/Post_CreateNote.dart';
-import '../Structs/Storage.dart';
-import '../Structs/RosterChild.dart';
 import '../Structs/Item.dart';
-import '../Structs/Note.dart';
-import '../Structs/Profile.dart';
+import '../Structs/Storage.dart';
 
 
 class ItemViewPage extends StatefulWidget {
@@ -40,7 +34,6 @@ class ItemViewState extends State<ItemViewPage>
   Resolved _resolved;
 
   bool itemControllerEditable;
-
 
   Storage storage;
   Item originalItem;

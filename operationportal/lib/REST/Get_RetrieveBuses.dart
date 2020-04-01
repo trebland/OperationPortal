@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Bus.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Bus.dart';
 
 Future<List<Bus>> RetrieveBuses (String token) async {
 

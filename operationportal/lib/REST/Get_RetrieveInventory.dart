@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Item.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Item.dart';
 
 Future<List<Item>> RetrieveInventory (String token) async {
 

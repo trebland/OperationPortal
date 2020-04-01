@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/RosterChild.dart';
-import 'package:operationportal/Structs/SuspendedChild.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/RosterChild.dart';
 
 Future<List<RosterChild>> GetSuspendedChildren (String token)
 async {

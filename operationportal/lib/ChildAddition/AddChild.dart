@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,14 +5,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-import '../Widget/TakePicture.dart';
-import 'AdditionalOptions.dart';
 import '../REST/Post_CreateChildBase.dart';
 import '../Structs/Storage.dart';
+import '../Widget/TakePicture.dart';
+import 'AdditionalOptions.dart';
 
 class AddChildPage extends StatefulWidget {
   AddChildPage({Key key, this.title}) : super(key: key);

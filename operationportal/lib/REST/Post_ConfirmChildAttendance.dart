@@ -1,11 +1,9 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Child.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Child.dart';
 
 Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/check-in/child";

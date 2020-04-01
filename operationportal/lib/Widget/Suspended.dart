@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/StaffWidgets/ChildProfile.dart';
@@ -19,8 +20,6 @@ class SuspendedWidgetPage extends StatefulWidget {
 }
 class SuspendedWidgetState extends State<SuspendedWidgetPage>
 {
-  final List<int> colorCodes = <int>[600, 500];
-
   List<RosterChild> displaySuspended = new List<RosterChild>();
   List<RosterChild> suspended = new List<RosterChild>();
   List<RosterChild> suspendedData = new List<RosterChild>();

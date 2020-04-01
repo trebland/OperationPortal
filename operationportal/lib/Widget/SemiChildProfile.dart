@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:operationportal/Structs/RosterChild.dart';
-import 'package:operationportal/Structs/Profile.dart';
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
+import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Structs/RosterChild.dart';
 
 import '../Structs/Storage.dart';
 
@@ -20,21 +21,6 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
   final suspensionController = TextEditingController();
 
   Storage storage;
-
-  final List<int> colorCodes = <int>[600, 500];
-
-  DateTime parseBirthday (String birthday)
-  {
-    List<String> dateBreak = new List<String>();
-    dateBreak = birthday.split('/');
-    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
-  }
-
-  int calculateBirthday(String birthday)
-  {
-    return (DateTime.now().difference(parseBirthday(birthday.split(' ')[0])).inDays ~/ 365.25);
-  }
-
 
   Widget buildPictureNameRow(String firstName, String lastName) {
     return Container(
@@ -108,7 +94,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(birthday)}' : "N/A",
+                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(widget.child)}' : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),

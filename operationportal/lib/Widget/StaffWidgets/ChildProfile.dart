@@ -1,15 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:operationportal/NoteAddition/AddNote.dart';
 import 'package:operationportal/NoteAddition/NoteView.dart';
 import 'package:operationportal/REST/Get_RetrieveNotes.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/Note.dart';
+import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
-import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:operationportal/Widget/SuspensionView.dart';
 
 class ChildProfileViewerPage extends StatefulWidget {
@@ -27,8 +27,6 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
   final suspensionController = TextEditingController();
 
   Storage storage;
-
-  final List<int> colorCodes = <int>[600, 500];
 
   Widget buildPictureNameRow(String firstName, String lastName) {
     return Container(
@@ -88,18 +86,6 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
-  DateTime parseBirthday (String birthday)
-  {
-    List<String> dateBreak = new List<String>();
-    dateBreak = birthday.split('/');
-    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
-  }
-
-  int calculateBirthday(String birthday)
-  {
-    return (DateTime.now().difference(parseBirthday(birthday.split(' ')[0])).inDays ~/ 365.25);
-  }
-
   Widget buildBirthdayAndGradeRow (String birthday, int grade)
   {
     return Container(
@@ -123,7 +109,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(birthday)}' : "N/A",
+                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(widget.child)}' : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),

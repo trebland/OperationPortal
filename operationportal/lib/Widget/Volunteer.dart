@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveVolunteers.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
 import 'package:operationportal/Widget/VolunteerProfile.dart';
 
@@ -15,8 +16,6 @@ class VolunteerWidgetPage extends StatefulWidget {
 }
 class VolunteerWidgetState extends State<VolunteerWidgetPage>
 {
-  final List<int> colorCodes = <int>[600, 500];
-
   void filterVolunteerResults(String query) {
     if (volunteers == null || volunteerData == null)
       return;

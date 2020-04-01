@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:operationportal/Structs/Class.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
+import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
-import 'package:flutter/material.dart';
 import 'package:operationportal/Widget/AppBar.dart';
-import 'package:operationportal/Widget/TeacherRoster.dart';
 import 'package:operationportal/Widget/Inventory.dart';
+import 'package:operationportal/Widget/TeacherRoster.dart';
 
 
 class Volunteer_ActiveDashboard_Page extends StatefulWidget {
@@ -29,56 +25,6 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
 
   Storage storage;
 
-  void filterRosterResults(String query) {
-    if (children == null || childrenData == null)
-      return;
-
-    query = query.toUpperCase();
-
-    List<RosterChild> dummySearchList = List<RosterChild>();
-    dummySearchList.addAll(childrenData);
-    if(query.isNotEmpty) {
-      List<RosterChild> dummyListData = List<RosterChild>();
-      dummySearchList.forEach((item) {
-        if(item.firstName.toUpperCase().contains(query) || item.lastName.toUpperCase().contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      displayChildren.clear();
-      displayChildren.addAll(dummyListData);
-      setState(() {
-      });
-    } else {
-      displayChildren.clear();
-      setState(() {
-      });
-    }
-  }
-
-  String busRouteValue;
-  String classIdValue;
-  List<String> classIds;
-
-  final classIdController = TextEditingController();
-
-  final rosterSearchController = TextEditingController();
-
-  List<RosterChild> displayChildren = new List<RosterChild>();
-  List<RosterChild> children = new List<RosterChild>();
-  List<RosterChild> childrenData = new List<RosterChild>();
-
-  DateTime parseBirthday (String birthday)
-  {
-    List<String> dateBreak = new List<String>();
-    dateBreak = birthday.split('/');
-    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
-  }
-
-  int calculateBirthday(RosterChild child)
-  {
-    return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
-  }
-
   Widget buildRefreshButton ()
   {
     return IconButton(
@@ -88,47 +34,15 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
       ),
       onPressed: () {
         setState(() {
-          checkClasses();
         });
       },
     );
   }
 
-  void checkClasses ()
-  {
-    List<String> tempList = new List<String>();
-    tempList.add("Select Class");
-    for (Class c in widget.user.classes)
-      {
-        print('${c.id}');
-        tempList.add('${c.id}');
-      }
-    classIds = tempList;
-  }
-
-  bool filterCheckedIn;
-
-  List<RosterChild> FilterChildren (List<RosterChild> children)
-  {
-    List<RosterChild> newList = new List<RosterChild>();
-    for (RosterChild c in children)
-    {
-      if (c.isCheckedIn)
-        newList.add(c);
-    }
-
-    return newList;
-  }
-
   @override
   void initState() {
-    super.initState();
-
     myTabs = new List<Tab>();
     storage = new Storage();
-    classIds = new List<String>();
-
-    filterCheckedIn = false;
 
     if (widget.user.isTeacher)
       myTabs.add(Tab(text: "Roster"));
@@ -139,8 +53,8 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
 
 
     _tabController = TabController(vsync: this, length: myTabs.length);
-    checkClasses();
-    classIdValue = "Select Class";
+
+    super.initState();
   }
 
   @override

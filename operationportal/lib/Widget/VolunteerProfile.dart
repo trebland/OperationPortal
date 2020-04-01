@@ -1,5 +1,5 @@
-import 'package:operationportal/Structs/Volunteer.dart';
 import 'package:flutter/material.dart';
+import 'package:operationportal/Structs/Volunteer.dart';
 
 class VolunteerProfilePage extends StatefulWidget {
   VolunteerProfilePage({Key key, this.volunteer}) : super(key: key);
@@ -11,11 +11,6 @@ class VolunteerProfilePage extends StatefulWidget {
 }
 
 class VolunteerProfileState extends State<VolunteerProfilePage> {
-
-  List<String> notes = ["Doesn't play well with Henry", "Loves Juice", "Dislikes Soccer", "Likes Monopoly"];
-
-  final List<int> colorCodes = <int>[600, 500];
-
   Widget buildPictureNameRow_Volunteer (String title)
   {
     return Container(

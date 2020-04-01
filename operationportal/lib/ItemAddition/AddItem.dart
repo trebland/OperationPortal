@@ -1,6 +1,6 @@
-import 'package:operationportal/REST/Post_CreateInventory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:operationportal/REST/Post_CreateInventory.dart';
 
 import '../Structs/Storage.dart';
 

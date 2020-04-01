@@ -1,12 +1,11 @@
 
+import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Storage.dart';
+import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/AppBar.dart';
 import 'package:operationportal/Widget/Inventory.dart';
-import 'package:operationportal/Structs/User.dart';
-import 'package:flutter/material.dart';
-
-import 'package:operationportal/Widget/StaffWidgets/CheckIn.dart';
 import 'package:operationportal/Widget/StaffWidgets/Roster.dart';
+import 'package:operationportal/Widget/StaffWidgets/VolunteerCheckIn.dart';
 import 'package:operationportal/Widget/Suspended.dart';
 import 'package:operationportal/Widget/Volunteer.dart';
 
@@ -36,6 +35,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   void initState() {
     _tabController = TabController(vsync: this, length: myTabs.length);
     storage = new Storage();
+
     super.initState();
   }
 
@@ -80,7 +80,7 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
         controller: _tabController,
         children: myTabs.map((Tab tab) {
           if (tab.text == "Check-In")
-            return CheckInWidgetPage(storage: storage,);
+            return VolunteerCheckInPage(storage: storage,);
           else if(tab.text == "Volunteers")
             return VolunteerWidgetPage(storage: storage,);
           else if(tab.text == "Roster")
