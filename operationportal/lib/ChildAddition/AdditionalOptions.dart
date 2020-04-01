@@ -488,7 +488,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           {
             storage.readToken().then((value) {
               CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber,
-                  widget.imagePath, genderController.text, birthdayController.text, preferredNameController.text,
+                  widget.imagePath, birthdayController.text, genderController.text, preferredNameController.text,
                   busController.text, context);
             });
           },

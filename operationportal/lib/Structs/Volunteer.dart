@@ -10,13 +10,17 @@ class Volunteer {
   Class mClass;
   Bus mBus;
 
+  int yearStarted;
+
   String affiliation;
   String referral;
+  String picture;
   bool orientation;
 
 
   Volunteer({this.id, this.firstName, this.lastName, this.preferredName,
-    this.mClass, this.mBus, this.affiliation, this.referral, this.orientation});
+    this.mClass, this.mBus, this.yearStarted,
+    this.affiliation, this.referral, this.picture, this.orientation});
 
   factory Volunteer.fromJson(Map<String, dynamic> json) {
     return Volunteer(
@@ -26,8 +30,10 @@ class Volunteer {
       preferredName: json['preferredName'],
       mClass: json['class'] != null ? Class.fromJson(json['class']) : null,
       mBus: json['bus'] != null ? Bus.fromJson(json['bus']) : null,
+      yearStarted: json['yearStarted'],
       affiliation: json['affiliation'],
       referral: json['referral'],
+      picture: json['picture'],
       orientation: json['orientation'],
     );
   }

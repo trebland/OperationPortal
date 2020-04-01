@@ -5,6 +5,7 @@ import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/User.dart';
+import 'package:operationportal/Widget/SemiChildProfile.dart';
 import 'package:operationportal/Widget/StaffWidgets/ChildProfile.dart';
 
 import '../Structs/Storage.dart';
@@ -119,7 +120,9 @@ class SuspendedWidgetState extends State<SuspendedWidgetPage>
                               subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension.split('T')[0]}' + '\n' + 'End of Suspension: ' + '${suspended[index].endSuspension.split('T')[0]}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileViewerPage(user: widget.user, child: suspended[index])));
+                                widget.user.profile.role == "Staff"
+                                ? Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileViewerPage(user: widget.user, child: suspended[index])))
+                                : Navigator.push(context, MaterialPageRoute(builder: (context) => SemiChildProfilePage(profile: widget.user.profile, child: suspended[index])));
                               },
                               dense: false,
                             ),

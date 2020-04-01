@@ -27,7 +27,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
   if (birthday.isNotEmpty)
     {
       Map<String, dynamic> addTo = {
-        'Birthday': birthday
+        'Birthday': birthday,
       };
       bodyToSet.addAll(addTo);
     }
@@ -35,7 +35,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
   if (gender.isNotEmpty)
     {
       Map<String, dynamic> addTo = {
-        'Gender': gender
+        'Gender': gender,
       };
       bodyToSet.addAll(addTo);
     }
@@ -43,7 +43,7 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
   if (preferredName.isNotEmpty)
     {
       Map<String, dynamic> addTo = {
-        'PreferredName': preferredName
+        'preferredName': preferredName,
       };
       bodyToSet.addAll(addTo);
     }

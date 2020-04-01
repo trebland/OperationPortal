@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Profile.dart';
 
@@ -31,7 +33,9 @@ class UserProfileState extends State<UserProfilePage>
             children: <Widget>
             [
               Container(
-                  child: CircleAvatar(),
+                  child: CircleAvatar(
+                    backgroundImage: (widget.profile.picture != null) ? MemoryImage(base64.decode((widget.profile.picture))) : null,
+                  ),
                   height: 200,
                   width: 200,
                   margin: EdgeInsets.only(top: 10, right: 20)
@@ -40,13 +44,75 @@ class UserProfileState extends State<UserProfilePage>
                 child: Text(
                   firstName + "\n" + lastName,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 40),
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ]
         ),
       ),
-      margin: EdgeInsets.only(left: 10, right: 10),
+      margin: EdgeInsets.all(10),
+    );
+  }
+
+  Widget buildContact ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Email",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        widget.profile.email != null ? widget.profile.email : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Phone",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        widget.profile.phone != null && widget.profile.phone.isNotEmpty ? widget.profile.phone : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
     );
   }
 
@@ -68,6 +134,7 @@ class UserProfileState extends State<UserProfilePage>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
+                  buildContact(),
                 ],
               ),
             ),

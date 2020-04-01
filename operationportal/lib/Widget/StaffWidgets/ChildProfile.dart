@@ -170,7 +170,24 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
     );
   }
 
-  /*Widget buildContactInformationRow()
+  String formatNumber (String number)
+  {
+    String formattedNumber = "";
+    for (int i=0; i<10; i++)
+      {
+        if (i == 0)
+          formattedNumber += '(' + number[i];
+        else if (i == 2)
+          formattedNumber += number[i] + ') ';
+        else if (i == 5)
+          formattedNumber += number[i] + '-';
+        else
+          formattedNumber += number[i];
+      }
+    return formattedNumber;
+  }
+
+  Widget buildContactInformationRow()
   {
     return Container(
       child: IntrinsicHeight(
@@ -193,7 +210,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     ),
                     Container(
                       child: Text(
-                        widget.child != null && birthday.isNotEmpty ? '${calculateBirthday(birthday)}' : "N/A",
+                        widget.child.contactNumber != null && widget.child.contactNumber.isNotEmpty ? formatNumber(widget.child.contactNumber) : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -209,14 +226,14 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Birthday",
+                        "Parent Name",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
                     Container(
                       child: Text(
-                        birthday != null && birthday.isNotEmpty ? birthday.split(' ')[0] : "N/A",
+                        widget.child.parentName != null && widget.child.parentName.isNotEmpty ? widget.child.parentName : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -225,34 +242,12 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                 ),
                 margin: EdgeInsets.only(right: 20),
               ),
-              Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          "Grade",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          grade != null ? '$grade' : "N/A",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  )
-              ),
             ]
         ),
       ),
       margin: EdgeInsets.all(10),
     );
-  }*/
+  }
 
   @override
   void initState() {
@@ -273,6 +268,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
           buildBirthdayAndGradeRow(widget.child.birthday, widget.child.grade),
+          buildContactInformationRow(),
           Container(
             child: IntrinsicHeight(
               child: Row(

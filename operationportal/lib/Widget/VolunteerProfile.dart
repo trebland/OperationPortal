@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
 
@@ -11,41 +13,35 @@ class VolunteerProfilePage extends StatefulWidget {
 }
 
 class VolunteerProfileState extends State<VolunteerProfilePage> {
-  Widget buildPictureNameRow_Volunteer (String title)
+
+  Widget buildPictureNameRow ()
   {
     return Container(
       child: IntrinsicHeight(
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>
             [
               Container(
-                child: Image(
-                    image: AssetImage('assets/OCC_LOGO_128_128.png')
-                ),
-                decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.all(
-                      new Radius.circular(20)
+                  child: CircleAvatar(
+                    backgroundImage: (widget.volunteer.picture != null) ? MemoryImage(base64.decode((widget.volunteer.picture))) : null,
                   ),
-                ),
-                height: 200,
-                width: 200,
-                padding: EdgeInsets.all(5),
-                margin: EdgeInsets.only(right: 10),
+                  height: 200,
+                  width: 200,
+                  margin: EdgeInsets.only(top: 10, right: 20)
               ),
               Flexible(
                 child: Text(
-                  title,
+                  widget.volunteer.firstName + "\n" + widget.volunteer.lastName,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28),
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ]
         ),
       ),
-      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+      margin: EdgeInsets.all(10),
     );
   }
 
@@ -65,14 +61,14 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Started Volunteering",
+                        "Started Volunteering in",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
                     Container(
                       child: Text(
-                        "October 7th, 2018",
+                        '${widget.volunteer.yearStarted}',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -88,14 +84,14 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "Verification Forms Filled?",
+                          "Orientation Completed?",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
                       Container(
                         child: Text(
-                          "Yes",
+                          widget.volunteer.orientation ? "Yes" : "No",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -120,7 +116,7 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          buildPictureNameRow_Volunteer(widget.volunteer.firstName + " " + widget.volunteer.lastName),
+          buildPictureNameRow(),
           buildFirstRowInfo(),
         ],
       ),
