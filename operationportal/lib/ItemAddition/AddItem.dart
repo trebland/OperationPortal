@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/REST/Post_CreateInventory.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
-import '../Structs/Storage.dart';
 
 class AddItemPage extends StatefulWidget {
   AddItemPage({Key key}) : super(key: key);

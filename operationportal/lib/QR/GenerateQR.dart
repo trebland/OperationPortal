@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:operationportal/Dashboards/BusDriver_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/VolunteerCaptain_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/Volunteer_ActiveDashboard.dart';
+import 'package:operationportal/REST/Get_RetrieveUser.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../Dashboards/BusDriver_ActiveDashboard.dart';
-import '../Dashboards/VolunteerCaptain_ActiveDashboard.dart';
-import '../Dashboards/Volunteer_ActiveDashboard.dart';
-import '../REST/Get_RetrieveUser.dart';
-import '../Structs/Storage.dart';
 
 class QRPage extends StatefulWidget {
   QRPage({Key key, this.id, this.token}) : super(key: key);

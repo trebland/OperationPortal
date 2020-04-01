@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/QR/GenerateQR.dart';
 import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Widget/AppBar.dart';
 
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Widget/AppBar.dart';
 
 class InactiveDashboardPage extends StatefulWidget {
   InactiveDashboardPage({Key key, this.profile, this.accessToken}) : super(key: key);

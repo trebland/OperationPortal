@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Delete_Note.dart';
 import 'package:operationportal/REST/Post_EditNote.dart';
 import 'package:operationportal/Structs/Note.dart';
-
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
 
 

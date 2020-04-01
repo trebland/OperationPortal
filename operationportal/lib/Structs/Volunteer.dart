@@ -1,5 +1,7 @@
-import 'Bus.dart';
-import 'Class.dart';
+
+
+import 'package:operationportal/Structs/Bus.dart';
+import 'package:operationportal/Structs/Class.dart';
 
 class Volunteer {
   /*“volunteer”: {  “training”: [{“name”: “string”}], “referral”: “string”, “languages”: [“language”: “string”], “newsletter”: “bool”, “contactWhenShort”: “bool”, “phone”: “string”, “email”: “string”,“blueShirt”:bool, “nametag”:bool, “personalInterviewCompleted”:bool, “backgroundCheck”:bool, “yearStarted”:int, “canEditInventory”:bool, “picture”:byte[], “birthday”:DateTime}*/

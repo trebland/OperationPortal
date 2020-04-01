@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/Profile.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
-import '../Structs/Storage.dart';
 
 class SemiChildProfilePage extends StatefulWidget {
   SemiChildProfilePage({Key key, this.profile, this.child}) : super(key: key);

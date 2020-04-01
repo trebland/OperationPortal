@@ -1,7 +1,3 @@
-/*
-api/volunteer-info?id=int*/
-
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';

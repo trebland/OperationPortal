@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/ItemAddition/AddItem.dart';
+import 'package:operationportal/ItemAddition/ItemView.dart';
 import 'package:operationportal/REST/Get_RetrieveInventory.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Item.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/ItemAddition/AddItem.dart';
-
-import '../ItemAddition/ItemView.dart';
-import '../Structs/Storage.dart';
 
 class InventoryWidgetPage extends StatefulWidget
 {

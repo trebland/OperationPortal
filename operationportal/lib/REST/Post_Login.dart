@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/REST/Get_RetrieveUserAndPush.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
-import '../Structs/Storage.dart';
-import 'Get_RetrieveUserAndPush.dart';
 
 Future<void> Login(String username, String passwordText, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/auth/token";

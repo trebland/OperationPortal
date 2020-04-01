@@ -13,9 +13,9 @@ import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/StaffWidgets/BusProfile.dart';
+import 'package:operationportal/Widget/StaffWidgets/ChildProfile.dart';
 import 'package:operationportal/Widget/StaffWidgets/ClassProfile.dart';
 
-import 'ChildProfile.dart';
 
 // ignore: must_be_immutable
 class RosterWidgetPage extends StatefulWidget {

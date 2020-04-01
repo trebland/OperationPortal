@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Bus.dart';
-
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
 
 class BusProfilePage extends StatefulWidget {

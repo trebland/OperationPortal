@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/SemiChildProfile.dart';
 import 'package:operationportal/Widget/StaffWidgets/ChildProfile.dart';
 
-import '../Structs/Storage.dart';
 
 class SuspendedWidgetPage extends StatefulWidget {
   SuspendedWidgetPage({Key key, this.storage, this.user}) : super(key: key);

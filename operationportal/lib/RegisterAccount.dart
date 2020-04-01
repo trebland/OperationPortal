@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:operationportal/REST/Post_RegisterAccount.dart';
+import 'package:operationportal/Widget/TakePicture.dart';
 
-import 'REST/Post_RegisterAccount.dart';
-import 'Widget/TakePicture.dart';
 
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);

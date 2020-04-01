@@ -1,5 +1,7 @@
-import 'Bus.dart';
-import 'Class.dart';
+
+
+import 'package:operationportal/Structs/Bus.dart';
+import 'package:operationportal/Structs/Class.dart';
 
 class RosterChild {
   int id;

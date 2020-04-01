@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Post_EditInventory.dart';
-
-import '../Structs/Item.dart';
-import '../Structs/Storage.dart';
+import 'package:operationportal/Structs/Item.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
 
 class ItemViewPage extends StatefulWidget {

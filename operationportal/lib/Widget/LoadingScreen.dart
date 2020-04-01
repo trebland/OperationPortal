@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:operationportal/QR/GenerateQR.dart';
-import 'package:operationportal/Structs/Profile.dart';
-
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Widget/AppBar.dart';
 
 class LoadingScreenPage extends StatefulWidget {
   LoadingScreenPage({Key key, this.title}) : super(key: key);

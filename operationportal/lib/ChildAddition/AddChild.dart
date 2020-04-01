@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:operationportal/ChildAddition/AdditionalOptions.dart';
+import 'package:operationportal/REST/Post_CreateChildBase.dart';
+import 'package:operationportal/Structs/Storage.dart';
+import 'package:operationportal/Widget/TakePicture.dart';
 
-import '../REST/Post_CreateChildBase.dart';
-import '../Structs/Storage.dart';
-import '../Widget/TakePicture.dart';
-import 'AdditionalOptions.dart';
 
 class AddChildPage extends StatefulWidget {
   AddChildPage({Key key, this.title}) : super(key: key);
