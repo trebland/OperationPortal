@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
-import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
+import { Form, FormControl, FormGroup, FormLabel, Button, Col, Row } from 'react-bootstrap/'
 
 export class AdminVolunteerEdit extends Component {
     constructor(props){
@@ -9,10 +9,9 @@ export class AdminVolunteerEdit extends Component {
             redirect: false,
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            id: null,
-            ori: false
+            volunteer: props.location.state.volunteer
         }
-        console.log(this.state.id)
+        console.log(this.state.volunteer)
     }
 
     setRedirect = () => {
@@ -20,6 +19,16 @@ export class AdminVolunteerEdit extends Component {
             redirect: true
         })
     }
+
+    componentDidMount() {
+        this.mounted = true
+    }
+
+    componentWillUnmount() {
+        this.mounted = false
+    }
+
+    
 
     renderRedirect = () => {
         if(this.state.redirect){
@@ -35,26 +44,70 @@ export class AdminVolunteerEdit extends Component {
         }
     }
 
-    handleIdChange = (e) => {
-        this.setState({
-            id: e.target.value
-        })
-        console.log(this.state.id)
+    renderVolunteer = () => {
+        const vol = this.state.volunteer
+        return (
+            <div style={styling.volunteer}>
+                <FormGroup>
+                    <FormLabel>
+                        ID Number:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.id} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Name:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.firstName + " " +vol.lastName} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Orientation:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.orientation ? "Yes" : "No"} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Blue Shirt:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.blueShirt ? "Yes" : "No"} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Name Tag:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.nametag ? "Yes" : "No"} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Personal Interview:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.personalInterviewCompleted ? "Yes" : "No"} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Background Check:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.backgroundCheck ? "Yes" : "No"} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Year Started:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.yearStarted} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>
+                        Can Edit Inventory:
+                    </FormLabel>   
+                    <Form.Control plaintext readOnly defaultValue={vol.canEditInventory ? "Yes" : "No"} />
+                </FormGroup>
+                
+            </div>
+        )
     }
 
-    handleOriChangeTru = (e) => {
-        this.setState({
-            ori: true
-        })
-        console.log(this.state.ori)
-    }
-
-    handleOriChangeFal = (e) => {
-        this.setState({
-            ori: false
-        })
-        console.log(this.state.ori)
-    }
+    
 
     render() {
         return (
@@ -64,24 +117,29 @@ export class AdminVolunteerEdit extends Component {
                     Back to View Volunteers
                 </Button>
                 <div style={styling.outderdiv}>
+                    {this.renderVolunteer()}
                     <Form>
-                        <FormGroup>
-                            <FormLabel>
-                                ID Number
-                            </FormLabel>
-                            <FormControl type="number" placeholder="Enter Unique ID Number" value={this.state.id} onChange={this.handleIdChange} />
-                        </FormGroup>
-
-                        <FormGroup>
-                            <FormLabel>
+                        <fieldset>
+                            <Form.Group as={Row}>
+                            <Form.Label as="legend" column sm={1}>
                                 Orientation
-                            </FormLabel>
-                            <Form.Check type="checkbox" label="Yes" onChange={this.handleOriChangeTru}/>
-                            <Form.Check type="checkbox" label="No" onChange={this.handleOriChangeFal}/>
-                        </FormGroup>
-                        
-
-
+                            </Form.Label>
+                            <Col sm={10} style={{marginTop: '7px'}}>
+                                <Form.Check
+                                type="radio"
+                                label="Yes"
+                                name="formHorizontalRadios"
+                                id="formHorizontalRadios1"
+                                />
+                                <Form.Check
+                                type="radio"
+                                label="No"
+                                name="formHorizontalRadios"
+                                id="formHorizontalRadios2"
+                                />
+                            </Col>
+                            </Form.Group>
+                        </fieldset>
                     </Form>
                 </div>
 
@@ -102,5 +160,8 @@ const styling = {
         marginTop: '15px',
         marginLeft: '15px',
         marginBottom: '15px'
+    },
+    volunteer: {
+
     }
 }

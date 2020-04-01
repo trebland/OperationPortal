@@ -151,10 +151,6 @@ export class LoginBox extends Component {
     this.mounted = false
   }
 
-  // Sets variable to false when ready to leave page
-  componentWillUnmount() {
-    this.mounted = false
-  }
 
   render() {
     return (

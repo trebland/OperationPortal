@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card, CardDeck } from 'react-bootstrap/'
+import { Button, Card } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import './cards.css'
 
@@ -91,7 +91,7 @@ export class ViewVolunteers extends Component {
         if(this.state.edit) {
             return (
                 <Redirect to={{
-                    pathname: '/admin-volunteer-edit',
+                    pathname: '/admin-get-id',
                     state: {
                         jwt: this.state.jwt,
                         loggedin: this.state.loggedin
@@ -109,9 +109,9 @@ export class ViewVolunteers extends Component {
 
     renderVolunteers = () => {
         if(this.state.volunteers != null){
-            const p = this.state.volunteers.map(v => {
+            const p = this.state.volunteers.map((v, index) => {
                 return (
-                    <div>
+                    <div key={index}>
                         <Card style={{width: '25rem'}}>
                             <Card.Header as='h5'>
                                 {v.firstName + " " +  v.lastName}
