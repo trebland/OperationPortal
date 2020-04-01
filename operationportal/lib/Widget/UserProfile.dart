@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../Structs/Profile.dart';
+import 'package:operationportal/Structs/Profile.dart';
 
 class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key key, this.profile}) : super(key: key);

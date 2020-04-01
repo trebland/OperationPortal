@@ -455,7 +455,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
-                            child: Text('$value'),
+                            child: Text('$value', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                           );
                         }).toList(),
                       ),
@@ -466,37 +466,6 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   return null;
               }
             }
-          /*Container(
-            child: DropdownButton<String>(
-              value: busDropdownValue,
-              icon: Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              style: TextStyle(
-                  color: Colors.deepPurple
-              ),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
-              onChanged: (String newValue) {
-                setState(() {
-                  busDropdownValue = newValue;
-                  if (busDropdownValue == "Select Bus")
-                    busController.text = "";
-                  else
-                    busController.text = busDropdownValue;
-                });
-              },
-              items: busIds
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text('$value'),
-                );
-              }).toList(),
-            ),
-          ),*/
         )
       ],
     );

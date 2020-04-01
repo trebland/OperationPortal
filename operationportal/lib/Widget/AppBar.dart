@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/Login.dart';
 import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Widget/UserProfile.dart';
 
-import '../Login.dart';
-import 'UserProfile.dart';
 
 
 Widget buildProfileButton (BuildContext context, Profile toPass)

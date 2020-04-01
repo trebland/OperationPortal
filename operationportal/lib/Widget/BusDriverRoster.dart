@@ -29,7 +29,6 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
 
   final busIdController = TextEditingController();
   int busIndex;
-  List<String> classIds;
   List<Bus> buses;
 
   bool filterCheckedIn;
@@ -81,14 +80,12 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
   void initState() {
     filterCheckedIn = false;
 
-    classIds = new List<String>();
-
     displayChildren = new List<RosterChild>();
     children = new List<RosterChild>();
     childrenData = new List<RosterChild>();
 
     buses = widget.user.buses;
-    buses.insert(0, new Bus());
+    if (buses.elementAt(0).id != null) buses.insert(0, new Bus());
 
     busIndex = 0;
 
@@ -148,7 +145,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                                 .map<DropdownMenuItem<Bus>>((Bus value) {
                               return DropdownMenuItem<Bus>(
                                 value: value,
-                                child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                                child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                               );
                             }).toList(),
                           ),
