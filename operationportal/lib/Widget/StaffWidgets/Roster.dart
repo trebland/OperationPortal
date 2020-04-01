@@ -190,7 +190,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                             .map<DropdownMenuItem<Bus>>((Bus value) {
                                           return DropdownMenuItem<Bus>(
                                             value: value,
-                                            child: value.id == null ? Text('Select Bus') : Text('${value.id}'),
+                                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                                           );
                                         }).toList(),
                                       ),
