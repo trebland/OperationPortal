@@ -1,26 +1,13 @@
 import 'package:operationportal/REST/Delete_Note.dart';
 import 'package:operationportal/REST/Post_EditNote.dart';
 import 'package:flutter/material.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
+import 'package:operationportal/Structs/Note.dart';
 
-import 'BuildPresets/InactiveDashboard.dart';
-import 'REST/Post_CreateNote.dart';
-import 'Storage.dart';
-import 'Structs/RosterChild.dart';
-import 'Structs/Note.dart';
-import 'Structs/Profile.dart';
 
 
 class NoteViewPage extends StatefulWidget {
   NoteViewPage({Key key, this.note}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final Note note;
 

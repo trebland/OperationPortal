@@ -1,21 +1,14 @@
 
-import 'package:barcode_scan/barcode_scan.dart';
+import 'package:operationportal/Structs/Storage.dart';
+import 'package:operationportal/Widget/AppBar.dart';
 import 'package:operationportal/Widget/Inventory.dart';
-import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Widget/StaffWidgets/Roster.dart';
-import 'package:operationportal/BuildPresets/AppBar.dart';
-import 'package:operationportal/REST/Get_RetrieveUser.dart';
-import 'package:operationportal/REST/Post_ConfirmVolunteerAttendance.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
 
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:operationportal/Widget/StaffWidgets/CheckIn.dart';
+import 'package:operationportal/Widget/StaffWidgets/Roster.dart';
 import 'package:operationportal/Widget/Suspended.dart';
 import 'package:operationportal/Widget/Volunteer.dart';
-
-import '../Storage.dart';
 
 class Staff_ActiveDashboard_Page extends StatefulWidget {
   Staff_ActiveDashboard_Page({Key key, this.user}) : super(key: key);

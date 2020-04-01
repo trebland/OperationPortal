@@ -1,34 +1,28 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:operationportal/BuildPresets/Child_ProfileViewer.dart';
-import 'package:operationportal/NoteAddition.dart';
-import 'package:operationportal/NoteView.dart';
+import 'package:operationportal/NoteAddition/AddNote.dart';
+import 'package:operationportal/NoteAddition/NoteView.dart';
 import 'package:operationportal/REST/Get_RetrieveNotes.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Note.dart';
-import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/SuspensionView.dart';
 
-import '../Storage.dart';
-import '../Structs/Choice.dart';
-import '../SuspensionView.dart';
-
-class Staff_ProfileViewer_Page extends StatefulWidget {
-  Staff_ProfileViewer_Page({Key key, this.user, this.child}) : super(key: key);
+class ChildProfileViewerPage extends StatefulWidget {
+  ChildProfileViewerPage({Key key, this.user, this.child}) : super(key: key);
 
   final User user;
   final RosterChild child;
 
   @override
-  Staff_ProfileViewer_State createState() => Staff_ProfileViewer_State();
+  ChildProfileViewerState createState() => ChildProfileViewerState();
 }
 
-class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
+class ChildProfileViewerState extends State<ChildProfileViewerPage> {
 
   final suspensionController = TextEditingController();
 
@@ -92,6 +86,102 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
   String checkSuspension ()
   {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
+  }
+
+  DateTime parseBirthday (String birthday)
+  {
+    List<String> dateBreak = new List<String>();
+    dateBreak = birthday.split('/');
+    return DateTime(int.parse(dateBreak[2]), int.parse(dateBreak[0]), int.parse(dateBreak[1]));
+  }
+
+  int calculateBirthday(String birthday)
+  {
+    return (DateTime.now().difference(parseBirthday(birthday.split(' ')[0])).inDays ~/ 365.25);
+  }
+
+  Widget buildBirthdayAndGradeRow (String birthday, int grade)
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Age",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(birthday)}' : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Birthday",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        birthday != null && birthday.isNotEmpty ? birthday.split(' ')[0] : "N/A",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Grade",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          grade != null ? '$grade' : "N/A",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
   }
 
   /*Widget buildContactInformationRow()
@@ -272,7 +362,7 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       child: FlatButton(
                         child: Text("Add Note", style: TextStyle(color: Colors.white)),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => NoteAdditionPage(profile: widget.user.profile, child: widget.child))).then((value) {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(profile: widget.user.profile, child: widget.child))).then((value) {
                             setState(() {
                             });
                           });
@@ -287,27 +377,27 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
                       margin: EdgeInsets.only(left: 20),
                     ),
                   ]
-                ),
               ),
-              margin: EdgeInsets.only(top: 10, left: 10),
             ),
-            FutureBuilder(
-                future: storage.readToken().then((value) {
-                  return RetrieveNotes(value, widget.child.id);
-                }),
-                builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return new Text('Issue Posting Data');
-                    case ConnectionState.waiting:
-                      return new Center(child: new CircularProgressIndicator());
-                    case ConnectionState.active:
-                      return new Text('');
-                    case ConnectionState.done:
-                      if (snapshot.hasError) {
-                        return Text("Press 'Scan QR' to begin!");
-                      } else {
-                        return Expanded(
+            margin: EdgeInsets.only(top: 10, left: 10),
+          ),
+          FutureBuilder(
+              future: storage.readToken().then((value) {
+                return RetrieveNotes(value, widget.child.id);
+              }),
+              builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    return new Text('Issue Posting Data');
+                  case ConnectionState.waiting:
+                    return new Center(child: new CircularProgressIndicator());
+                  case ConnectionState.active:
+                    return new Text('');
+                  case ConnectionState.done:
+                    if (snapshot.hasError) {
+                      return Text("Press 'Scan QR' to begin!");
+                    } else {
+                      return Expanded(
                           child: snapshot.data.length > 0
                               ? new ListView.builder(
                             itemCount: snapshot.data.length,
@@ -344,14 +434,14 @@ class Staff_ProfileViewer_State extends State<Staff_ProfileViewer_Page> {
 
                             margin: EdgeInsets.only(left: 10, right: 10),
                           )
-                        );
-                      }
-                      break;
-                    default:
-                      return null;
-                  }
+                      );
+                    }
+                    break;
+                  default:
+                    return null;
                 }
-            ),
+              }
+          ),
         ],
       ),
     );

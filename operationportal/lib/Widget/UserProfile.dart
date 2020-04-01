@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'BuildPresets/InactiveDashboard.dart';
-import 'Structs/Profile.dart';
+import '../Structs/Profile.dart';
 
-class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key, this.profile}) : super(key: key);
+class UserProfilePage extends StatefulWidget {
+  UserProfilePage({Key key, this.profile}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -18,11 +17,39 @@ class ProfilePage extends StatefulWidget {
   final Profile profile;
 
   @override
-  ProfileState createState() => ProfileState();
+  UserProfileState createState() => UserProfileState();
 }
 
-class ProfileState extends State<ProfilePage>
+class UserProfileState extends State<UserProfilePage>
 {
+  Widget buildPictureNameRow (String firstName, String lastName)
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                  child: CircleAvatar(),
+                  height: 200,
+                  width: 200,
+                  margin: EdgeInsets.only(top: 10, right: 20)
+              ),
+              Flexible(
+                child: Text(
+                  firstName + "\n" + lastName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 40),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 10, right: 10),
+    );
+  }
 
   @override
   Widget build (BuildContext context) {

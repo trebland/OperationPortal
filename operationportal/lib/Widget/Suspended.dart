@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
-import 'package:operationportal/Staff/Staff_ProfileViewer.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/User.dart';
+import 'package:operationportal/Widget/StaffWidgets/ChildProfile.dart';
 
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 class SuspendedWidgetPage extends StatefulWidget {
   SuspendedWidgetPage({Key key, this.storage, this.user}) : super(key: key);
@@ -120,7 +120,7 @@ class SuspendedWidgetState extends State<SuspendedWidgetPage>
                               subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension.split('T')[0]}' + '\n' + 'End of Suspension: ' + '${suspended[index].endSuspension.split('T')[0]}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: suspended[index])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileViewerPage(user: widget.user, child: suspended[index])));
                               },
                               dense: false,
                             ),

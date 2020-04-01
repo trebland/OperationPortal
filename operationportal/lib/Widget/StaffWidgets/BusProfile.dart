@@ -1,35 +1,24 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:operationportal/BuildPresets/Child_ProfileViewer.dart';
-import 'package:operationportal/NoteAddition.dart';
-import 'package:operationportal/NoteView.dart';
-import 'package:operationportal/REST/Get_RetrieveBusInfo.dart';
-import 'package:operationportal/REST/Get_RetrieveNotes.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
 import 'package:operationportal/Structs/Bus.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
-import 'package:operationportal/Structs/Note.dart';
-import 'package:operationportal/Structs/Profile.dart';
-import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-import '../Storage.dart';
-import '../Structs/Choice.dart';
-import '../SuspensionView.dart';
 
-class Staff_BusViewer_Page extends StatefulWidget {
-  Staff_BusViewer_Page({Key key, this.bus}) : super(key: key);
+class BusProfilePage extends StatefulWidget {
+  BusProfilePage({Key key, this.bus}) : super(key: key);
 
-    final Bus bus;
+  final Bus bus;
 
   @override
-  Staff_BusViewer_State createState() => Staff_BusViewer_State();
+  BusProfileState createState() => BusProfileState();
 }
 
-class Staff_BusViewer_State extends State<Staff_BusViewer_Page> {
+class BusProfileState extends State<BusProfilePage> {
 
 /*
   “bus”:

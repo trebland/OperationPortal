@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/REST/Post_CreateNote.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Structs/Storage.dart';
+import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Structs/RosterChild.dart';
 
-import 'BuildPresets/InactiveDashboard.dart';
-import 'REST/Post_CreateNote.dart';
-import 'Storage.dart';
-import 'Structs/RosterChild.dart';
-import 'Structs/Profile.dart';
 
-class NoteAdditionPage extends StatefulWidget {
-  NoteAdditionPage({Key key, this.profile, this.child}) : super(key: key);
+class AddNotePage extends StatefulWidget {
+  AddNotePage({Key key, this.profile, this.child}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,10 +21,10 @@ class NoteAdditionPage extends StatefulWidget {
   final RosterChild child;
 
   @override
-  NoteAdditionState createState() => NoteAdditionState();
+  AddNoteState createState() => AddNoteState();
 }
 
-class NoteAdditionState extends State<NoteAdditionPage>
+class AddNoteState extends State<AddNotePage>
 {
 
   TextEditingController _noteController = new TextEditingController();
@@ -191,7 +190,6 @@ class NoteAdditionState extends State<NoteAdditionPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  buildPictureNameRow(widget.child.firstName, widget.child.lastName),
                   buildNoteRow(),
                   buildPriorityRow(),
                   buildAddNoteButton(context),

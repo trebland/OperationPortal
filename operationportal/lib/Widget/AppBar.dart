@@ -2,7 +2,7 @@ import 'package:operationportal/Structs/Profile.dart';
 import 'package:flutter/material.dart';
 
 import '../Login.dart';
-import '../UserProfile.dart';
+import 'UserProfile.dart';
 
 
 Widget buildProfileButton (BuildContext context, Profile toPass)
@@ -13,7 +13,7 @@ Widget buildProfileButton (BuildContext context, Profile toPass)
       color: Colors.black,
     ),
     onPressed: () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(profile: toPass)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(profile: toPass)));
     },
   );
 }

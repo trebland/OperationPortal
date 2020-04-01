@@ -1,19 +1,18 @@
 import 'dart:convert';
 
-import 'package:operationportal/BuildPresets/ActiveDashboard.dart';
-import 'package:operationportal/BuildPresets/AppBar.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Widget/AppBar.dart';
 import 'package:operationportal/ChildAddition/AddChild.dart';
 import 'package:operationportal/REST/Get_RetrieveRoster.dart';
 import 'package:operationportal/REST/Get_RetrieveVolunteers.dart';
-import 'package:operationportal/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:operationportal/Structs/Profile.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
-import 'package:operationportal/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
 import 'package:flutter/material.dart';
+import 'package:operationportal/Widget/SemiChildProfile.dart';
+import 'package:operationportal/Widget/VolunteerProfile.dart';
 
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 
 class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
@@ -29,6 +28,7 @@ class VolunteerCaptain_ActiveDashboard_Page extends StatefulWidget {
 
 class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_ActiveDashboard_Page> with SingleTickerProviderStateMixin
 {
+  final List<int> colorCodes = <int>[600, 500];
 
   final List<Tab> myTabs = <Tab>[
       Tab(text: 'Roster'),
@@ -388,7 +388,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                         subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                         onTap: ()
                                         {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: children[index])));
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => SemiChildProfilePage(profile: widget.user.profile, child: children[index])));
                                         },
                                         dense: false,
                                       ),
@@ -472,7 +472,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
                                             style: TextStyle(color: Colors.white)),
                                         onTap: ()
                                         {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_VolunteerProfileViewer_Page(volunteer: volunteers[index],)));
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerProfilePage(volunteer: volunteers[index],)));
                                         },
                                         dense: false,
                                       ),

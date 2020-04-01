@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 import 'Get_RetrieveUserAndPush.dart';
 
 Future<void> Login(String username, String passwordText, BuildContext context) async {

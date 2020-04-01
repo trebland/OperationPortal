@@ -3,17 +3,15 @@ import 'dart:convert';
 import 'package:operationportal/REST/Get_RetrieveClasses.dart';
 import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Class.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/ChildAddition/AddChild.dart';
 import 'package:operationportal/REST/Get_RetrieveRoster.dart';
-import 'package:operationportal/Staff/Staff_ClassViewer.dart';
-import 'package:operationportal/Staff/Staff_ProfileViewer.dart';
-import 'package:operationportal/Storage.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:operationportal/Volunteer/Volunteer_ProfileViewer.dart';
-import 'package:operationportal/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
+import 'package:operationportal/Widget/SemiChildProfile.dart';
+import 'package:operationportal/Widget/StaffWidgets/ClassProfile.dart';
 
 // ignore: must_be_immutable
 class TeacherRosterWidgetPage extends StatefulWidget {
@@ -171,7 +169,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                         child: FlatButton(
                           onPressed: () {
                             if (classes[classIndex].id != null)
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ClassViewer_Page(mClass: classes[classIndex],)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ClassProfilePage(mClass: classes[classIndex],)));
                           },
                           child: Text("Info", style: TextStyle(color: Colors.white)),
                         ),
@@ -272,7 +270,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                               subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: children[index])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => SemiChildProfilePage(profile: widget.user.profile, child: children[index])));
                               },
                               dense: false,
                             ),

@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 import 'REST/Post_RegisterAccount.dart';
-import 'TakePicture.dart';
+import 'Widget/TakePicture.dart';
 
 class RegisterAccountPage extends StatefulWidget {
   RegisterAccountPage({Key key, this.title}) : super(key: key);

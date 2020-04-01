@@ -10,10 +10,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-import '../TakePicture.dart';
+import '../Widget/TakePicture.dart';
 import 'AdditionalOptions.dart';
 import '../REST/Post_CreateChildBase.dart';
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 class AddChildPage extends StatefulWidget {
   AddChildPage({Key key, this.title}) : super(key: key);

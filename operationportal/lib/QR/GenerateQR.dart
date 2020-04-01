@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../Bus_Driver/BusDriver_ActiveDashboard.dart';
+import '../Dashboards/BusDriver_ActiveDashboard.dart';
 import '../REST/Get_RetrieveUser.dart';
-import '../Storage.dart';
-import '../Volunteer/Volunteer_ActiveDashboard.dart';
-import '../Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
+import '../Structs/Storage.dart';
+import '../Dashboards/Volunteer_ActiveDashboard.dart';
+import '../Dashboards/VolunteerCaptain_ActiveDashboard.dart';
 
 class QRPage extends StatefulWidget {
-  QRPage({Key key, this.token}) : super(key: key);
+  QRPage({Key key, this.id, this.token}) : super(key: key);
 
+  final String id;
   final String token;
 
   @override
@@ -71,7 +72,7 @@ class QRState extends State<QRPage>
               ),
               child: Center (
                   child: QrImage(
-                  data: widget.token,
+                  data: widget.id,
                   version: QrVersions.auto,
                   size: 320,
                   errorStateBuilder: (cxt, err) {

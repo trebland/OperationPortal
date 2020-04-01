@@ -6,11 +6,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
 
-Future<void> ConfirmVolunteerAttendance (String token, Profile toConfirm, BuildContext context) async {
+Future<void> ConfirmVolunteerAttendance (String token, int id, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/check-in/volunteer";
 
   var body = json.encode({
-    'Id': '${toConfirm.id}'
+    'Id': '${id}'
   });
 
   var response = await http.post(mUrl,

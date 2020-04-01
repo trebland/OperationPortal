@@ -3,13 +3,12 @@ import 'package:operationportal/REST/Post_EditInventory.dart';
 import 'package:operationportal/REST/Post_EditNote.dart';
 import 'package:flutter/material.dart';
 
-import 'BuildPresets/InactiveDashboard.dart';
-import 'REST/Post_CreateNote.dart';
-import 'Storage.dart';
-import 'Structs/RosterChild.dart';
-import 'Structs/Item.dart';
-import 'Structs/Note.dart';
-import 'Structs/Profile.dart';
+import '../REST/Post_CreateNote.dart';
+import '../Structs/Storage.dart';
+import '../Structs/RosterChild.dart';
+import '../Structs/Item.dart';
+import '../Structs/Note.dart';
+import '../Structs/Profile.dart';
 
 
 class ItemViewPage extends StatefulWidget {

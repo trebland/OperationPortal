@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:barcode_scan/barcode_scan.dart';
-import 'package:operationportal/BuildPresets/ActiveDashboard.dart';
-import 'package:operationportal/BuildPresets/AppBar.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/Widget/AppBar.dart';
 import 'package:operationportal/ChildAddition/AddChild.dart';
 import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Get_RetrieveChild.dart';
@@ -11,24 +10,20 @@ import 'package:operationportal/REST/Get_RetrieveRoster.dart';
 import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:operationportal/REST/Get_RetrieveUser.dart';
 import 'package:operationportal/REST/Post_ConfirmChildAttendance.dart';
-import 'package:operationportal/REST/Post_ConfirmVolunteerAttendance.dart';
-import 'package:operationportal/Staff/Staff_ProfileViewer.dart';
-import 'package:operationportal/Staff/Staff_SuspendedProfileViewer.dart';
-import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Child.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Class.dart';
 import 'package:operationportal/Structs/Profile.dart';
 import 'package:operationportal/Structs/SuspendedChild.dart';
 import 'package:operationportal/Structs/User.dart';
-import 'package:operationportal/Volunteer_Captain/VolunteerCaptain_ProfileViewer.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:operationportal/Widget/SemiChildProfile.dart';
 
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 class BusDriver_ActiveDashboard_Page extends StatefulWidget {
   BusDriver_ActiveDashboard_Page({Key key, this.user}) : super(key: key);
@@ -452,7 +447,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                     subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: children[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => SemiChildProfilePage(profile: widget.user.profile, child: children[index])));
                                     },
                                     dense: false,
                                   ),
@@ -539,7 +534,7 @@ class BusDriver_ActiveDashboard_State extends State<BusDriver_ActiveDashboard_Pa
                                     subtitle: Text('${suspended[index].birthday != null && suspended[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(suspended[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                                     onTap: ()
                                     {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_ProfileViewer_Page(profile: widget.user.profile, child: suspended[index])));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => SemiChildProfilePage(profile: widget.user.profile, child: suspended[index])));
                                     },
                                     dense: false,
                                   ),

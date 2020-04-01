@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'REST/Post_SuspendChild.dart';
-import 'Storage.dart';
-import 'Structs/RosterChild.dart';
+import '../REST/Post_SuspendChild.dart';
+import '../Structs/Storage.dart';
+import '../Structs/RosterChild.dart';
 
 class SuspensionScreen extends StatefulWidget {
   SuspensionScreen({Key key, this.child}) : super(key: key);

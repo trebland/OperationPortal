@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../REST/Post_CreateChildFull.dart';
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 class AdditionalOptionsPage extends StatefulWidget {
   AdditionalOptionsPage({Key key, this.firstName, this.lastName, this.parentName, this.contactNumber, this.imagePath}) : super(key: key);

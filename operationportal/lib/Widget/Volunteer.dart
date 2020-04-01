@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveVolunteers.dart';
-import 'package:operationportal/Staff/Staff_VolunteerProfileViewer.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
+import 'package:operationportal/Widget/VolunteerProfile.dart';
 
-import '../Storage.dart';
+import '../Structs/Storage.dart';
 
 class VolunteerWidgetPage extends StatefulWidget {
   VolunteerWidgetPage({Key key, this.storage}) : super(key: key);
@@ -112,7 +112,7 @@ class VolunteerWidgetState extends State<VolunteerWidgetPage>
                                   style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_VolunteerProfileViewer_Page(volunteer: volunteers[index],)));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => VolunteerProfilePage(volunteer: volunteers[index],)));
                               },
                               dense: false,
                             ),

@@ -1,19 +1,20 @@
 import 'dart:convert';
 
-import 'package:operationportal/Staff/Staff_BusViewer.dart';
 import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Get_RetrieveClasses.dart';
 import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Class.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/ChildAddition/AddChild.dart';
 import 'package:operationportal/REST/Get_RetrieveRoster.dart';
-import 'package:operationportal/Staff/Staff_ClassViewer.dart';
-import 'package:operationportal/Staff/Staff_ProfileViewer.dart';
-import 'package:operationportal/Storage.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 
 import 'package:flutter/material.dart';
+import 'package:operationportal/Widget/StaffWidgets/BusProfile.dart';
+import 'package:operationportal/Widget/StaffWidgets/ClassProfile.dart';
+
+import 'ChildProfile.dart';
 
 // ignore: must_be_immutable
 class RosterWidgetPage extends StatefulWidget {
@@ -199,7 +200,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                       child: FlatButton(
                                         onPressed: () {
                                           if (snapshot.data[busIndex].id != null)
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_BusViewer_Page(bus: snapshot.data[busIndex],)));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => BusProfilePage(bus: snapshot.data[busIndex],)));
                                         },
                                         child: Text("Info", style: TextStyle(color: Colors.white)),
                                       ),
@@ -303,7 +304,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                       child: FlatButton(
                                         onPressed: () {
                                           if (snapshot.data[classIndex].id != null)
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ClassViewer_Page(mClass: snapshot.data[classIndex],)));
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => ClassProfilePage(mClass: snapshot.data[classIndex],)));
                                         },
                                         child: Text("Info", style: TextStyle(color: Colors.white)),
                                       ),
@@ -412,7 +413,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                               subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Staff_ProfileViewer_Page(user: widget.user, child: children[index])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileViewerPage(user: widget.user, child: children[index])));
                               },
                               dense: false,
                             ),

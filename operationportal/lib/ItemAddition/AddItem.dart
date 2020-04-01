@@ -2,14 +2,10 @@ import 'package:operationportal/REST/Post_CreateInventory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'BuildPresets/InactiveDashboard.dart';
-import 'REST/Post_CreateNote.dart';
-import 'Storage.dart';
-import 'Structs/RosterChild.dart';
-import 'Structs/Profile.dart';
+import '../Structs/Storage.dart';
 
-class ItemAdditionPage extends StatefulWidget {
-  ItemAdditionPage({Key key}) : super(key: key);
+class AddItemPage extends StatefulWidget {
+  AddItemPage({Key key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -21,10 +17,10 @@ class ItemAdditionPage extends StatefulWidget {
   // always marked "final".
 
   @override
-  ItemAdditionState createState() => ItemAdditionState();
+  AddItemState createState() => AddItemState();
 }
 
-class ItemAdditionState extends State<ItemAdditionPage>
+class AddItemState extends State<AddItemPage>
 {
 
   TextEditingController _itemNameController = new TextEditingController();

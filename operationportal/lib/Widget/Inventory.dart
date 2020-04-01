@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:operationportal/ItemAddition.dart';
+import 'file:///C:/Users/gecco/Documents/GitHub/OperationPortal/operationportal/lib/ItemAddition/AddItem.dart';
 import 'package:operationportal/REST/Get_RetrieveInventory.dart';
 import 'package:operationportal/Structs/Item.dart';
 
-import '../ItemView.dart';
-import '../Storage.dart';
+import '../ItemAddition/ItemView.dart';
+import '../Structs/Storage.dart';
 
 class InventoryWidgetPage extends StatefulWidget
 {
@@ -80,7 +80,7 @@ class InventoryWidgetState extends State<InventoryWidgetPage>
                   Container(
                       child: FlatButton(
                           child: Text("Add Item"),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ItemAdditionPage()))
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddItemPage()))
                       )
                   ),
                 ]

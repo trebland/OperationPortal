@@ -1,37 +1,21 @@
-import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:operationportal/BuildPresets/Child_ProfileViewer.dart';
-import 'package:operationportal/NoteAddition.dart';
-import 'package:operationportal/NoteView.dart';
-import 'package:operationportal/REST/Get_RetrieveBusInfo.dart';
-import 'package:operationportal/REST/Get_RetrieveClassInfo.dart';
-import 'package:operationportal/REST/Get_RetrieveNotes.dart';
-import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Class.dart';
-import 'package:operationportal/Structs/RosterChild.dart';
-import 'package:operationportal/Structs/Note.dart';
-import 'package:operationportal/Structs/Profile.dart';
-import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Storage.dart';
 
-import '../Storage.dart';
-import '../Structs/Choice.dart';
-import '../SuspensionView.dart';
-
-class Staff_ClassViewer_Page extends StatefulWidget {
-  Staff_ClassViewer_Page({Key key, this.mClass}) : super(key: key);
+class ClassProfilePage extends StatefulWidget {
+  ClassProfilePage({Key key, this.mClass}) : super(key: key);
 
   final Class mClass;
 
   @override
-  Staff_ClassViewer_State createState() => Staff_ClassViewer_State();
+  ClassProfileState createState() => ClassProfileState();
 }
 
-class Staff_ClassViewer_State extends State<Staff_ClassViewer_Page> {
+class ClassProfileState extends State<ClassProfilePage> {
 
   Storage storage;
 

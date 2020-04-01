@@ -1,11 +1,13 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveUser.dart';
+import 'package:operationportal/REST/Get_RetrieveVolunteerInfo.dart';
 import 'package:operationportal/REST/Post_ConfirmVolunteerAttendance.dart';
-import 'package:operationportal/Storage.dart';
 
 import 'package:flutter/services.dart';
+import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
+import 'package:operationportal/Structs/Volunteer.dart';
 
 class CheckInWidgetPage extends StatefulWidget
 {
@@ -63,9 +65,12 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.all(10),
           ),
+          barcode == null ? Container() :
           FutureBuilder(
-              future: barcode.isNotEmpty ? RetrieveUser(barcode, context) : null,
-              builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+              future: widget.storage.readToken().then((value){
+                return RetrieveVolunteerInfo(value, barcode, context);
+              }),
+              builder: (BuildContext context, AsyncSnapshot<Volunteer> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                     return new Text('Issue Posting Data');
@@ -96,7 +101,7 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                                     ),
                                     Flexible(
                                       child: Text(
-                                        snapshot.data.profile.firstName + "\n" + snapshot.data.profile.lastName,
+                                        (snapshot.data.firstName) + "\n" + (snapshot.data.lastName),
                                         textAlign: TextAlign.center,
                                         style: TextStyle(fontSize: 28, color: Colors.white),
                                       ),
@@ -118,7 +123,7 @@ class CheckInWidgetState extends State<CheckInWidgetPage>
                                 child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
                                 onPressed: () {
                                   widget.storage.readToken().then((value) {
-                                    ConfirmVolunteerAttendance(value, snapshot.data.profile, context);
+                                    ConfirmVolunteerAttendance(value, snapshot.data.id, context);
                                   });
                                 },
                               ),
