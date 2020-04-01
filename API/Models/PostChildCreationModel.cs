@@ -12,5 +12,6 @@ namespace API.Models
         public int BusId { get; set; }
         public string Birthday { get; set; }
         public byte[] Picture { get; set; }
+        public string Gender { get; set; }
     }
 }
