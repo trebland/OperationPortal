@@ -17,6 +17,7 @@ import { AdminCalendar } from './structures/adminViews/adminCalendar'
 import { ChildrensCalendar } from './structures/adminViews/childrensCalendar'
 import { StaffCalendar } from './structures/adminViews/staffCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
+import { AdminVolunteerEdit } from './structures/adminViews/adminVolunteerEdit'
 
 
 
@@ -44,6 +45,7 @@ export default class App extends Component {
             <Route exact path='/child-birthday-calendar' component={ChildrensCalendar} />
             <Route exact path='/staff-birthday-calendar' component={StaffCalendar} />
             <Route exact path='/privacy-policy' component={PrivacyPolicy} />
+            <Route exact path='/admin-volunteer-edit' component={AdminVolunteerEdit} />
 
             
             <Route component={NotFound} />

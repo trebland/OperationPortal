@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Button, Table } from 'react-bootstrap/'
+import { Button, Card, CardDeck } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
-import BootstrapTable from 'react-bootstrap-table-next'
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
+import './cards.css'
+
+// import BootstrapTable from 'react-bootstrap-table-next'
+// import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
 
 // https://react-bootstrap-table.github.io/react-bootstrap-table2/docs/basic-celledit.html
 
@@ -13,7 +15,8 @@ export class ViewVolunteers extends Component {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
             volunteers: [{}],
-            redirect: false
+            redirect: false,
+            edit: false
         }
         console.log(this.state.jwt)
         this.getVolunteers()
@@ -37,8 +40,11 @@ export class ViewVolunteers extends Component {
         })
     }
 
+    // https://www.operation-portal.com/api/volunteer-list
+    // http://localhost:5000/api/volunteer-list
+
     getVolunteers = () => {
-        fetch('https://www.operation-portal.com/api/volunteer-list' , {
+        fetch('http://localhost:5000/api/volunteer-list' , {
             // method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +65,7 @@ export class ViewVolunteers extends Component {
         .then((data) => {
             let res = JSON.parse(data)
             res = res.volunteers
-            if(this.mounted == true){
+            if(this.mounted === true){
                 this.setState({
                     volunteers: res
                 })
@@ -76,213 +82,125 @@ export class ViewVolunteers extends Component {
         this.mounted = false
       }
   
-      // Will set a variable to true when component is fully mounted
-       componentDidMount = () => {
-        this.mounted = true
-      }
+    // Will set a variable to true when component is fully mounted
+    componentDidMount = () => {
+    this.mounted = true
+    }
+
+    editVolunteers = () => {
+        if(this.state.edit) {
+            return (
+                <Redirect to={{
+                    pathname: '/admin-volunteer-edit',
+                    state: {
+                        jwt: this.state.jwt,
+                        loggedin: this.state.loggedin
+                    }
+                }}/>
+            )
+        }
+    }
+
+    setEdit = () => {
+        this.setState({
+            edit: true
+        })
+    }
+
+    renderVolunteers = () => {
+        if(this.state.volunteers != null){
+            const p = this.state.volunteers.map(v => {
+                return (
+                    <div>
+                        <Card style={{width: '25rem'}}>
+                            <Card.Header as='h5'>
+                                {v.firstName + " " +  v.lastName}
+                            </Card.Header>
+                            <Card.Body>
+                                <Card.Title>
+                                    Information
+                                </Card.Title>
+                                <Card.Text>
+                                    ID: {v.id}<br></br>
+                                    Preferred Name: {v.preferredName}<br></br>
+                                    Email: {v.email}<br></br>
+                                    Phone: {v.phone}<br></br>
+                                    Birthday: {v.birthday}<br></br>
+                                    <br></br>
+                                    Role: {v.role}<br></br>
+                                    Weeks Attended: {v.weeksAttended}<br></br>
+                                    {/* trainings, languages, picture, bus, class, classes interested, 
+                                        ages interested, 
+                                     */}
+                                    <br></br>
+                                    Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
+                                    Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>
+                                    Name Tag: {v.nametage  ? 'Yes' : 'No'}<br></br>
+                                    Personal Interview: {v.personalInterviewCompleted  ? 'Yes' : 'No'}<br></br>
+                                    Background Check: {v.backgroundCheck  ? 'Yes' : 'No'}<br></br>
+                                    Year Started: {v.yearStarted}<br></br>
+                                    Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
+                                </Card.Text>
+                                {this.editVolunteers()}
+                                <Button variant="primary" onClick={this.setEdit}>
+                                    Edit Volunteer Profiles
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                        
+                    </div>
+                )
+            })
+            return (
+                <div className="row">
+                    {p}
+                </div>
+            )
+        }
+    }
 
     render() {
-        const products = this.state.volunteers.map(v => {
-            [
-                {
-                    'pref': v.preferredName,
-                    'first': 'aaa',
-                    'last': '2001',
-                    'role': '2001',
-                    'weeks': '2001',
-                    'phone': '2001',
-                    'email': '2001',
-                    'ori': '2001',
-                    'train': '2001',
-                    'aff': '2001',
-                    'ref': '2001',
-                    'lang': '2001',
-                    'class': '2001',
-                    'ages': '2001',
-                    'news': '2001',
-                    'contact': '2001',
-                    'back': '2001',
-                    'blue': '2001',
-                    'nametag': '2001',
-                    'interview': '2001',
-                    'year': '2001',
-                    'birthday': '2001',
-                }
-            ]
-        })
+        
         return (
             <div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
                     Back to Dashboard
                 </Button>
-                <BootstrapTable 
-                    keyField='id' 
-                    data={ products } 
-                    columns={ columns } 
-                    style= {styling.table}
-                />
+
+                {this.editVolunteers()}
+                <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
+                    Edit Volunteer Profiles
+                </Button>
+
+                <h1 style={styling.head}>All Volunteers</h1>
+
+                <div style={styling.outderdiv}>
+                    <h4>Edit Profile Instructions:</h4>
+                    <p>
+                        In order to edit volunteer information, please keep track of their unique ID number when navigating to
+                        Edit Volunteer Profiles page. There you will be prompted<br></br>
+                        to enter the unique ID number and to update any necessary information.
+                    </p>
+                </div>
+                <div style={styling.deckDiv}>
+                    {this.renderVolunteers()}
+                </div>
+                
             </div>
         )
     }
 }
 
-// if(this.state.volunteers != null){
-//     const products = this.state.volunteers.map(v => {
-//         [
-//             {
-//                 'pref': v.preferredName,
-//                 'first': 'aaa',
-//                 'last': '2001',
-//                 'role': '2001',
-//                 'weeks': '2001',
-//                 'phone': '2001',
-//                 'email': '2001',
-//                 'ori': '2001',
-//                 'train': '2001',
-//                 'aff': '2001',
-//                 'ref': '2001',
-//                 'lang': '2001',
-//                 'class': '2001',
-//                 'ages': '2001',
-//                 'news': '2001',
-//                 'contact': '2001',
-//                 'back': '2001',
-//                 'blue': '2001',
-//                 'nametag': '2001',
-//                 'interview': '2001',
-//                 'year': '2001',
-//                 'birthday': '2001',
-//             }
-//         ]
-//     })
-// }
-
-
-// const products = [
-//     {
-//         'pref': '5',
-//         'first': 'aaa',
-//         'last': '2001',
-//         'role': '2001',
-//         'weeks': '2001',
-//         'phone': '2001',
-//         'email': '2001',
-//         'ori': '2001',
-//         'train': '2001',
-//         'aff': '2001',
-//         'ref': '2001',
-//         'lang': '2001',
-//         'class': '2001',
-//         'ages': '2001',
-//         'news': '2001',
-//         'contact': '2001',
-//         'back': '2001',
-//         'blue': '2001',
-//         'nametag': '2001',
-//         'interview': '2001',
-//         'year': '2001',
-//         'birthday': '2001',
-
-//     }
-// ]
-const columns = [
-    {
-        dataField: 'pref',
-        text: 'Preferred Name'
-    }, 
-    {
-        dataField: 'first',
-        text: 'First Name'
-    },
-    {
-        dataField: 'last',
-        text: 'Last Name'
-    }, 
-    {
-        dataField: 'role',
-        text: 'Role'
-    },
-    {
-        dataField: 'weeks',
-        text: 'Weeks Attended'
-    },
-    {
-        dataField: 'phone',
-        text: 'Phone Number'
-    },
-    {
-        dataField: 'email',
-        text: 'Email'
-    },
-    {
-        dataField: 'ori',
-        text: 'Orientation'
-    },
-    {
-        dataField: 'train',
-        text: 'Trainings'
-    },
-    {
-        dataField: 'aff',
-        text: 'Affiliations'
-    },
-    {
-        dataField: 'ref',
-        text: 'Referral'
-    },
-    {
-        dataField: 'lang',
-        text: 'Languages'
-    },
-    {
-        dataField: 'class',
-        text: 'Classes Interested'
-    },
-    {
-        dataField: 'ages',
-        text: 'Ages Interested'
-    },
-    {
-        dataField: 'news',
-        text: 'News Letter'
-    },
-    {
-        dataField: 'contact',
-        text: 'Contact When Short'
-    },
-    {
-        dataField: 'back',
-        text: 'Background Check'
-    },
-    {
-        dataField: 'blue',
-        text: 'Blue Shirt'
-    },
-    {
-        dataField: 'nametag',
-        text: 'Name Tag'
-    },
-    {
-        dataField: 'interview',
-        text: 'Personal Interview Completed'
-    },
-    {
-        dataField: 'year',
-        text: 'Year Started'
-    },
-    {
-        dataField: 'birthday',
-        text: 'Birthday'
-    }
-]
 
 const styling = {
     head: {
+        marginBottom: "15px",
         textAlign: "center"
     },
     outderdiv: {
-        padding: '20px 20px'
+        padding: '20px 20px',
+        marginLeft: '75px'
     },
     butt: {
         marginTop: '15px',
@@ -292,5 +210,18 @@ const styling = {
     table: {
         height: '400px',
         width: '1000px'
+    },
+    deckDiv: {
+        justifyContent: 'center',
+        alignContent: 'center',
+        outline: 'none',
+        border: 'none',
+        overflowWrap: 'normal',
+        marginLeft:'7%'
+    },
+    ann: {
+        marginTop: '15px',
+        marginRight: '15px',
+        marginBottom: '15px'
     }
 }
