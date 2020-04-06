@@ -1079,6 +1079,7 @@ namespace API.Data
             }
             
             child.IsCheckedIn = IsCheckedIn((int)dr["id"]);
+            child.LastDateAttended = GetLastDateAttended((int)dr["id"]);
 
             return child;
         }
@@ -1195,6 +1196,36 @@ namespace API.Data
             }
 
             return dates;
+        }
+
+        /// <summary>
+        /// Given a child id, retrieves the most recent DateTime the child has been marked for attendance
+        /// </summary>
+        /// <param name="childid"></param>
+        public DateTime GetLastDateAttended(int childid)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT * 
+                               FROM Child_Attendance 
+                               WHERE childid = @childid
+                               ORDER BY dayattended DESC";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childid;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+            if (dt.Rows.Count == 0)
+            {
+                return DateTime.MinValue;
+            }
+
+            return (DateTime)dt.Rows[0]["dayattended"];
         }
 
         /// <summary>
