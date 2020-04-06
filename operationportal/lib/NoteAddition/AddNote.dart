@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Post_CreateNote.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Profile.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
@@ -56,7 +57,7 @@ class AddNoteState extends State<AddNotePage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -107,7 +108,7 @@ class AddNoteState extends State<AddNotePage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -157,14 +158,14 @@ class AddNoteState extends State<AddNotePage>
         child: RaisedButton(
           child: Text(
               "Add Note",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             storage.readToken().then((value) {
               CreateNote(value, widget.profile.firstName + " " + widget.profile.lastName, widget.child.id, _noteController.text, priorityValue, context);
             });
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,

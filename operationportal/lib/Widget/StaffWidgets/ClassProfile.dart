@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Class.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
@@ -51,7 +52,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                     child: Text("Name:\n${widget.mClass.teacherName}", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.all(
                           new Radius.circular(20)
                       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/ForgotPassword.dart';
 import 'package:operationportal/REST/Post_Login.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/RegisterAccount.dart';
 
 
@@ -63,7 +64,7 @@ class LoginPageState extends State<LoginPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -119,7 +120,7 @@ class LoginPageState extends State<LoginPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -206,13 +207,13 @@ class LoginPageState extends State<LoginPage> {
         child: RaisedButton(
           child: Text(
               "Login",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: Colors.white)
           ),
           onPressed: () {
             Login(_emailController.text, _passwordController.text, context);
             // LoginCheck(_emailController.text);
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,

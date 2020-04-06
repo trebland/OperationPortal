@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/REST/Get_RetrieveVolunteerInfo.dart';
 import 'package:operationportal/REST/Post_ConfirmVolunteerAttendance.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
 
@@ -54,7 +55,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
               ),
             ),
             decoration: new BoxDecoration(
-              color: Colors.blue,
+              color: primaryWidgetColor,
               borderRadius: new BorderRadius.all(
                   new Radius.circular(20)
               ),
@@ -107,7 +108,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                               ),
                             ),
                             decoration: new BoxDecoration(
-                              color: Colors.blue,
+                              color: primaryWidgetColor,
                               borderRadius: new BorderRadius.all(
                                   new Radius.circular(20)
                               ),
@@ -125,7 +126,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                                 },
                               ),
                               decoration: new BoxDecoration(
-                                color: Colors.blue,
+                                color: primaryWidgetColor,
                                 borderRadius: new BorderRadius.all(
                                     new Radius.circular(20)
                                 ),

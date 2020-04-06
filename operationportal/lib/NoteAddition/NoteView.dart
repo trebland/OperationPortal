@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Delete_Note.dart';
 import 'package:operationportal/REST/Post_EditNote.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Note.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
@@ -92,7 +93,7 @@ class NoteViewState extends State<NoteViewPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -144,7 +145,7 @@ class NoteViewState extends State<NoteViewPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -189,12 +190,12 @@ class NoteViewState extends State<NoteViewPage>
         child: RaisedButton(
           child: Text(
               noteControllerEditable ? "Submit Changes" : "Edit Note",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             noteControllerEditable ? submitNoteEdit() : switchOnOffEdit();
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,
@@ -209,7 +210,7 @@ class NoteViewState extends State<NoteViewPage>
         child: RaisedButton(
           child: Text(
               noteControllerEditable ? "Discard Changes" : "Delete Note",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             noteControllerEditable ? discardChanges() : deleteNote();

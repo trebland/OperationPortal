@@ -286,7 +286,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                           }
                       ),
                       decoration: new BoxDecoration(
-                        color: Colors.blue,
+                        color: primaryWidgetColor,
                         borderRadius: new BorderRadius.only(
                           topLeft: Radius.circular(20),
                           bottomLeft: Radius.circular(20),
@@ -334,7 +334,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                         style: TextStyle(fontSize: 28, color: Colors.white),
                       ),
                       decoration: new BoxDecoration(
-                          color: Colors.blue,
+                          color: primaryWidgetColor,
                           borderRadius: new BorderRadius.only(
                             topRight: new Radius.circular(20), topLeft: new Radius.circular(20),
                           )
@@ -352,7 +352,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                         },
                       ),
                       decoration: new BoxDecoration(
-                        color: Colors.blue,
+                        color: primaryWidgetColor,
                         borderRadius: new BorderRadius.all(
                           Radius.circular(20),
                         ),
@@ -398,7 +398,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                                     });
                                   },
                                 ),
-                                color: Colors.blue[colorCodes[index%2]],
+                                color: index%2 == 0 ? primaryWidgetColor : secondaryWidgetColor,
                                 margin: EdgeInsets.only(left: 10, right: 10),
                               );
                             },
@@ -408,7 +408,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                               child: Text('No Notes Attached!', style: TextStyle(color: Colors.white)),
                             ),
                             decoration: new BoxDecoration(
-                              color: Colors.blue,
+                              color: primaryWidgetColor,
                               borderRadius: new BorderRadius.only(
                                 bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20),
                               ),
