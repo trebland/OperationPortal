@@ -26,7 +26,9 @@ class TeacherRosterWidgetPage extends StatefulWidget {
 
 class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
 {
+  final searchController = TextEditingController();
   final classIdController = TextEditingController();
+
   int classIndex;
   List<String> classIds;
   List<Class> classes;
@@ -199,6 +201,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                       onChanged: (value) {
                         filterRosterResults(value);
                       },
+                      controller: searchController,
                       decoration: InputDecoration(
                           labelText: "Search",
                           prefixIcon: Icon(Icons.search),
@@ -210,7 +213,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                   Container(
                       child: FlatButton(
                           child: Text("Add Child"),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(futureBuses: null, driversBus: null,)))
                       )
                   )
                 ]
@@ -238,7 +241,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                     );
                   } else {
                     childrenData = snapshot.data;
-                    children = displayChildren.length > 0 ? displayChildren : childrenData;
+                    children = searchController.text.isNotEmpty ? displayChildren : childrenData;
                     filterCheckedIn ? children = filterChildren (children) : children;
                     return Expanded(
                       child: new ListView.builder(

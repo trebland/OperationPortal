@@ -29,12 +29,22 @@ class LoginPageState extends State<LoginPage> {
   Widget buildHeader ()
   {
     return Container(
-      child: Text(
-        "Orlando Children's Church",
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Welcome to",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          Container(
+            child: Image.asset('assets/OCC_LOGO.png'),
+            width: 400,
+            height: 200,
+            margin: EdgeInsets.only(top: 10),
+          ),
+        ],
       ),
-      margin: EdgeInsets.only(top: 120, bottom: 50),
+      margin: EdgeInsets.only(top: 60, bottom: 50),
     );
   }
 
@@ -173,7 +183,7 @@ class LoginPageState extends State<LoginPage> {
           Builder(
               builder: (context) => Center(
                   child: FlatButton(
-                    child: const Text('Register Account'),
+                    child: const Text('New Volunteer'),
                     onPressed: ()
                     {
                       Navigator.push(

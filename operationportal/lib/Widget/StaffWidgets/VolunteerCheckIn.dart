@@ -35,7 +35,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                   children: <Widget>
                   [
                     Flexible(
-                      child: Text("Recent Volunteer", style: TextStyle(fontSize: 30, color: Colors.white),),
+                      child: Text("Returning Volunteer", style: TextStyle(fontSize: 24, color: Colors.white),),
                     ),
                     Container(
                       child: FlatButton(

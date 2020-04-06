@@ -30,7 +30,7 @@ class VolunteerCaptain_ActiveDashboard_State extends State<VolunteerCaptain_Acti
     return IconButton(
       icon: Icon(
         Icons.refresh,
-        color: Colors.black,
+        color: Colors.white,
       ),
       onPressed: () {
         setState(() {

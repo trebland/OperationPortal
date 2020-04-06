@@ -9,7 +9,7 @@ import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> CreateChildFull (String token, String firstName, String lastName, String parentName,
     String contactNumber, String childImagePath, String birthday, String gender,
-    String preferredName, String busId, BuildContext context) async {
+    String preferredName, BuildContext context) async {
   Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Adding Child",)));
   var mUrl = "https://www.operation-portal.com/api/child-creation";
 
@@ -44,14 +44,6 @@ Future<void> CreateChildFull (String token, String firstName, String lastName, S
     {
       Map<String, dynamic> addTo = {
         'preferredName': preferredName,
-      };
-      bodyToSet.addAll(addTo);
-    }
-
-  if (busId.isNotEmpty)
-    {
-      Map<String, dynamic> addTo = {
-        'BusId': busId,
       };
       bodyToSet.addAll(addTo);
     }

@@ -38,7 +38,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
                   children: <Widget>
                   [
                     Flexible(
-                      child: Text("Recent Child", style: TextStyle(fontSize: 30, color: Colors.white),),
+                      child: Text("Returning Child", style: TextStyle(fontSize: 30, color: Colors.white),),
                     ),
                     Container(
                       child: FlatButton(

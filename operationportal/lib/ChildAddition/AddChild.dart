@@ -7,15 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:operationportal/ChildAddition/AdditionalOptions.dart';
+import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Post_CreateChildBase.dart';
+import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Widget/TakePicture.dart';
 
 
 class AddChildPage extends StatefulWidget {
-  AddChildPage({Key key, this.title}) : super(key: key);
+  AddChildPage({Key key, this.futureBuses, this.driversBus}) : super(key: key);
 
-  final String title;
+  Future<List<Bus>> futureBuses;
+  final Bus driversBus;
 
   @override
   AddChildState createState() => AddChildState();
@@ -28,11 +31,16 @@ class AddChildState extends State<AddChildPage>
   final lastNameController = TextEditingController();
   final parentNameController = TextEditingController();
   final contactNumberController = TextEditingController();
+  final busController = new TextEditingController();
 
   final _phoneFormatter = _UsNumberTextInputFormatter();
 
   Storage storage;
   String childImagePath;
+
+  int busIndex;
+
+
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -68,6 +76,10 @@ class AddChildState extends State<AddChildPage>
   @override
   void initState() {
      storage = new Storage();
+
+     busIndex = 0;
+
+     super.initState();
   }
 
   String parseNumber (String number)
@@ -128,6 +140,21 @@ class AddChildState extends State<AddChildPage>
 
         return false;
       }
+    else if (busController.text.isEmpty)
+    {
+
+      Fluttertoast.showToast(
+          msg: 'Bus Id is mandatory',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
     else if (childImagePath == null)
     {
       Fluttertoast.showToast(
@@ -195,6 +222,21 @@ class AddChildState extends State<AddChildPage>
     {
       Fluttertoast.showToast(
           msg: 'Contact number is mandatory to procede to additional options',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+
+      return false;
+    }
+    else if (busController.text.isEmpty)
+    {
+
+      Fluttertoast.showToast(
+          msg: 'Bus Id is mandatory to procede to additional options',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIos: 1,
@@ -520,6 +562,116 @@ class AddChildState extends State<AddChildPage>
     );
   }
 
+  Widget buildBusRow()
+  {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.directions_bus,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  ),
+                  Flexible(
+                    child: TextField(
+                      textAlign: TextAlign.left,
+                      controller: busController,
+                      decoration: new InputDecoration(
+                        labelText: "Bus",
+                        border: new OutlineInputBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                          borderSide: new BorderSide(
+                            color: Colors.black,
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                      enabled: false,
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ),
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(left: 25, right: 25,),
+        ),
+        FutureBuilder(
+            future: widget.futureBuses == null ? storage.readToken().then((value) async {
+              widget.futureBuses = RetrieveBuses(value);
+              return widget.futureBuses;
+            }) : widget.futureBuses,
+            builder: (BuildContext context, AsyncSnapshot<List<Bus>> snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return new Text('Issue Posting Data');
+                case ConnectionState.waiting:
+                  return new Center(child: new CircularProgressIndicator());
+                case ConnectionState.active:
+                  return new Text('');
+                case ConnectionState.done:
+                  if (snapshot.hasError) {
+                    return Text("Bus Ids failed to load");
+                  } else {
+                    busIndex = widget.driversBus != null ? snapshot.data.indexOf(widget.driversBus): 0;
+                    return Container(
+                      child: DropdownButton<Bus>(
+                        value: snapshot.data[busIndex],
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(
+                            color: Colors.deepPurple
+                        ),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (Bus newValue) {
+                          setState(() {
+                            busIndex = snapshot.data.indexOf(newValue);
+                            busController.text = newValue.id == null ? "" : '${newValue.id}';
+                          });
+                        },
+                        items: snapshot.data
+                            .map<DropdownMenuItem<Bus>>((Bus value) {
+                          return DropdownMenuItem<Bus>(
+                            value: value,
+                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                          );
+                        }).toList(),
+                      ),
+                      margin: EdgeInsets.only(bottom: 25,),
+                    );
+                  }
+                  break;
+                default:
+                  return null;
+              }
+            }
+        )
+      ],
+    );
+  }
+
   Widget buildButtonBar ()
   {
     return ButtonBar(
@@ -540,7 +692,9 @@ class AddChildState extends State<AddChildPage>
           {
             if (filledOut())
               storage.readToken().then((value) {
-                CreateChildBase(value, firstNameController.text, lastNameController.text, parentNameController.text, contactNumberController.text, childImagePath, context);
+                CreateChildBase(value, firstNameController.text, lastNameController.text,
+                    parentNameController.text, contactNumberController.text,
+                    busController.text, childImagePath, context);
               });
           },
           color: Colors.amber,
@@ -555,7 +709,7 @@ class AddChildState extends State<AddChildPage>
       builder: (BuildContext context, BoxConstraints viewportConstraints) {
         return Scaffold (
           appBar: new AppBar(
-            title: new Text(widget.title),
+            title: new Text("Add Child"),
           ),
           body: SingleChildScrollView(
             child: ConstrainedBox(
@@ -570,6 +724,7 @@ class AddChildState extends State<AddChildPage>
                   buildLastNameRow(),
                   buildParentNameRow(),
                   buildContactNumberRow(),
+                  buildBusRow(),
                   buildTakePicture(),
                   buildButtonBar(),
                 ],

@@ -27,6 +27,7 @@ class BusRosterWidgetPage extends StatefulWidget {
 class BusRosterWidgetState extends State<BusRosterWidgetPage>
 {
 
+  final searchController = TextEditingController();
   final busIdController = TextEditingController();
   int busIndex;
   List<Bus> buses;
@@ -198,6 +199,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                       onChanged: (value) {
                         filterRosterResults(value);
                       },
+                      controller: searchController,
                       decoration: InputDecoration(
                           labelText: "Search",
                           prefixIcon: Icon(Icons.search),
@@ -209,7 +211,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                   Container(
                       child: FlatButton(
                           child: Text("Add Child"),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(futureBuses: null, driversBus: buses[busIndex].id != null ? buses[busIndex] : null,)))
                       )
                   )
                 ]
@@ -237,7 +239,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                     );
                   } else {
                     childrenData = snapshot.data;
-                    children = displayChildren.length > 0 ? displayChildren : childrenData;
+                    children = searchController.text.isNotEmpty ? displayChildren : childrenData;
                     filterCheckedIn ? children = filterChildren (children) : children;
                     return Expanded(
                       child: new ListView.builder(

@@ -86,6 +86,16 @@ class RosterWidgetState extends State<RosterWidgetPage>
     return newList;
   }
 
+  List<RosterChild> sortedChildren (List<RosterChild> children)
+  {
+    children.sort((a, b) {
+      return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
+    });
+
+    return children;
+  }
+
+
   @override
   void initState() {
 
@@ -354,7 +364,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                   Container(
                       child: FlatButton(
                           child: Text("Add Child"),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(title: 'Add Child')))
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddChildPage(futureBuses: null, driversBus: null)))
                       )
                   )
                 ]
@@ -382,8 +392,9 @@ class RosterWidgetState extends State<RosterWidgetPage>
                     );
                   } else {
                     childrenData = snapshot.data;
-                    children = displayChildren.length > 0 ? displayChildren : childrenData;
-                    filterCheckedIn ? children = filterChildren (children) : children;
+                    children = searchController.text.isNotEmpty ? displayChildren : childrenData;
+                    children = filterCheckedIn ? filterChildren (children) : children;
+                    children = sortedChildren(children);
                     return Expanded(
                       child: new ListView.builder(
                         itemCount: children.length,

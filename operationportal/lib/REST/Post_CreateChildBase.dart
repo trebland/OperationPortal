@@ -6,47 +6,35 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String childImagePath, BuildContext context) async {
+Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String busId, String childImagePath, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/child-creation";
+
   var body;
-  Uint8List bytes;
 
-  if (lastName.isEmpty && childImagePath == null)
-    body = json.encode({
-      'FirstName': firstName,
-      'ParentName': parentName,
-      'ContactNumber': contactNumber,
-    });
-  else if (lastName.isEmpty) {
-    bytes = (await File(childImagePath).readAsBytes());
-    body = json.encode({
-      'FirstName': firstName,
-      'ParentName': parentName,
-      'ContactNumber': contactNumber,
-      'Picture': bytes,
-    });
+  Map<String, dynamic> bodyToSet = {
+    'FirstName': firstName,
+    'ParentName': parentName,
+    'ContactNumber': contactNumber,
+    'BusId': busId,
+  };
+
+  if (lastName.isEmpty) {
+    Map<String, dynamic> addTo = {
+      'lastName': lastName,
+    };
+    bodyToSet.addAll(addTo);
   }
-  else if (childImagePath == null)
-    body = json.encode({
-      'FirstName': firstName,
-      'LastName': lastName,
-      'ParentName': parentName,
-      'ContactNumber': contactNumber,
-    });
-  else
-    {
-      bytes = (await File(childImagePath).readAsBytes());
-      body = json.encode({
-        'FirstName': firstName,
-        'LastName': lastName,
-        'ParentName': parentName,
-        'ContactNumber': contactNumber,
-        //'Bus': { 'Id': '$busId' },
-        'Picture': bytes,
-      });
-    }
 
+  if (childImagePath == null)
+  {
+    Uint8List bytes = (await File(childImagePath).readAsBytes());
+    Map<String, dynamic> addTo = {
+      'Picture': bytes,
+    };
+    bodyToSet.addAll(addTo);
+  }
 
+  body = json.encode(bodyToSet);
 
   var response = await http.post(mUrl,
       body: body,
