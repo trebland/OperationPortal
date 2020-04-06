@@ -112,7 +112,7 @@ class SuspendedWidgetState extends State<SuspendedWidgetPage>
                             child: ListTile(
                               leading: Container(
                                 child: CircleAvatar(
-                                  backgroundImage: (suspended[index].picture != null) ? MemoryImage(base64.decode((suspended[index].picture))) : null,
+                                  backgroundImage: (suspended[index].picture != null && suspended[index].picture.isNotEmpty) ? MemoryImage(base64.decode((suspended[index].picture))) : null,
                                 ),
                               ),
                               title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
