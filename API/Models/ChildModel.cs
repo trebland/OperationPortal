@@ -30,5 +30,6 @@ namespace API.Models
         public DateTime? SuspendedEnd { get; set; }
         public bool IsSuspended { get; set; }
         public bool IsCheckedIn { get; set; }
+        public DateTime LastDateAttended { get; set; }
     }
 }
