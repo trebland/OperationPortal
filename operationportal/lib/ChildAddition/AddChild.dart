@@ -74,6 +74,13 @@ class AddChildState extends State<AddChildPage>
     });
   }
 
+  int matchBusIds (List<Bus> listOf, Bus toMatch)
+  {
+    for (Bus b in listOf)
+      if (b.id == toMatch.id)
+        return listOf.indexOf(b);
+  }
+
   @override
   void initState() {
      storage = new Storage();
@@ -632,7 +639,7 @@ class AddChildState extends State<AddChildPage>
                   if (snapshot.hasError) {
                     return Text("Bus Ids failed to load");
                   } else {
-                    busIndex = widget.driversBus != null ? snapshot.data.indexOf(widget.driversBus): 0;
+                    busIndex = widget.driversBus != null ? matchBusIds(snapshot.data, widget.driversBus) : 0;
                     return Container(
                       child: DropdownButton<Bus>(
                         value: snapshot.data[busIndex],
