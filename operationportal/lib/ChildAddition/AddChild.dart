@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:operationportal/ChildAddition/AdditionalOptions.dart';
 import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Post_CreateChildBase.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Widget/TakePicture.dart';
@@ -281,7 +282,7 @@ class AddChildState extends State<AddChildPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -331,7 +332,7 @@ class AddChildState extends State<AddChildPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -381,7 +382,7 @@ class AddChildState extends State<AddChildPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -431,7 +432,7 @@ class AddChildState extends State<AddChildPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -489,7 +490,7 @@ class AddChildState extends State<AddChildPage>
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -505,7 +506,7 @@ class AddChildState extends State<AddChildPage>
                       },
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topRight: Radius.circular(20),
                         bottomRight: Radius.circular(20),
@@ -531,7 +532,7 @@ class AddChildState extends State<AddChildPage>
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -545,7 +546,7 @@ class AddChildState extends State<AddChildPage>
                       onPressed: getImage,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topRight: Radius.circular(20),
                         bottomRight: Radius.circular(20),
@@ -580,7 +581,7 @@ class AddChildState extends State<AddChildPage>
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -697,7 +698,7 @@ class AddChildState extends State<AddChildPage>
                     busController.text, childImagePath, context);
               });
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
       ],
     );

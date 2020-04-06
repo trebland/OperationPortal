@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/REST/Post_CreateInventory.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
 
@@ -52,7 +53,7 @@ class AddItemState extends State<AddItemPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -101,7 +102,7 @@ class AddItemState extends State<AddItemPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -146,14 +147,14 @@ class AddItemState extends State<AddItemPage>
         child: RaisedButton(
           child: Text(
               "Add Item",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             storage.readToken().then((value) {
               CreateInventory(value, _itemNameController.text, int.parse(_countController.text), context);
             });
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,

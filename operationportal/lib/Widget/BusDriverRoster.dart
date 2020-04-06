@@ -110,7 +110,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                     child: Text("Bus Id", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.all(
                           new Radius.circular(20)
                       ),
@@ -160,7 +160,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                             child: Text("Info", style: TextStyle(color: Colors.white)),
                           ),
                           decoration: new BoxDecoration(
-                            color: Colors.blue,
+                            color: primaryWidgetColor,
                             borderRadius: new BorderRadius.all(
                                 new Radius.circular(20)
                             ),
@@ -261,7 +261,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                               },
                               dense: false,
                             ),
-                            color: Colors.blue[colorCodes[index%2]],
+                            color: index%2 == 0 ? primaryWidgetColor : secondaryWidgetColor,
                           );
                         },
                       ),

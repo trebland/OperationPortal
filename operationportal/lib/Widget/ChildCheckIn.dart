@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:operationportal/REST/Get_RetrieveChild.dart';
 import 'package:operationportal/REST/Post_ConfirmChildAttendance.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Child.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
@@ -57,7 +58,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
               ),
             ),
             decoration: new BoxDecoration(
-              color: Colors.blue,
+              color: primaryWidgetColor,
               borderRadius: new BorderRadius.all(
                   new Radius.circular(20)
               ),
@@ -110,7 +111,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
                               ),
                             ),
                             decoration: new BoxDecoration(
-                              color: Colors.blue,
+                              color: primaryWidgetColor,
                               borderRadius: new BorderRadius.all(
                                   new Radius.circular(20)
                               ),
@@ -140,7 +141,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
                                 },
                               ),
                               decoration: new BoxDecoration(
-                                color: Colors.blue,
+                                color: primaryWidgetColor,
                                 borderRadius: new BorderRadius.all(
                                     new Radius.circular(20)
                                 ),

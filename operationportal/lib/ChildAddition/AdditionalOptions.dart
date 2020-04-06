@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveBuses.dart';
 import 'package:operationportal/REST/Post_CreateChildFull.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Bus.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
@@ -119,7 +120,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -172,7 +173,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -261,7 +262,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -323,7 +324,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -381,7 +382,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   context);
             });
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
       ],
     );

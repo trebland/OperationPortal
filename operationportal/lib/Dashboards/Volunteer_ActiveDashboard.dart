@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/AppBar.dart';
@@ -90,7 +91,7 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
             return Center(
               child: Container(
                 child: Text("Checked-in Successfully! Please speak to leadership about your role assignment.", textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, color: Colors.blue)),
+                    style: TextStyle(fontSize: 28, color: primaryWidgetColor)),
                 padding: EdgeInsets.all(5),
                 margin: EdgeInsets.only(top: 20, bottom: 5),
               ),

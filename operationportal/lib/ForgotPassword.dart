@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+
 
 class ForgotPasswordPage extends StatefulWidget {
   ForgotPasswordPage({Key key, this.title}) : super(key: key);
@@ -35,7 +37,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -81,7 +83,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
           onPressed: () {
             Navigator.pop(context);
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,

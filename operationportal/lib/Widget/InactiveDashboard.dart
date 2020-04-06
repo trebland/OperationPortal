@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/QR/GenerateQR.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Profile.dart';
 import 'package:operationportal/Widget/AppBar.dart';
 
@@ -56,7 +57,7 @@ class InactiveDashboardState extends State<InactiveDashboardPage>
         },
       ),
       decoration: new BoxDecoration(
-        color: Colors.blue,
+        color: primaryWidgetColor,
         borderRadius: new BorderRadius.all(
             new Radius.circular(20)
         ),
@@ -70,7 +71,7 @@ class InactiveDashboardState extends State<InactiveDashboardPage>
   {
     return Container(
       child: Text("Please present your QR code to staff in-order to begin volunteering.", textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 28, color: Colors.blue)),
+          style: TextStyle(fontSize: 28, color: primaryWidgetColor)),
       padding: EdgeInsets.all(5),
       margin: EdgeInsets.only(top: 20, bottom: 5),
     );

@@ -112,7 +112,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                     child: Text("Class Id", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.all(
                           new Radius.circular(20)
                       ),
@@ -162,7 +162,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                           child: Text("Info", style: TextStyle(color: Colors.white)),
                         ),
                         decoration: new BoxDecoration(
-                          color: Colors.blue,
+                          color: primaryWidgetColor,
                           borderRadius: new BorderRadius.all(
                               new Radius.circular(20)
                           ),
@@ -263,7 +263,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                               },
                               dense: false,
                             ),
-                            color: Colors.blue[colorCodes[index%2]],
+                            color: index%2 == 0 ? primaryWidgetColor : secondaryWidgetColor,
                           );
                         },
                       ),

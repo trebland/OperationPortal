@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Post_EditInventory.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 import 'package:operationportal/Structs/Item.dart';
 import 'package:operationportal/Structs/Storage.dart';
 
@@ -106,7 +107,7 @@ class ItemViewState extends State<ItemViewPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -156,7 +157,7 @@ class ItemViewState extends State<ItemViewPage>
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -210,7 +211,7 @@ class ItemViewState extends State<ItemViewPage>
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -269,12 +270,12 @@ class ItemViewState extends State<ItemViewPage>
         child: RaisedButton(
           child: Text(
               itemControllerEditable ? "Submit Changes" : "Edit Item",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             itemControllerEditable ? submitNoteEdit() : switchOnOffEdit();
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,
@@ -290,7 +291,7 @@ class ItemViewState extends State<ItemViewPage>
         child: RaisedButton(
           child: Text(
               "Discard Changes",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             discardChanges();

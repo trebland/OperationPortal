@@ -124,7 +124,7 @@ class InventoryWidgetState extends State<InventoryWidgetPage>
                               },
                               dense: false,
                             ),
-                            color: Colors.blue[colorCodes[index%2]],
+                            color: index%2 == 0 ? primaryWidgetColor : secondaryWidgetColor,
                           );
                         },
                       ),
