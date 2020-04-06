@@ -88,11 +88,24 @@ class RosterWidgetState extends State<RosterWidgetPage>
 
   List<RosterChild> sortedChildren (List<RosterChild> children)
   {
-    children.sort((a, b) {
+    List<RosterChild> oldChildren = new List<RosterChild>();
+    List<RosterChild> recentChildren = new List<RosterChild>();
+    for (RosterChild c in children)
+      {
+        c.lastDateAttended.difference(DateTime.now()).inDays > 90 ? oldChildren.add(c) : recentChildren.add(c);
+      }
+
+    recentChildren.sort((a, b) {
       return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
     });
 
-    return children;
+    oldChildren.sort((a, b) {
+      return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
+    });
+
+    recentChildren.addAll(oldChildren);
+
+    return recentChildren;
   }
 
 

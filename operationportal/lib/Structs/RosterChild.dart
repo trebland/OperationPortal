@@ -20,11 +20,13 @@ class RosterChild {
   String endSuspension;
   bool isSuspended;
   bool isCheckedIn;
+  DateTime lastDateAttended;
 
 
   RosterChild({this.id, this.firstName, this.lastName, this.preferredName, this.parentName,
     this.contactNumber, this.grade, this.gender, this.mClass, this.mBus, this.birthday, this.picture,
-    this.startSuspension, this.endSuspension, this.isSuspended, this.isCheckedIn});
+    this.startSuspension, this.endSuspension, this.isSuspended, this.isCheckedIn,
+    this.lastDateAttended});
 
   factory RosterChild.fromJson(Map<String, dynamic> json) {
     return RosterChild(
@@ -44,6 +46,10 @@ class RosterChild {
       endSuspension: json['suspendedEnd'] == null ? null : json['suspendedEnd'],
       isSuspended: json['isSuspended'],
       isCheckedIn: json['isCheckedIn'],
+      lastDateAttended: json['lastDateAttended'] != null ?
+        new DateTime(int.parse(json['lastDateAttended'].split('-')[0]),
+          int.parse(json['lastDateAttended'].split('-')[1]),
+          int.parse(json['lastDateAttended'].split('-')[2].split('T')[0])) : null,
     );
   }
 }
