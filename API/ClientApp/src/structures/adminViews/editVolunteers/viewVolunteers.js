@@ -75,11 +75,11 @@ export class ViewVolunteers extends Component {
     // Sets variable to false when ready to leave page
     componentWillUnmount = () => {
         this.mounted = false
-      }
+    }
   
     // Will set a variable to true when component is fully mounted
     componentDidMount = () => {
-    this.mounted = true
+        this.mounted = true
     }
 
     editVolunteers = () => {

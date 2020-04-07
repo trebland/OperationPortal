@@ -16,52 +16,98 @@ export class GeneralCalendar extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      // username: (this.props.location.state.username == undefined) ? "" : this.props.location.state.username,
-      redirect: false
+        eventsapi: [{}],
+        groups: [{}],
+        redirect: false
     }
+    this.getInfo()
   }
+
+  getInfo = () => {
+    fetch('http://localhost:5000/api/calendar/' , {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then((res) => {
+            console.log(res.status)
+            if((res.status === 200 || res.status === 201) && this.mounted === true){
+                console.log('Retrieval successful')
+                return res.text()
+            }
+            else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                console.log('Retrieval failed')
+                return
+            }
+        })
+        .then((data) => {
+            let res = JSON.parse(data)
+            let g = res.groups
+            let e = res.events
+            if(this.mounted === true){
+                this.setState({
+                    groups: g,
+                    eventsapi: e
+                })
+            }
+            console.log(this.state.eventsapi)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+  }
+
+
   
-  static displayName = GeneralCalendar.name;
-
-  renderRedirect = () => {
-    if(this.state.redirect){
-        return <Redirect to={{
-            pathname: '/'
-        }}/>
+    componentWillUnmount = () => {
+        this.mounted = false
     }
-  }
+    
+    componentDidMount = () => {
+        this.mounted = true
+    }
+    
+    renderRedirect = () => {
+        if(this.state.redirect){
+            return <Redirect to={{
+                pathname: '/'
+            }}/>
+        }
+    }
+    
+    setRedirect = () => {
+        this.setState({
+            redirect: true
+        })
+    }
 
-  setRedirect = () => {
-      this.setState({
-          redirect: true
-      })
-  }
 
-
-  render () {
-    return(
-        <div>
-            <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
-                Back to Dashboard
-            </Button>
-            <div style={styling.cal}>
-                <h1>General Calendar</h1>
-                <Calendar
-                    selectable
-                    popup
-                    localizer = {localizer}
-                    events = {events}
-                    startAccessor = "start"
-                    endAccessor = "end"
-                    onSelectEvent={event => alert(event.title)}
-                />
-            </div>
-            {this.renderRedirect()}
-            
-            
-        </div> 
-    )
-  }
+    render () {
+        return(
+            <div>
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
+                    Back to Dashboard
+                </Button>
+                <div style={styling.cal}>
+                    <h1>General Calendar</h1>
+                    <Calendar
+                        selectable
+                        popup
+                        localizer = {localizer}
+                        events = {events}
+                        startAccessor = "start"
+                        endAccessor = "end"
+                        onSelectEvent={event => alert(event.title)}
+                    />
+                </div>
+                {this.renderRedirect()}
+                
+                
+            </div> 
+        )
+    }
 }
 
 const styling = {
