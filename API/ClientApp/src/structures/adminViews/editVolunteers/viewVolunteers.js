@@ -3,11 +3,6 @@ import { Button, Card } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import './cards.css'
 
-// import BootstrapTable from 'react-bootstrap-table-next'
-// import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css'
-
-// https://react-bootstrap-table.github.io/react-bootstrap-table2/docs/basic-celledit.html
-
 export class ViewVolunteers extends Component {
     constructor(props) {
         super(props)
@@ -135,7 +130,7 @@ export class ViewVolunteers extends Component {
                                     <br></br>
                                     Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
                                     Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>
-                                    Name Tag: {v.nametage  ? 'Yes' : 'No'}<br></br>
+                                    Name Tag: {v.nameTag  ? 'Yes' : 'No'}<br></br>
                                     Personal Interview: {v.personalInterviewCompleted  ? 'Yes' : 'No'}<br></br>
                                     Background Check: {v.backgroundCheck  ? 'Yes' : 'No'}<br></br>
                                     Year Started: {v.yearStarted}<br></br>
