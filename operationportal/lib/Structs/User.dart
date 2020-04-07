@@ -1,6 +1,7 @@
-import 'Bus.dart';
-import 'Class.dart';
-import 'Profile.dart';
+
+import 'package:operationportal/Structs/Bus.dart';
+import 'package:operationportal/Structs/Class.dart';
+import 'package:operationportal/Structs/Profile.dart';
 
 class User {
   Profile profile;

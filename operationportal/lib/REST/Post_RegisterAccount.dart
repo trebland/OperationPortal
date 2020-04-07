@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
 
 Future<void> RegisterAccount(BuildContext context, String email, String password, String firstName, String lastName) async {

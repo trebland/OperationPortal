@@ -1,9 +1,10 @@
-import 'package:operationportal/ForgotPassword.dart';
-import 'package:operationportal/RegisterAccount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:operationportal/ForgotPassword.dart';
+import 'package:operationportal/REST/Post_Login.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/RegisterAccount.dart';
 
-import 'REST/Post_Login.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -29,12 +30,22 @@ class LoginPageState extends State<LoginPage> {
   Widget buildHeader ()
   {
     return Container(
-      child: Text(
-        "Orlando Children's Church",
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Welcome to",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          Container(
+            child: Image.asset('assets/OCC_LOGO.png'),
+            width: 400,
+            height: 200,
+            margin: EdgeInsets.only(top: 10),
+          ),
+        ],
       ),
-      margin: EdgeInsets.only(top: 120, bottom: 50),
+      margin: EdgeInsets.only(top: 60, bottom: 50),
     );
   }
 
@@ -53,7 +64,7 @@ class LoginPageState extends State<LoginPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -109,7 +120,7 @@ class LoginPageState extends State<LoginPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -173,7 +184,7 @@ class LoginPageState extends State<LoginPage> {
           Builder(
               builder: (context) => Center(
                   child: FlatButton(
-                    child: const Text('Register Account'),
+                    child: const Text('New Volunteer'),
                     onPressed: ()
                     {
                       Navigator.push(
@@ -196,13 +207,13 @@ class LoginPageState extends State<LoginPage> {
         child: RaisedButton(
           child: Text(
               "Login",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: Colors.white)
           ),
           onPressed: () {
             Login(_emailController.text, _passwordController.text, context);
             // LoginCheck(_emailController.text);
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
         height: 50,
         width: double.infinity,

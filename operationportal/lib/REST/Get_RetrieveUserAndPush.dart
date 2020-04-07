@@ -1,17 +1,14 @@
 import 'dart:convert';
 
-import 'package:operationportal/Bus_Driver/BusDriver_ActiveDashboard.dart';
-import 'package:operationportal/Bus_Driver/BusDriver_InactiveDashboard.dart';
-import 'package:operationportal/Staff/Staff_ActiveDashboard.dart';
-import 'package:operationportal/Structs/User.dart';
-import 'package:operationportal/Volunteer/Volunteer_ActiveDashboard.dart';
-import 'package:operationportal/Volunteer/Volunteer_InactiveDashboard.dart';
-import 'package:operationportal/Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
-import 'package:operationportal/Volunteer_Captain/VolunteerCaptain_InactiveDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Dashboards/BusDriver_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/Staff_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/VolunteerCaptain_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/Volunteer_ActiveDashboard.dart';
+import 'package:operationportal/Structs/User.dart';
+import 'package:operationportal/Widget/InactiveDashboard.dart';
 
 Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/auth/user";
@@ -36,12 +33,7 @@ Future<User> RetrieveUserAndPush (String token, BuildContext context) async {
     }
     else
     {
-      if (mPost.profile.role == "BusDriver")
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BusDriver_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
-      else if (mPost.profile.role == "VolunteerCaptain")
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VolunteerCaptain_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
-      else
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Volunteer_InactiveDashboard_Page(profile: mPost.profile, accessToken: token,)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InactiveDashboardPage(profile: mPost.profile, accessToken: token,)));
     }
 
 

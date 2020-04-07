@@ -21,5 +21,6 @@ namespace API.Models
         public bool? ParentalEmailOptIn { get; set; }
         public int OrangeShirtStatus { get; set; }
         public DateTime StartDate { get; set; }
+        public bool IsSuspended { get; set; }
     }
 }

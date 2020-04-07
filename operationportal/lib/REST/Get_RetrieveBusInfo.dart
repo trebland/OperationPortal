@@ -1,11 +1,9 @@
-
 import 'dart:convert';
 
-import 'package:operationportal/Structs/Bus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Structs/Bus.dart';
 
 Future<Bus> RetrieveBusInfo (String token, String id, BuildContext context) async {
   var mUrl = "https://www.operation-portal.com/api/bus-info?id=$id";

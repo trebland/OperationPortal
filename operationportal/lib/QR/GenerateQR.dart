@@ -1,19 +1,19 @@
 import 'dart:async';
 
-import 'package:operationportal/Structs/User.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:operationportal/Dashboards/BusDriver_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/VolunteerCaptain_ActiveDashboard.dart';
+import 'package:operationportal/Dashboards/Volunteer_ActiveDashboard.dart';
+import 'package:operationportal/REST/Get_RetrieveUser.dart';
+import 'package:operationportal/Structs/Storage.dart';
+import 'package:operationportal/Structs/User.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../Bus_Driver/BusDriver_ActiveDashboard.dart';
-import '../REST/Get_RetrieveUser.dart';
-import '../Storage.dart';
-import '../Volunteer/Volunteer_ActiveDashboard.dart';
-import '../Volunteer_Captain/VolunteerCaptain_ActiveDashboard.dart';
 
 class QRPage extends StatefulWidget {
-  QRPage({Key key, this.token}) : super(key: key);
+  QRPage({Key key, this.id, this.token}) : super(key: key);
 
+  final String id;
   final String token;
 
   @override
@@ -70,47 +70,20 @@ class QRState extends State<QRPage>
                 minHeight: 200,
               ),
               child: Center (
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    FutureBuilder(
-                        future: storage.readToken(),
-                        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.none:
-                              return new Text('Issue Posting Data');
-                            case ConnectionState.waiting:
-                              return new Center(child: new CircularProgressIndicator());
-                            case ConnectionState.active:
-                              return new Text('');
-                            case ConnectionState.done:
-                              if (snapshot.hasError) {
-                                return Text("Error");
-                              } else {
-                                return QrImage(
-                                  data: snapshot.data,
-                                  version: QrVersions.auto,
-                                  size: 320,
-                                  errorStateBuilder: (cxt, err) {
-                                    return Container(
-                                      child: Center(
-                                        child: Text(
-                                          "Uh oh! Something went wrong...",
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                              break;
-                            default:
-                              return null;
-                          }
-                        }
-                    ),
-                  ],
+                  child: QrImage(
+                  data: widget.id,
+                  version: QrVersions.auto,
+                  size: 320,
+                  errorStateBuilder: (cxt, err) {
+                    return Container(
+                      child: Center(
+                        child: Text(
+                          "Uh oh! Something went wrong...",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               )
             ),

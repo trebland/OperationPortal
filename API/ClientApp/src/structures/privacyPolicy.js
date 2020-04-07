@@ -7,8 +7,7 @@ export class PrivacyPolicy extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            redirect: false,
-            loggedin: props.location.state.loggedin
+            redirect: false
         }
     }
 

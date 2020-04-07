@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:operationportal/Login.dart';
 
-import 'Login.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,16 +11,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Operation Portal',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.amber,
+        primarySwatch: MaterialColor(0xff1c415b,
+          const <int, Color>{
+          50:  const Color(0xff0DBAFF),
+          100: const Color(0xff0DBAFF),
+          200: const Color(0xff0DBAFF),
+          300: const Color(0xff0DBAFF),
+          400: const Color(0xff0DBAFF),
+          500: const Color(0xff1c415b),
+          600: const Color(0xff0DBAFF),
+          700: const Color(0xff0DBAFF),
+          800: const Color(0xff0DBAFF),
+          900: const Color(0xff0DBAFF),
+        },
+        ),
         secondaryHeaderColor: Colors.amberAccent,
         primaryTextTheme: TextTheme(
           headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),

@@ -57,7 +57,7 @@ export class LoginBox extends Component {
     // http://localhost:5000/api/auth/token
 
     try{
-        fetch('https://www.operation-portal.com/api/auth/token' , {
+        fetch('http://localhost:5000/api/auth/token' , {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -151,10 +151,6 @@ export class LoginBox extends Component {
     this.mounted = false
   }
 
-  // Sets variable to false when ready to leave page
-  componentWillUnmount() {
-    this.mounted = false
-  }
 
   render() {
     return (

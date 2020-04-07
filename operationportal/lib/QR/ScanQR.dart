@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -31,9 +32,9 @@ class _ScanState extends State<ScanScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: RaisedButton(
-                    color: Colors.blue,
+                    color: primaryWidgetColor,
                     textColor: Colors.white,
-                    splashColor: Colors.blueGrey,
+                    splashColor: primaryWidgetColor,
                     onPressed: scan,
                     child: const Text('START CAMERA SCAN')
                 ),

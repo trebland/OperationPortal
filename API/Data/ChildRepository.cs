@@ -175,9 +175,24 @@ namespace API.Data
                 }
                 parm++;
 
+                /*
+                Postman:
+                string fname = "test.jpg";
+                FileStream fs = new FileStream(fname, FileMode.Open, FileAccess.Read);
+                BinaryReader br = new BinaryReader(fs);
+                byte[] barray = br.ReadBytes((int)fs.Length);
+                child.Picture = barray;
+                */
                 if (child.Picture != null)
                 {
                     columns.Append($"@picture,");
+                    updated[parm] = true;
+                }
+                parm++;
+
+                if (child.Gender != null)
+                {
+                    columns.Append($"@gender,");
                     updated[parm] = true;
                 }
 
@@ -225,6 +240,11 @@ namespace API.Data
                     if (updated[++parm])
                     {
                         cmd.Parameters.Add($"@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = child.Picture;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@gender", NpgsqlTypes.NpgsqlDbType.Varchar, 6).Value = child.Gender;
                     }
 
                     cmd.ExecuteNonQuery();
@@ -1015,6 +1035,11 @@ namespace API.Data
             child.FirstName = dr["firstname"].ToString();
             child.LastName = dr["lastname"].ToString();
             child.Gender = dr["gender"].ToString();
+            child.Birthday = dr["birthday"].ToString();
+            child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
+            child.PreferredName = dr["preferredname"].ToString();
+            child.ParentName = dr["parentname"].ToString();
+            child.ContactNumber = dr["contactnumber"].ToString();
             child.Grade = grade;
             child.Class = new Pair
             {
@@ -1026,8 +1051,6 @@ namespace API.Data
                 Id = busId,
                 Name = dr["busname"].ToString()
             };
-            child.Birthday = dr["birthday"].ToString();
-            child.Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"];
 
             // Child was already found to be suspended
             if (dr.Table.Columns.Contains("startdate"))
@@ -1056,6 +1079,7 @@ namespace API.Data
             }
             
             child.IsCheckedIn = IsCheckedIn((int)dr["id"]);
+            child.LastDateAttended = GetLastDateAttended((int)dr["id"]);
 
             return child;
         }
@@ -1172,6 +1196,36 @@ namespace API.Data
             }
 
             return dates;
+        }
+
+        /// <summary>
+        /// Given a child id, retrieves the most recent DateTime the child has been marked for attendance
+        /// </summary>
+        /// <param name="childid"></param>
+        public DateTime GetLastDateAttended(int childid)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT * 
+                               FROM Child_Attendance 
+                               WHERE childid = @childid
+                               ORDER BY dayattended DESC";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childid;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+            if (dt.Rows.Count == 0)
+            {
+                return DateTime.MinValue;
+            }
+
+            return (DateTime)dt.Rows[0]["dayattended"];
         }
 
         /// <summary>

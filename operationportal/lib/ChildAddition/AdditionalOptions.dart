@@ -1,14 +1,11 @@
-import 'dart:convert';
-
-import 'package:operationportal/REST/Get_RetrieveBuses.dart';
-import 'package:operationportal/Structs/Bus.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:operationportal/REST/Get_RetrieveBuses.dart';
+import 'package:operationportal/REST/Post_CreateChildFull.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/Structs/Bus.dart';
+import 'package:operationportal/Structs/Storage.dart';
 
-import 'package:http/http.dart' as http;
 
-import '../REST/Post_CreateChildFull.dart';
-import '../Storage.dart';
 
 class AdditionalOptionsPage extends StatefulWidget {
   AdditionalOptionsPage({Key key, this.firstName, this.lastName, this.parentName, this.contactNumber, this.imagePath}) : super(key: key);
@@ -41,7 +38,6 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
   final genderController = new TextEditingController();
   final birthdayController = new TextEditingController();
   final preferredNameController = new TextEditingController();
-  final busController = new TextEditingController();
 
   DateTime selectedDate;
   int currentYear;
@@ -124,7 +120,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   size: 40,
                 ),
                 decoration: new BoxDecoration(
-                  color: Colors.blue,
+                  color: primaryWidgetColor,
                   borderRadius: new BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
@@ -177,7 +173,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -266,7 +262,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -328,7 +324,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                       size: 40,
                     ),
                     decoration: new BoxDecoration(
-                      color: Colors.blue,
+                      color: primaryWidgetColor,
                       borderRadius: new BorderRadius.only(
                         topLeft: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
@@ -365,148 +361,6 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     );
   }
 
-  Widget buildBusRow()
-  {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: IntrinsicHeight(
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>
-                [
-                  Container(
-                    child: Icon(
-                      Icons.directions_bus,
-                      size: 40,
-                    ),
-                    decoration: new BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: new BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                      ),
-                    ),
-                    padding: EdgeInsets.only(left: 5),
-                  ),
-                  Flexible(
-                    child: TextField(
-                      textAlign: TextAlign.left,
-                      controller: busController,
-                      decoration: new InputDecoration(
-                        labelText: "Bus",
-                        hintText: "Bus Id: " + '$busDropdownValue',
-                        border: new OutlineInputBorder(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
-                          ),
-                          borderSide: new BorderSide(
-                            color: Colors.black,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      enabled: false,
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                  ),
-                ]
-            ),
-          ),
-          margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
-        ),
-        FutureBuilder(
-            future: storage.readToken().then((value) {
-              return RetrieveBuses(value);
-            }),
-            builder: (BuildContext context, AsyncSnapshot<List<Bus>> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                  return new Text('Issue Posting Data');
-                case ConnectionState.waiting:
-                  return new Center(child: new CircularProgressIndicator());
-                case ConnectionState.active:
-                  return new Text('');
-                case ConnectionState.done:
-                  if (snapshot.hasError) {
-                    return Text("Bus Ids failed to load");
-                  } else {
-                    return Container(
-                      child: DropdownButton<String>(
-                        value: busDropdownValue,
-                        icon: Icon(Icons.arrow_downward),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(
-                            color: Colors.deepPurple
-                        ),
-                        underline: Container(
-                          height: 2,
-                          color: Colors.deepPurpleAccent,
-                        ),
-                        onChanged: (String newValue) {
-                          setState(() {
-                            busDropdownValue = newValue;
-                            if (busDropdownValue == "Select Bus")
-                              busController.text = "";
-                            else
-                              busController.text = busDropdownValue;
-                          });
-                        },
-                        items: RetrieveBusIds(snapshot.data)
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text('$value'),
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  }
-                  break;
-                default:
-                  return null;
-              }
-            }
-          /*Container(
-            child: DropdownButton<String>(
-              value: busDropdownValue,
-              icon: Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              style: TextStyle(
-                  color: Colors.deepPurple
-              ),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
-              onChanged: (String newValue) {
-                setState(() {
-                  busDropdownValue = newValue;
-                  if (busDropdownValue == "Select Bus")
-                    busController.text = "";
-                  else
-                    busController.text = busDropdownValue;
-                });
-              },
-              items: busIds
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text('$value'),
-                );
-              }).toList(),
-            ),
-          ),*/
-        )
-      ],
-    );
-  }
-
   Widget buildButtonBar (BuildContext context)
   {
     return ButtonBar(
@@ -524,16 +378,15 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           {
             storage.readToken().then((value) {
               CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber,
-                  widget.imagePath, genderController.text, birthdayController.text, preferredNameController.text,
-                  busController.text, context);
+                  widget.imagePath, birthdayController.text, genderController.text, preferredNameController.text,
+                  context);
             });
           },
-          color: Colors.amber,
+          color: primaryColor,
         ),
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -555,7 +408,6 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   buildBirthdayColumn(),
                   buildGenderColumn(),
                   buildPreferredNameColumn(),
-                  buildBusRow(),
                   buildButtonBar(context),
                 ],
               ),

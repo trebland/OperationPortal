@@ -60,7 +60,7 @@ namespace API.Controllers
             {
                return Utilities.ErrorJson("Not authorized.");
             }
-
+            
             if (model == null || (model.Busid == 0 && model.Classid == 0))
             {
                 return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
@@ -102,7 +102,7 @@ namespace API.Controllers
 
         [Route("~/api/child-creation")]
         [HttpPost]
-        // Required input: contact number, parent name, child first name
+        // Required input: contact number, parent name, child first name, bus id
         public async Task<IActionResult> CreateChild(PostChildCreationModel model)
         {
             var user = await userManager.GetUserAsync(User);
@@ -128,6 +128,11 @@ namespace API.Controllers
             if (model.ContactNumber == null)
             {
                 missingParameters.Add("contact number");
+            }
+
+            if (model.BusId == 0)
+            {
+                missingParameters.Add("bus id");
             }
 
             if (missingParameters.Count != 0)
@@ -246,7 +251,8 @@ namespace API.Controllers
                     HaircutWaiver = child.HaircutWaiver,
                     ParentalEmailOptIn = child.ParentalEmailOptIn,
                     OrangeShirtStatus = child.OrangeShirtStatus,
-                    StartDate = child.StartDate
+                    StartDate = child.StartDate,
+                    IsSuspended = repo.IsSuspended(model.Id)
                 });
             }
             catch (Exception exc)
