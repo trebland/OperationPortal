@@ -49,33 +49,25 @@ namespace API.Controllers
         [AllowAnonymous]
         [Route("~/api/calendar")]
         [HttpGet]
-        public async Task<IActionResult> Get(MonthModel monthModel)
+        public async Task<IActionResult> Get(int month, int year)
         {
             List<EventModel> events;
             List<GroupModel> groups;
             List<DateTime> scheduledDates = null;
             CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
-            int month;
-            int year;
+            //int month;
+            //int year;
 
             var user = await userManager.GetUserAsync(User);
 
             // If a month was not specified, use the current month
-            if (monthModel.Month == 0)
+            if (month == 0 || month > 12)
             {
                 month = DateTime.Now.Month;
             }
-            else
-            {
-                month = monthModel.Month;
-            }
-            if (monthModel.Year == 0)
+            if (year == 0)
             {
                 year = DateTime.Now.Year;
-            }
-            else
-            {
-                year = monthModel.Year;
             }
 
             try
