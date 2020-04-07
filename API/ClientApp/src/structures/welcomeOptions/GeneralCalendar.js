@@ -47,10 +47,13 @@ export class GeneralCalendar extends Component {
             <div style={styling.cal}>
                 <h1>General Calendar</h1>
                 <Calendar
+                    selectable
+                    popup
                     localizer = {localizer}
                     events = {events}
                     startAccessor = "start"
                     endAccessor = "end"
+                    onSelectEvent={event => alert(event.title)}
                 />
             </div>
             {this.renderRedirect()}
