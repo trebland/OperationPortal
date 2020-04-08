@@ -101,7 +101,7 @@ namespace API.Controllers
         /// </returns>
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Details(DateModel date)
+        public async Task<IActionResult> Details(DateTime date)
         {
             List<EventModel> events = null;
             List<GroupModel> groups = null;
