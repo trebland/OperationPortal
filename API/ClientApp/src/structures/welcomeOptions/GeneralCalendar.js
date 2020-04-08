@@ -12,23 +12,25 @@ import { Redirect } from 'react-router-dom'
 const localizer = momentLocalizer(moment)
 
 export class GeneralCalendar extends Component {
-
-  constructor(props) {
-    super(props)
-    this.state = {
-        eventsapi: [{}],
-        groups: [{}],
-        redirect: false
+    constructor(props) {
+        super(props)
+        this.state = {
+            eventsapi: [{}],
+            groups: [{}],
+            redirect: false
+        }
+        this.getInfo()
     }
-    this.getInfo()
-  }
 
-  getInfo = () => {
-    fetch('http://localhost:5000/api/calendar/' , {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+    getInfo = () => {
+        let date = new Date()
+        let month = date.getMonth() + 1
+        let year = date.getFullYear()
+        fetch('http://localhost:5000/api/calendar?month=' + month + '&year=' + year , {
+          // method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
             }
         })
         .then((res) => {
@@ -45,7 +47,24 @@ export class GeneralCalendar extends Component {
         .then((data) => {
             let res = JSON.parse(data)
             let g = res.groups
-            let e = res.events
+            let eve = res.events
+            
+            let e = eve.map((details) => {
+                let year = Number.parseInt(details.date.substring(0, 4))
+                // starts at 0 for january 
+                let month = Number.parseInt(details.date.substring(5, 7)) - 1
+                let day = Number.parseInt(details.date.substring(8, 10))
+                console.log(month)
+                let ret = {
+                    'title': details.name,
+                    'allDay': true,
+                    desc: details.description,
+                    'start': new Date(year, month, day),
+                    'end': new Date(year, month, day)
+                }
+                return ret
+            })
+
             if(this.mounted === true){
                 this.setState({
                     groups: g,
@@ -53,11 +72,12 @@ export class GeneralCalendar extends Component {
                 })
             }
             console.log(this.state.eventsapi)
+            console.log(events)
         })
         .catch((err) => {
             console.log(err)
         })
-  }
+    }
 
 
   
@@ -85,6 +105,7 @@ export class GeneralCalendar extends Component {
 
 
     render () {
+
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -96,10 +117,13 @@ export class GeneralCalendar extends Component {
                         selectable
                         popup
                         localizer = {localizer}
-                        events = {events}
+                        events = {this.state.eventsapi}
                         startAccessor = "start"
                         endAccessor = "end"
-                        onSelectEvent={event => alert(event.title)}
+                        onSelectEvent={event => {
+                                alert("Title: " + event.title + "\nDescription: " + event.desc)
+                            }
+                        }
                     />
                 </div>
                 {this.renderRedirect()}
@@ -112,7 +136,7 @@ export class GeneralCalendar extends Component {
 
 const styling = {
     cal: {
-        height: '550px',
+        height: '600px',
         padding: '20px 20px'
     },
     butt: {
