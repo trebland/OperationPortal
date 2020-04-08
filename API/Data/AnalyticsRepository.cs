@@ -9,6 +9,7 @@ using System.Data;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Data
 {
@@ -128,6 +129,74 @@ namespace API.Data
             foreach (DataRow dr in dt.Rows)
             {
                 numChildrenPerBus.Add(new DataModel(DBNull.Value.Equals(dr["busid"]) ? "Unknown" : ((int)dr["busid"]).ToString(), (int)(long)dr["count"]));
+            }
+
+            return numChildrenPerBus;
+        }
+
+        /// <summary>
+        /// Returns the number of children that attended OCC on a given date, grouped by bus
+        /// </summary>
+        public List<DataModel> GetChildrenByBusForDay(DateModel date)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT c.busid, COUNT(*)
+                              FROM Child c
+                              INNER JOIN Child_Attendance ca
+                              ON c.id = ca.childid
+                              WHERE ca.dayattended = @date
+                              GROUP BY c.busid";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    cmd.Parameters.Add($"@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<DataModel> numChildrenPerBus = new List<DataModel>();
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                numChildrenPerBus.Add(new DataModel(DBNull.Value.Equals(dr["busid"]) ? "Unknown" : ((int)dr["busid"]).ToString(), (int)(long)dr["count"]));
+            }
+
+            return numChildrenPerBus;
+        }
+
+        /// <summary>
+        /// Returns the number of children that attended OCC on a given date, grouped by class
+        /// </summary>
+        public List<DataModel> GetChildrenByClassForDay(DateModel date)
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT c.classid, COUNT(*)
+                              FROM Child c
+                              INNER JOIN Child_Attendance ca
+                              ON c.id = ca.childid
+                              WHERE ca.dayattended = @date
+                              GROUP BY c.classid";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    cmd.Parameters.Add($"@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date.Date;
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<DataModel> numChildrenPerBus = new List<DataModel>();
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                numChildrenPerBus.Add(new DataModel(DBNull.Value.Equals(dr["classid"]) ? "Unknown" : ((int)dr["classid"]).ToString(), (int)(long)dr["count"]));
             }
 
             return numChildrenPerBus;

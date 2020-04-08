@@ -161,6 +161,73 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/analytics/children-bus-day")]
+        [HttpGet]
+        public  async Task<IActionResult> ChildrenByBusForDay([FromQuery]DateModel Date)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            try
+            {
+                AnalyticsRepository repo = new AnalyticsRepository(configModel.ConnectionString);
+                return new JsonResult(new
+                {
+                    ChildrenByBus = repo.GetChildrenByBusForDay(Date)
+                });
+            }
+
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
+        [Route("~/api/analytics/children-class-day")]
+        [HttpGet]
+        public async Task<IActionResult> ChildrenByClassForDay([FromQuery]DateModel Date)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
+            // Volunteers must be teachers to have access
+            if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && !volunteerRepo.VolunteerIsClassTeacher(user.VolunteerId))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            try
+            {
+                AnalyticsRepository repo = new AnalyticsRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    ChildrenByBus = repo.GetChildrenByClassForDay(Date)
+                });
+            }
+
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         [Route("~/api/analytics/volunteers-new")]
         [HttpGet]
         public async Task<IActionResult> VolunteersNew([FromQuery]DateModel model)
