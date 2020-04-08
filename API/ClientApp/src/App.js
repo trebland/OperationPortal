@@ -19,6 +19,7 @@ import { StaffCalendar } from './structures/adminViews/staffCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
 import { AdminVolunteerEdit } from './structures/adminViews/editVolunteers/adminVolunteerEdit'
 import { AdminGetId } from './structures/adminViews/editVolunteers/adminGetId'
+import { EventDetails } from './structures/welcomeOptions/eventDetails'
 
 
 
@@ -48,6 +49,7 @@ export default class App extends Component {
             <Route exact path='/privacy-policy' component={PrivacyPolicy} />
             <Route exact path='/admin-volunteer-edit' component={AdminVolunteerEdit} />
             <Route exact path='/admin-get-id' component={AdminGetId} />
+            <Route exact path='/event-details' component={EventDetails} />
 
             
             <Route component={NotFound} />

@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import events from './dummydata/events'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Button } from 'react-bootstrap/'
+import { Button, Popover, OverlayTrigger } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
 // https://www.npmjs.com/package/react-big-calendar
@@ -17,7 +17,9 @@ export class GeneralCalendar extends Component {
         this.state = {
             eventsapi: [{}],
             groups: [{}],
-            redirect: false
+            redirect: false,
+            redirectEvents: false,
+            clicked: {}
         }
         this.getInfo()
     }
@@ -54,8 +56,11 @@ export class GeneralCalendar extends Component {
                 // starts at 0 for january 
                 let month = Number.parseInt(details.date.substring(5, 7)) - 1
                 let day = Number.parseInt(details.date.substring(8, 10))
-                console.log(month)
                 let ret = {
+                    id: details.id,
+                    year: year,
+                    month: month,
+                    day: day,
                     'title': details.name,
                     'allDay': true,
                     desc: details.description,
@@ -71,8 +76,6 @@ export class GeneralCalendar extends Component {
                     eventsapi: e
                 })
             }
-            console.log(this.state.eventsapi)
-            console.log(events)
         })
         .catch((err) => {
             console.log(err)
@@ -95,13 +98,53 @@ export class GeneralCalendar extends Component {
                 pathname: '/'
             }}/>
         }
+        else if(this.state.redirectEvents){
+            return <Redirect to={{
+                pathname: '/event-details',
+                state: {
+                    clicked: this.state.clicked
+                }
+            }}/>
+        }
     }
+
     
     setRedirect = () => {
         this.setState({
             redirect: true
         })
     }
+
+    // showPopover = (ep) => {
+    //     const popover = (
+    //         <Popover id="popover-basic">
+    //           <Popover.Title as="h3">Popover right</Popover.Title>
+    //           <Popover.Content>
+    //             And here's some <strong>amazing</strong> content. It's very engaging.
+    //             right?
+    //           </Popover.Content>
+    //         </Popover>
+    //     );
+    //     const Example = () => (
+    //         <OverlayTrigger trigger="click" placement="right" overlay={popover}>
+    //           <Button variant="success">Click me to see</Button>
+    //         </OverlayTrigger>
+    //     );
+    //     return(
+    //         <Example/>
+    //     )
+    // }
+
+    getEventDetails = (ep) => {
+        console.log(ep.year)
+        this.setState({
+            clicked: ep,
+            redirectEvents: true
+        })
+        console.log(this.state.clicked)
+    }
+
+    
 
 
     render () {
@@ -120,8 +163,17 @@ export class GeneralCalendar extends Component {
                         events = {this.state.eventsapi}
                         startAccessor = "start"
                         endAccessor = "end"
-                        onSelectEvent={event => {
-                                alert("Title: " + event.title + "\nDescription: " + event.desc)
+                        onSelectEvent={
+                            e => {
+                                // alert(
+                                //     "Title: " + e.title + "\n" + 
+                                //     "Description: " + e.desc + "\n" + 
+                                //     ""
+                                // )
+                                // this.setState({
+                                //     clicked: e
+                                // })
+                                this.getEventDetails(e)
                             }
                         }
                     />
