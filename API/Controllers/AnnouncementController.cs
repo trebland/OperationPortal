@@ -102,15 +102,21 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Announcements()
+        public async Task<IActionResult> Announcements(bool activeOnly = true)
         {
             var user = await userManager.GetUserAsync(User);
             AnnouncementRepository repo = new AnnouncementRepository(configModel.ConnectionString);
             List<AnnouncementModel> announcements;
 
+            // Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                activeOnly = true;
+            }
+
             try
             {
-                announcements = repo.GetAnnouncementList();
+                announcements = repo.GetAnnouncementList(activeOnly);
             }
             catch(Exception e)
             {
