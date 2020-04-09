@@ -547,6 +547,41 @@ namespace API.Data
             return GetChildEditModel(dt.Rows[0]);
         }
 
+        /// <summary>
+        /// Returns list of all children in the database
+        /// </summary>
+        public List<ChildModel> GetChildren()
+        {
+            DataTable dt = new DataTable();
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT c.*,
+                                      cl.description,
+                                      b.name AS busname
+                              FROM Child c
+                              LEFT JOIN Class_List cl
+                              ON c.classid = cl.id
+                              LEFT JOIN Bus b
+                              ON c.busid = b.id
+                              WHERE c.busid = @busid";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<ChildModel> children = new List<ChildModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                children.Add(GetBasicChildModel(new ChildModel(), dr));
+            }
+
+            return children;
+        }
+
         public string DeleteChild(int childId)
         {
             int columnRemoved = 0;

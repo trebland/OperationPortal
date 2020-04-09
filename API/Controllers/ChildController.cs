@@ -60,36 +60,39 @@ namespace API.Controllers
             {
                return Utilities.ErrorJson("Not authorized.");
             }
-            
-            if (model == null || (model.Busid == 0 && model.Classid == 0))
-            {
-                return Utilities.ErrorJson("Bus id or class id is required to retrieve a roster.");
-            }
 
             try
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
-                List<ChildModel> BusRoster = null;
-                List<ChildModel> ClassRoster = null;
-
-                if (model.Busid != 0)
+                if (model.Busid == 0 && model.Classid == 0)
                 {
-                    BusRoster = repo.GetChildrenBus(model.Busid);
+                    return new JsonResult(new
+                    {
+                        FullRoster = repo.GetChildren()
+                    });
+                } else
+                {
+                    List<ChildModel> BusRoster = null;
+                    List<ChildModel> ClassRoster = null;
+                    if (model.Busid != 0)
+                    {
+                        BusRoster = repo.GetChildrenBus(model.Busid);
+                    }
+
+                    if (model.Classid != 0)
+                    {
+                        ClassRoster = repo.GetChildrenClass(model.Classid);
+                    }
+
+                    List<ChildModel> IntersectionRoster = repo.GetIntersection(BusRoster, ClassRoster);
+
+                    return new JsonResult(new
+                    {
+                        BusRoster,
+                        ClassRoster,
+                        IntersectionRoster
+                    });
                 }
-
-                if (model.Classid != 0)
-                {
-                    ClassRoster = repo.GetChildrenClass(model.Classid);
-                }
-
-                List<ChildModel> IntersectionRoster = repo.GetIntersection(BusRoster, ClassRoster);
-
-                return new JsonResult(new
-                {
-                    BusRoster,
-                    ClassRoster,
-                    IntersectionRoster
-                });
             }
             catch (Exception exc)
             {
