@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom'
 
 
 
-export class EventDetails extends Component {
+export class UserEventDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -70,7 +70,7 @@ export class EventDetails extends Component {
     renderRedirect = () => {
         if(this.state.redirect){
             return <Redirect to={{
-                pathname: '/general-calendar'
+                pathname: '/user-calendar'
             }}/>
         }
     }

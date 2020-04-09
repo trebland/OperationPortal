@@ -54,7 +54,7 @@ export class GeneralCalendar extends Component {
             let e = eve.map((details) => {
                 let year = Number.parseInt(details.date.substring(0, 4))
                 // starts at 0 for january 
-                let month = Number.parseInt(details.date.substring(5, 7)) - 1
+                let month = Number.parseInt(details.date.substring(5, 7)) 
                 let day = Number.parseInt(details.date.substring(8, 10))
                 let ret = {
                     id: details.id,
@@ -64,8 +64,8 @@ export class GeneralCalendar extends Component {
                     'title': details.name,
                     'allDay': true,
                     desc: details.description,
-                    'start': new Date(year, month, day),
-                    'end': new Date(year, month, day)
+                    'start': new Date(year, month - 1, day),
+                    'end': new Date(year, month - 1, day)
                 }
                 return ret
             })
