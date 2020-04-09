@@ -13,7 +13,7 @@ import { UserProfile } from './structures/userViews/userProfile'
 import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements'
 import { ViewVolunteers } from './structures/adminViews/editVolunteers/viewVolunteers'
 import { AdminProfile } from './structures/adminViews/adminProfile'
-import { AdminCalendar } from './structures/adminViews/adminCalendar'
+import { AdminCalendar } from './structures/adminViews/calendarFunctions/adminCalendar'
 import { ChildrensCalendar } from './structures/adminViews/childrensCalendar'
 import { StaffCalendar } from './structures/adminViews/staffCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
@@ -21,10 +21,10 @@ import { AdminVolunteerEdit } from './structures/adminViews/editVolunteers/admin
 import { AdminGetId } from './structures/adminViews/editVolunteers/adminGetId'
 import { EventDetails } from './structures/welcomeOptions/eventDetails'
 import { UserEventDetails } from './structures/userViews/userEventDetails'
-import { AdminEventDetails } from './structures/adminViews/adminEventDetails'
-import { AdminEditEvent } from './structures/adminViews/editEvent'
+import { AdminEventDetails } from './structures/adminViews/calendarFunctions/adminEventDetails'
+import { AdminEditEvent } from './structures/adminViews/calendarFunctions/editEvent'
 
-
+// http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
 export default class App extends Component {
   static displayName = App.name;
