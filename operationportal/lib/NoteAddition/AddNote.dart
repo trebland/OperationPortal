@@ -30,17 +30,39 @@ class AddNoteState extends State<AddNotePage>
 
   TextEditingController _noteController = new TextEditingController();
   TextEditingController _priorityController = new TextEditingController();
+  TextEditingController _dateController = new TextEditingController();
 
+  DateTime selectedDate;
+  int currentYear;
+  int previousYears;
 
   Storage storage;
   String priorityValue;
 
   @override
   void initState() {
-    super.initState();
-
     storage = new Storage();
+    currentYear = DateTime.now().year;
+    previousYears = currentYear - 25;
+
+    selectedDate = DateTime.now();
     priorityValue = "Low";
+
+    super.initState();
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(previousYears),
+        lastDate: DateTime(currentYear, 12, 31));
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+      });
+      _dateController.text = "${selectedDate.toLocal()}".split(' ')[0];
+    }
   }
 
   Widget buildNoteRow () {
@@ -91,6 +113,67 @@ class AddNoteState extends State<AddNotePage>
         ),
       ),
       margin: EdgeInsets.all(25),
+    );
+  }
+
+  Widget buildDateRow () {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Icon(
+                      Icons.date_range,
+                      size: 40,
+                    ),
+                    decoration: new BoxDecoration(
+                      color: primaryWidgetColor,
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.only(left: 5),
+                  ),
+                  Flexible(
+                    child: TextField(
+                      textAlign: TextAlign.left,
+                      controller: _dateController,
+                      decoration: new InputDecoration(
+                        labelText: "Date of Incident",
+                        border: new OutlineInputBorder(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                          ),
+                          borderSide: new BorderSide(
+                            color: Colors.black,
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                      enabled: false,
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                  ),
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
+        ),
+        Container(
+          child: OutlineButton(
+            onPressed: () => _selectDate(context),
+            child: Text('Select Date'),
+          ),
+        ),
+      ],
     );
   }
 
@@ -162,7 +245,7 @@ class AddNoteState extends State<AddNotePage>
           ),
           onPressed: () {
             storage.readToken().then((value) {
-              CreateNote(value, widget.profile.firstName + " " + widget.profile.lastName, widget.child.id, _noteController.text, priorityValue, context);
+              CreateNote(value, widget.profile.firstName + " " + widget.profile.lastName, widget.child.id, _noteController.text, _dateController.text, priorityValue, context);
             });
           },
           color: primaryColor,
@@ -193,6 +276,7 @@ class AddNoteState extends State<AddNotePage>
                 children: <Widget>[
                   buildNoteRow(),
                   buildPriorityRow(),
+                  buildDateRow(),
                   buildAddNoteButton(context),
                 ],
               ),

@@ -31,6 +31,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
 
   int classIndex;
   List<String> classIds;
+  Class selectedClass;
   List<Class> classes;
 
   bool filterCheckedIn;
@@ -141,14 +142,15 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                           onChanged: (Class newValue) {
                             setState(() {
                               classIndex = classes.indexOf(newValue);
-                              classIdController.text = newValue.id == null ? "" : '${newValue.id}';
+                              selectedClass = newValue.id == null ? null : newValue;
+                              classIdController.text = newValue.name == null ? "No Associated Name" : '${selectedClass.name}';
                             });
                           },
                           items: classes
                               .map<DropdownMenuItem<Class>>((Class value) {
                             return DropdownMenuItem<Class>(
                               value: value,
-                              child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                              child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                             );
                           }).toList(),
                         ),
@@ -242,7 +244,8 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                   } else {
                     childrenData = snapshot.data;
                     children = searchController.text.isNotEmpty ? displayChildren : childrenData;
-                    filterCheckedIn ? children = filterChildren (children) : children;
+                    children = filterCheckedIn ? filterChildren (children) : children;
+                    children = sortedChildren(children);
                     return Expanded(
                       child: new ListView.builder(
                         itemCount: children.length,

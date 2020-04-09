@@ -37,7 +37,9 @@ class RosterWidgetState extends State<RosterWidgetPage>
   final searchController = TextEditingController();
 
   int busIndex;
+  Bus selectedBus;
   int classIndex;
+  Class selectedClass;
   
   bool filterCheckedIn;
 
@@ -85,29 +87,6 @@ class RosterWidgetState extends State<RosterWidgetPage>
 
     return newList;
   }
-
-  List<RosterChild> sortedChildren (List<RosterChild> children)
-  {
-    List<RosterChild> oldChildren = new List<RosterChild>();
-    List<RosterChild> recentChildren = new List<RosterChild>();
-    for (RosterChild c in children)
-      {
-        c.lastDateAttended.difference(DateTime.now()).inDays > 90 ? oldChildren.add(c) : recentChildren.add(c);
-      }
-
-    recentChildren.sort((a, b) {
-      return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
-    });
-
-    oldChildren.sort((a, b) {
-      return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
-    });
-
-    recentChildren.addAll(oldChildren);
-
-    return recentChildren;
-  }
-
 
   @override
   void initState() {
@@ -192,16 +171,17 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                           color: Colors.deepPurpleAccent,
                                         ),
                                         onChanged: (Bus newValue) {
-                                          busIndex = snapshot.data.indexOf(newValue);
-                                          busRouteController.text = newValue.id == null ? "" : '${newValue.id}';
                                           setState(() {
+                                            busIndex = snapshot.data.indexOf(newValue);
+                                            selectedBus = newValue.id == null ? null : newValue;
+                                            busRouteController.text = newValue.name == null ? "N/A" : '${newValue.name}';
                                           });
                                         },
                                         items: snapshot.data
                                             .map<DropdownMenuItem<Bus>>((Bus value) {
                                           return DropdownMenuItem<Bus>(
                                             value: value,
-                                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                                           );
                                         }).toList(),
                                       ),
@@ -296,16 +276,18 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                           color: Colors.deepPurpleAccent,
                                         ),
                                         onChanged: (Class newValue) {
-                                          classIndex = snapshot.data.indexOf(newValue);
-                                          classIdController.text = newValue.id == null ? "" : '${newValue.id}';
                                           setState(() {
+                                            classIndex = snapshot.data.indexOf(newValue);
+                                            selectedClass = newValue.id == null ? null : newValue;
+                                            classIdController.text = newValue.name == null ? "No Associated Name" : '${selectedClass.name}';
+
                                           });
                                         },
                                         items: snapshot.data
                                             .map<DropdownMenuItem<Class>>((Class value) {
                                           return DropdownMenuItem<Class>(
                                             value: value,
-                                            child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                                            child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                                           );
                                         }).toList(),
                                       ),
@@ -387,7 +369,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
         ),
         FutureBuilder(
             future: widget.storage.readToken().then((value) {
-              return RetrieveRoster(value, busRouteController.text, classIdController.text);
+              return RetrieveRoster(value, selectedBus == null ? "" : '${selectedBus.id}', selectedClass == null ? "" : '${selectedClass.id}');
             }),
             builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
               switch (snapshot.connectionState) {

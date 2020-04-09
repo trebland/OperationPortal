@@ -21,6 +21,7 @@ class NoteViewState extends State<NoteViewPage>
 
   TextEditingController _noteController = new TextEditingController();
   TextEditingController _authorController = new TextEditingController();
+  TextEditingController _dateController = new TextEditingController();
 
   bool noteControllerEditable;
 
@@ -75,6 +76,7 @@ class NoteViewState extends State<NoteViewPage>
     originalNote = widget.note.content;
     _noteController.text = originalNote;
     _authorController.text = widget.note.author;
+    _dateController.text = widget.note.date != null ? widget.note.date.toString().split(' ')[0] : "No Associated Date";
 
     noteControllerEditable = false;
   }
@@ -183,6 +185,58 @@ class NoteViewState extends State<NoteViewPage>
     );
   }
 
+  Widget buildDateRow () {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>
+            [
+              Container(
+                child: Icon(
+                  Icons.date_range,
+                  size: 40,
+                ),
+                decoration: new BoxDecoration(
+                  color: primaryWidgetColor,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+                padding: EdgeInsets.only(left: 5),
+              ),
+              Flexible(
+                child: TextField(
+                  textAlign: TextAlign.left,
+                  controller: _dateController,
+                  keyboardType: TextInputType.multiline,
+                  enabled: false,
+                  maxLines: null,
+                  decoration: new InputDecoration(
+                    labelText: 'Date Created',
+                    border: new OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      borderSide: new BorderSide(
+                        color: Colors.black,
+                        width: 0.5,
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    );
+  }
+
   Widget buildEditNoteButton (BuildContext context)
   {
     return Container(
@@ -247,6 +301,7 @@ class NoteViewState extends State<NoteViewPage>
                           children: <Widget>[
                             buildNoteRow(),
                             buildAuthorRow(),
+                            buildDateRow(),
                           ],
                         )
                     ),

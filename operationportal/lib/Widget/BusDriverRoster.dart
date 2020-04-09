@@ -28,8 +28,9 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
 {
 
   final searchController = TextEditingController();
-  final busIdController = TextEditingController();
+  final busController = TextEditingController();
   int busIndex;
+  Bus selectedBus;
   List<Bus> buses;
 
   bool filterCheckedIn;
@@ -139,14 +140,15 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                             onChanged: (Bus newValue) {
                               setState(() {
                                 busIndex = buses.indexOf(newValue);
-                                busIdController.text = newValue.id == null ? "" : '${newValue.id}';
+                                selectedBus = newValue.id == null ? null : newValue;
+                                busController.text = newValue.name == null ? "N/A" : '${newValue.name}';
                               });
                             },
                             items: buses
                                 .map<DropdownMenuItem<Bus>>((Bus value) {
                               return DropdownMenuItem<Bus>(
                                 value: value,
-                                child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                                child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                               );
                             }).toList(),
                           ),
@@ -221,7 +223,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
         ),
         FutureBuilder(
             future: widget.storage.readToken().then((value) {
-              return RetrieveRoster(value, busIdController.text, "");
+              return RetrieveRoster(value, busController.text, "");
             }),
             builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
               switch (snapshot.connectionState) {
@@ -240,7 +242,8 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                   } else {
                     childrenData = snapshot.data;
                     children = searchController.text.isNotEmpty ? displayChildren : childrenData;
-                    filterCheckedIn ? children = filterChildren (children) : children;
+                    children = filterCheckedIn ? filterChildren (children) : children;
+                    children = sortedChildren(children);
                     return Expanded(
                       child: new ListView.builder(
                         itemCount: children.length,

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-Future<void> CreateNote (String token, String author, int childId, String content, String priority, BuildContext context)
+Future<void> CreateNote (String token, String author, int childId, String content, String date, String priority, BuildContext context)
 async {
   var mUrl = "https://www.operation-portal.com/api/note";
 
@@ -18,6 +18,7 @@ async {
     'childId': childId,
     'content': content,
     'priority': priority,
+    'date': date.isEmpty ? DateTime.now().toString().split('T')[0] : date,
   });
 
   var response = await http.post(mUrl,
