@@ -102,6 +102,10 @@ export class ViewVolunteers extends Component {
         })
     }
 
+    profileClicked = (ep) => {
+        console.log(ep)
+    }
+
     renderVolunteers = () => {
         if(this.state.volunteers != null){
             const p = this.state.volunteers.map((v, index) => {
@@ -136,8 +140,7 @@ export class ViewVolunteers extends Component {
                                     Year Started: {v.yearStarted}<br></br>
                                     Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
                                 </Card.Text>
-                                {this.editVolunteers()}
-                                <Button variant="primary" onClick={this.setEdit}>
+                                <Button variant="primary" onClick={() => {this.profileClicked(v)}}>
                                     Edit Volunteer Profiles
                                 </Button>
                             </Card.Body>
