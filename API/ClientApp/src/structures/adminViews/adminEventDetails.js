@@ -81,7 +81,8 @@ export class AdminEventDetails extends Component {
                 pathname: '/admin-event-edit',
                 state: {
                     jwt: this.state.jwt,
-                    event: this.state.event
+                    event: this.state.event,
+                    clicked: this.state.clicked
                 }
             }}/>
         }
@@ -116,15 +117,8 @@ export class AdminEventDetails extends Component {
                         <h2>{e.name} - {nue}</h2>
                         <hr></hr>
                         <p>{e.description}</p>
-                        <Button 
-                            variant="primary" 
-                            size="lg" 
-                            style={styling.butt} 
-                            onClick={() => {
-                                this.getDetails(e)
-                            }}
-                        >
-                            Details
+                        <Button variant="primary" size="sm" style={styling.butt} onClick={() => {this.getDetails(e)}}>
+                            Edit this Event
                         </Button>
                     </div>
                 )

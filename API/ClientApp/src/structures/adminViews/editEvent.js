@@ -14,14 +14,15 @@ export class AdminEditEvent extends Component {
             redirect: false,
             jwt: props.location.state.jwt,
             event: props.location.state.event,
+            clicked: props.location.state.clicked,
             name: '',
             description: '',
-            date: ''
+            date: '',
+            redirectED: false
         }
-        console.log(this.state.event)
+        console.log(this.state.clicked)
     }
 
-  
     componentWillUnmount = () => {
         this.mounted = false
     }
@@ -36,6 +37,15 @@ export class AdminEditEvent extends Component {
                 pathname: '/admin-calendar',
                 state: {
                     jwt: this.state.jwt
+                }
+            }}/>
+        }
+        else if(this.state.redirectED){
+            return <Redirect to={{
+                pathname: '/admin-event-details',
+                state: {
+                    jwt: this.state.jwt,
+                    clicked: this.state.clicked
                 }
             }}/>
         }
@@ -68,12 +78,54 @@ export class AdminEditEvent extends Component {
         console.log(this.state.date)
     }
 
-    callEditEndpoint = () => {
-        console.log('hi')
+    callEditEndpoint = (e) => {
+        let a = this.state.date
+        let year = a.substring(0, 4)
+        let month = a.substring(5, 7)
+        let day = a.substring(8, 10)
+        let nue = year + '-' + month + '-' + day
+        console.log(nue)
+        try {
+            fetch('http://localhost:5000/api/calendar/event-edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id': this.state.event.id,
+                    'date': nue,
+                    'name': this.state.name,
+                    'description': this.state.description
+                })
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('edit event successful')
+                    this.setState({
+                        redirectED: true
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('edit event failed')
+                    return
+                }
+            })
+        }
+        catch(e){
+            console.log('no')
+        }
     }
 
-
     editEvent = () => {
+        let a = this.state.event.date
+        let year = a.substring(0, 4)
+        let month = a.substring(5, 7)
+        let day = a.substring(8, 10)
+        let nue = month + '/' + day + '/' + year
         return (
             <div style={styling.add}>
                 <h1 style={styling.head}>Edit Event</h1>
@@ -82,18 +134,24 @@ export class AdminEditEvent extends Component {
                         <Form.Label>Date</Form.Label>
                         <Form.Control type="date" onChange={this.handleDateChange}/>
                         <Form.Text>
-                            Date of Event
+                        Original: {nue}
                         </Form.Text>
                     </Form.Group>
 
                     <Form.Group>
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Name of Event" onChange={this.handleNameChange}/>
+                        <Form.Text>
+                            Original: {this.state.event.name}
+                        </Form.Text>
                     </Form.Group>
 
                     <Form.Group>
                         <Form.Label>Description</Form.Label>
                         <Form.Control type="text" placeholder="Description of Event" onChange={this.handleDescriptionChange}/>
+                        <Form.Text>
+                            Original: {this.state.event.description}
+                        </Form.Text>
                     </Form.Group>
                     
                     <Button variant="link" variant="primary" size="lg" onClick={this.callEditEndpoint}>
