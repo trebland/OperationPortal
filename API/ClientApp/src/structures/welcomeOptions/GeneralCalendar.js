@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import events from './dummydata/events'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Button, Popover, OverlayTrigger } from 'react-bootstrap/'
+import { Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
 // https://www.npmjs.com/package/react-big-calendar
@@ -25,10 +25,12 @@ export class GeneralCalendar extends Component {
     }
 
     getInfo = () => {
+        // https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
+        // http://localhost:5000/api/calendar?month=' + month + '&year=' + year
         let date = new Date()
         let month = date.getMonth() + 1
         let year = date.getFullYear()
-        fetch('http://localhost:5000/api/calendar?month=' + month + '&year=' + year , {
+        fetch('https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year , {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -115,26 +117,6 @@ export class GeneralCalendar extends Component {
         })
     }
 
-    // showPopover = (ep) => {
-    //     const popover = (
-    //         <Popover id="popover-basic">
-    //           <Popover.Title as="h3">Popover right</Popover.Title>
-    //           <Popover.Content>
-    //             And here's some <strong>amazing</strong> content. It's very engaging.
-    //             right?
-    //           </Popover.Content>
-    //         </Popover>
-    //     );
-    //     const Example = () => (
-    //         <OverlayTrigger trigger="click" placement="right" overlay={popover}>
-    //           <Button variant="success">Click me to see</Button>
-    //         </OverlayTrigger>
-    //     );
-    //     return(
-    //         <Example/>
-    //     )
-    // }
-
     getEventDetails = (ep) => {
         console.log(ep.year)
         this.setState({
@@ -143,9 +125,6 @@ export class GeneralCalendar extends Component {
         })
         console.log(this.state.clicked)
     }
-
-    
-
 
     render () {
 
@@ -163,19 +142,7 @@ export class GeneralCalendar extends Component {
                         events = {this.state.eventsapi}
                         startAccessor = "start"
                         endAccessor = "end"
-                        onSelectEvent={
-                            e => {
-                                // alert(
-                                //     "Title: " + e.title + "\n" + 
-                                //     "Description: " + e.desc + "\n" + 
-                                //     ""
-                                // )
-                                // this.setState({
-                                //     clicked: e
-                                // })
-                                this.getEventDetails(e)
-                            }
-                        }
+                        onSelectEvent={e => {this.getEventDetails(e)}}
                     />
                 </div>
                 {this.renderRedirect()}

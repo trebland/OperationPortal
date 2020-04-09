@@ -27,8 +27,9 @@ export class EventDetails extends Component {
         let month = this.state.clicked.month
         let day = this.state.clicked.day
         let date = month + '/' + day + '/' + year
-        console.log(date)
-        fetch('http://localhost:5000/api/calendar/details?date=' + date , {
+        // https://www.operation-portal.com/api/calendar/details?date=' + date
+        // http://localhost:5000/api/calendar/details?date=' + date
+        fetch('https://www.operation-portal.com/api/calendar/details?date=' + date , {
           // method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -96,8 +97,6 @@ export class EventDetails extends Component {
             return eve
 
         }
-        // console.log(events)
-
     }
 
 

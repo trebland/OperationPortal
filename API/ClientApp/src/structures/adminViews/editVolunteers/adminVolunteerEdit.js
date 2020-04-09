@@ -36,8 +36,11 @@ export class AdminVolunteerEdit extends Component {
     }
 
     editProfile = (e) => {
+        // http://localhost:5000/api/volunteer-records-edit
+        // https://www.operation-portal.com/api/volunteer-records-edit
+
         try{
-            fetch('http://localhost:5000/api/volunteer-records-edit' , {
+            fetch('https://www.operation-portal.com/api/volunteer-records-edit' , {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

@@ -36,7 +36,9 @@ export class AdminCalendar extends Component {
         let date = new Date()
         let month = date.getMonth() + 1
         let year = date.getFullYear()
-        fetch('http://localhost:5000/api/calendar?month=' + month + '&year=' + year , {
+        // https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
+        // http://localhost:5000/api/calendar?month=' + month + '&year=' + year
+        fetch('https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year , {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -163,8 +165,10 @@ export class AdminCalendar extends Component {
         let day = a.substring(8, 10)
         let nue = year + '-' + month + '-' + day
         console.log(nue)
+        // https://www.operation-portal.com/api/calendar/event-creation
+        // http://localhost:5000/api/calendar/event-creation
         try {
-            fetch('http://localhost:5000/api/calendar/event-creation', {
+            fetch('https://www.operation-portal.com/api/calendar/event-creation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
