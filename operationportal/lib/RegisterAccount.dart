@@ -460,7 +460,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
         child: RaisedButton(
           child: Text(
               "Register",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             if (_passwordController.text == _confirmPasswordController.text)

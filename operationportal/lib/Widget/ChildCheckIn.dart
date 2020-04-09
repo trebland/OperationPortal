@@ -66,6 +66,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.all(10),
           ),
+          barcode == null || barcode.isEmpty ? Container() :
           FutureBuilder(
               future: widget.storage.readToken().then((value) {
                 return RetrieveChild(value, barcode, context);

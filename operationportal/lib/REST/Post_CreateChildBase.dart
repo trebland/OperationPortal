@@ -18,7 +18,7 @@ Future<void> CreateChildBase (String token, String firstName, String lastName, S
     'BusId': busId,
   };
 
-  if (lastName.isEmpty) {
+  if (lastName.isNotEmpty) {
     Map<String, dynamic> addTo = {
       'lastName': lastName,
     };

@@ -172,6 +172,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
 
   String formatNumber (String number)
   {
+    print(number);
     String formattedNumber = "";
     for (int i=0; i<10; i++)
       {

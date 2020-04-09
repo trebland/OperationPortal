@@ -701,7 +701,7 @@ class AddChildState extends State<AddChildPage>
             if (filledOut())
               storage.readToken().then((value) {
                 CreateChildBase(value, firstNameController.text, lastNameController.text,
-                    parentNameController.text, contactNumberController.text,
+                    parentNameController.text, parseNumber(contactNumberController.text),
                     busController.text, childImagePath, context);
               });
           },
