@@ -978,6 +978,39 @@ namespace API.Data
         }
 
         /// <summary>
+        /// Given a child ID, returns all suspensions, if any
+        /// </summary>
+        public List<SuspensionModel> GetSuspensionHistoryForChild(IdModel model)
+        {
+            DateTime now = DateTime.Now;
+            DataTable dt = new DataTable();
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                string sql = @"SELECT startdate, enddate
+                               FROM Child_Suspensions
+                               WHERE childid = @childId";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    con.Open();
+                    cmd.Parameters.Add("@childId", NpgsqlTypes.NpgsqlDbType.Integer).Value = model.Id;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            List<SuspensionModel> suspensions = new List<SuspensionModel>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                suspensions.Add(new SuspensionModel((DateTime)dr["startdate"], (DateTime)dr["enddate"]));
+            }
+
+            return suspensions;
+        }
+
+        /// <summary>
         /// Create child models from a given data table
         /// </summary>
         /// <param name="dt">Data table matching specific criteria</param>

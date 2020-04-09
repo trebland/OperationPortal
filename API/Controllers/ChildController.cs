@@ -455,6 +455,50 @@ namespace API.Controllers
             }
         }
 
+        [Route("~/api/suspension-history-child")]
+        [HttpGet]
+        public async Task<ActionResult> SuspensionHistoryForChild([FromQuery]IdModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null ||
+               !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.BusDriver.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
+               await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            VolunteerRepository volunteerRepo = new VolunteerRepository(configModel.ConnectionString);
+            // Volunteers must be teachers to have access
+            if (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) && !volunteerRepo.VolunteerIsClassTeacher(user.VolunteerId))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+            
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("id");
+            }
+
+            try
+            {
+                ChildRepository repo = new ChildRepository(configModel.ConnectionString);
+
+                return new JsonResult(new
+                {
+                    Suspensions = repo.GetSuspensionHistoryForChild(model)
+                });
+            }
+            catch (Exception exc)
+            {
+                return new JsonResult(new
+                {
+                    Error = exc.Message,
+                });
+            }
+        }
+
         [Route("~/api/child-current-suspension")]
         [HttpGet]
         public async Task<IActionResult> CheckChildSuspension([FromQuery]IdModel model)
