@@ -9,9 +9,11 @@ export class ViewVolunteers extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            volunteers: [{}],
+            volunteers_list: [{}],
             redirect: false,
-            edit: false
+            redirectId: false,
+            edit: false,
+            volunteer: []
         }
         console.log(this.state.jwt)
         this.getVolunteers()
@@ -26,6 +28,18 @@ export class ViewVolunteers extends Component {
                     loggedin: this.state.loggedin
                 }
             }}/>
+        }
+        else if(this.state.redirectId) {
+            return (
+                <Redirect to={{
+                    pathname: '/admin-volunteer-edit',
+                    state: {
+                        jwt: this.state.jwt,
+                        loggedin: this.state.loggedin,
+                        volunteer: this.state.volunteer
+                    }
+                }}/>
+            )
         }
     }
 
@@ -63,10 +77,10 @@ export class ViewVolunteers extends Component {
             res = res.volunteers
             if(this.mounted === true){
                 this.setState({
-                    volunteers: res
+                    volunteers_list: res
                 })
             }
-            console.log(this.state.volunteers)
+            console.log(this.state.volunteers_list)
         })
         .catch((err) => {
             console.log(err)
@@ -105,11 +119,54 @@ export class ViewVolunteers extends Component {
 
     profileClicked = (ep) => {
         console.log(ep)
+        let live = 'https://www.operation-portal.com/api/volunteer-info?id=' + ep
+        let local = 'http://localhost:5000/api/volunteer-info?id=' + ep
+
+        try{
+            fetch(local , {
+            // method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                }
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('Retrieval successful')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('Retrieval failed')
+                    return
+                }
+            })
+            .then((data) => {
+                let res = JSON.parse(data)
+                res = res.volunteer
+                if(this.mounted === true){
+                    this.setState({
+                        volunteer: res
+                    })
+                }
+                console.log(this.state.profile)
+            })
+            .then(() => {
+                this.setState({
+                    redirectId: true
+                })
+            })
+        }
+        catch(e) {
+            console.log("didnt post")
+        }
     }
 
+    
+
     renderVolunteers = () => {
-        if(this.state.volunteers != null){
-            const p = this.state.volunteers.map((v, index) => {
+        if(this.state.volunteers_list != null){
+            const p = this.state.volunteers_list.map((v, index) => {
                 return (
                     <div key={index}>
                         <Card style={{width: '25rem'}}>
@@ -141,7 +198,7 @@ export class ViewVolunteers extends Component {
                                     Year Started: {v.yearStarted}<br></br>
                                     Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
                                 </Card.Text>
-                                <Button variant="primary" onClick={() => {this.profileClicked(v)}}>
+                                <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
                                     Edit Volunteer Profiles
                                 </Button>
                             </Card.Body>
