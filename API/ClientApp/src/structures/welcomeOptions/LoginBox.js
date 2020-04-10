@@ -54,11 +54,8 @@ export class LoginBox extends Component {
     }
     formBody = formBody.join("&");
 
-    let live = 'https://www.operation-portal.com/api/auth/token'
-    let local = 'http://localhost:5000/api/auth/token'
-
     try{
-        fetch(local , {
+        fetch('/api/auth/token' , {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -108,10 +105,8 @@ export class LoginBox extends Component {
   }
 
   getRole = () => {
-    let live = 'https://www.operation-portal.com/api/auth/user'
-    let local = 'http://localhost:5000/api/auth/user'
     try {
-      fetch(local , {
+      fetch('/api/auth/user' , {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.state.jwt}`
