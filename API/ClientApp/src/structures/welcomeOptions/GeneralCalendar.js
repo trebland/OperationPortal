@@ -25,12 +25,15 @@ export class GeneralCalendar extends Component {
     }
 
     getInfo = () => {
-        // https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
-        // http://localhost:5000/api/calendar?month=' + month + '&year=' + year
+        
         let date = new Date()
         let month = date.getMonth() + 1
         let year = date.getFullYear()
-        fetch('https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year , {
+
+        let live = 'https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
+        let local = 'http://localhost:5000/api/calendar?month=' + month + '&year=' + year
+
+        fetch(local , {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',

@@ -36,11 +36,11 @@ export class AdminVolunteerEdit extends Component {
     }
 
     editProfile = (e) => {
-        // http://localhost:5000/api/volunteer-records-edit
-        // https://www.operation-portal.com/api/volunteer-records-edit
+        let local = 'http://localhost:5000/api/volunteer-records-edit' 
+        let live = 'https://www.operation-portal.com/api/volunteer-records-edit'
 
         try{
-            fetch('https://www.operation-portal.com/api/volunteer-records-edit' , {
+            fetch(local , {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

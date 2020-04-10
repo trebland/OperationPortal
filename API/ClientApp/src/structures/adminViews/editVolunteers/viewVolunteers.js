@@ -35,11 +35,12 @@ export class ViewVolunteers extends Component {
         })
     }
 
-    // https://www.operation-portal.com/api/volunteer-list
-    // http://localhost:5000/api/volunteer-list
 
     getVolunteers = () => {
-        fetch('https://www.operation-portal.com/api/volunteer-list' , {
+
+        let live = 'https://www.operation-portal.com/api/volunteer-list'
+        let local = 'http://localhost:5000/api/volunteer-list'
+        fetch(local , {
             // method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
