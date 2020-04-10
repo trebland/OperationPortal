@@ -75,7 +75,7 @@ export class AdminGetId extends Component {
         let local = 'http://localhost:5000/api/volunteer-info?id=' + gi
 
         try{
-            fetch(local , {
+            fetch('/api/volunteer-info?id=' + gi , {
             // method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

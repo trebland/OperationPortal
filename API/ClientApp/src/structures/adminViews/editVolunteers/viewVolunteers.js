@@ -54,7 +54,7 @@ export class ViewVolunteers extends Component {
 
         let live = 'https://www.operation-portal.com/api/volunteer-list'
         let local = 'http://localhost:5000/api/volunteer-list'
-        fetch(local , {
+        fetch('/api/volunteer-list' , {
             // method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -123,7 +123,8 @@ export class ViewVolunteers extends Component {
         let local = 'http://localhost:5000/api/volunteer-info?id=' + ep
 
         try{
-            fetch(local , {
+            fetch('/api/volunteer-info?id=' + ep
+            , {
             // method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

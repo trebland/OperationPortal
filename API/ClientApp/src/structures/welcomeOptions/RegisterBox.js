@@ -29,10 +29,8 @@ export class RegisterBox extends Component {
     }
 
     onSubmit = (e) => {
-      let live = 'https://www.operation-portal.com/api/auth/register'
-      let local = 'http://localhost:5000/api/auth/register'
         try{
-            fetch(local , {
+            fetch('/api/auth/register' , {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',

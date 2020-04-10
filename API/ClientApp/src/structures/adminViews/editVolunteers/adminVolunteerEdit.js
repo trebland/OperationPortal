@@ -40,7 +40,7 @@ export class AdminVolunteerEdit extends Component {
         let live = 'https://www.operation-portal.com/api/volunteer-records-edit'
 
         try{
-            fetch(local , {
+            fetch('/api/volunteer-records-edit' , {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

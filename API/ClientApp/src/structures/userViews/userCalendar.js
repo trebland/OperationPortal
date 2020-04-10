@@ -28,9 +28,7 @@ export class UserCalendar extends Component {
         let date = new Date()
         let month = date.getMonth() + 1
         let year = date.getFullYear()
-        let live = 'https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
-        let local = 'http://localhost:5000/api/calendar?month=' + month + '&year=' + year
-        fetch(local , {
+        fetch('/api/calendar?month=' + month + '&year=' + year , {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',

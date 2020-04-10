@@ -27,10 +27,7 @@ export class UserEventDetails extends Component {
         let month = this.state.clicked.month
         let day = this.state.clicked.day
         let date = month + '/' + day + '/' + year
-        console.log(date)
-        let live = 'https://www.operation-portal.com/api/calendar/details?date=' + date
-        let local = 'http://localhost:5000/api/calendar/details?date=' + date
-        fetch(local , {
+        fetch('/api/calendar/details?date=' + date , {
           // method: 'GET',
             headers: {
               'Content-Type': 'application/json',

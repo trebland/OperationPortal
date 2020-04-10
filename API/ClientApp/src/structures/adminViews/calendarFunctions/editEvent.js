@@ -88,7 +88,7 @@ export class AdminEditEvent extends Component {
         // https://www.operation-portal.com/api/calendar/event-edit
         // http://localhost:5000/api/calendar/event-edit
         try {
-            fetch('https://www.operation-portal.com/api/calendar/event-edit', {
+            fetch('/api/calendar/event-edit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
