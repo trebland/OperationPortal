@@ -78,7 +78,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
         child: RaisedButton(
           child: Text(
               "Reset Password",
-              style: TextStyle(fontSize: 24, color: Colors.black)
+              style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
             Navigator.pop(context);

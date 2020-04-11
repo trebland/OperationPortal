@@ -166,8 +166,9 @@ class LoginPageState extends State<LoginPage> {
         children: <Widget>[
           Builder(
               builder: (context) => Center(
-                  child: FlatButton(
-                    child: const Text('Forgot Password?'),
+                  child: RaisedButton(
+                    child: Text('Forgot Password?',
+                      style: TextStyle(color: textComplementColor)),
                     onPressed: ()
                     {
                       Navigator.push(
@@ -175,16 +176,18 @@ class LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
                       );
                     },
+                    color: primaryWidgetColor,
                   )
               )
           ),
           Text(
-              "OR"
+              "OR", style: TextStyle(fontWeight: FontWeight.bold)
           ),
           Builder(
               builder: (context) => Center(
                   child: FlatButton(
-                    child: const Text('New Volunteer'),
+                    child: Text('New Volunteer',
+                        style: TextStyle(color: textComplementColor)),
                     onPressed: ()
                     {
                       Navigator.push(
@@ -192,6 +195,7 @@ class LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => RegisterAccountPage()),
                       );
                     },
+                    color: primaryWidgetColor,
                   )
               )
           )

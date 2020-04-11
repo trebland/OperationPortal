@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> CreateInventory (String token, String name, int count, BuildContext context)
 async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Creating Item",)));
   var mUrl = "https://www.operation-portal.com/api/inventory-create";
 
   Map<String, String> headers = {
@@ -34,9 +36,10 @@ async {
         fontSize: 16.0
     );
 
-    Navigator.pop(context);
+    Navigator.popUntil(context, (route) => route.isFirst);
   } else {
 
+    Navigator.pop(context);
     return null;
   }
 }

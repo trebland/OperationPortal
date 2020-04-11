@@ -110,7 +110,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                 children: <Widget>
                 [
                   Container(
-                    child: Text("Class Id", textAlign: TextAlign.center,
+                    child: Text("Class ID", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
                       color: primaryWidgetColor,
@@ -133,11 +133,11 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                           iconSize: 24,
                           elevation: 16,
                           style: TextStyle(
-                              color: Colors.deepPurple
+                              color: primaryColor
                           ),
                           underline: Container(
                             height: 2,
-                            color: Colors.deepPurpleAccent,
+                            color: primaryColor,
                           ),
                           onChanged: (Class newValue) {
                             setState(() {

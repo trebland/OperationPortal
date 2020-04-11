@@ -157,6 +157,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: _firstNameController,
                   decoration: new InputDecoration(
                     labelText: 'First Name',
@@ -206,6 +207,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: _lastNameController,
                   decoration: new InputDecoration(
                     labelText: 'Last Name',

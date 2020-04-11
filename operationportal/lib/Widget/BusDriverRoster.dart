@@ -108,7 +108,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                 children: <Widget>
                 [
                   Container(
-                    child: Text("Bus Id", textAlign: TextAlign.center,
+                    child: Text("Bus ID", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
                       color: primaryWidgetColor,
@@ -131,11 +131,11 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                             iconSize: 24,
                             elevation: 16,
                             style: TextStyle(
-                                color: Colors.deepPurple
+                                color: primaryColor
                             ),
                             underline: Container(
                               height: 2,
-                              color: Colors.deepPurpleAccent,
+                              color: primaryColor,
                             ),
                             onChanged: (Bus newValue) {
                               setState(() {

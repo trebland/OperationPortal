@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> RegisterAccount(BuildContext context, String email, String password, String firstName, String lastName) async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Registering Account",)));
   var mUrl = "https://www.operation-portal.com/api/auth/register";
 
   var body = json.encode({
@@ -21,7 +23,17 @@ Future<void> RegisterAccount(BuildContext context, String email, String password
   if (response.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
 
-    Navigator.pop(context);
+    Fluttertoast.showToast(
+        msg: "Account created successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+
+    Navigator.popUntil(context, (route) => route.isFirst);
   } else {
     // If that call was not successful, throw an error.
     Register_Response mPost = Register_Response.fromJson(json.decode(response.body));
@@ -36,6 +48,7 @@ Future<void> RegisterAccount(BuildContext context, String email, String password
         fontSize: 16.0
     );
 
+    Navigator.pop(context);
     throw Exception('Failed to load post');
   }
 }

@@ -40,8 +40,7 @@ class AddChildState extends State<AddChildPage>
   String childImagePath;
 
   int busIndex;
-
-
+  Bus selectedBus;
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -240,7 +239,7 @@ class AddChildState extends State<AddChildPage>
 
       return false;
     }
-    else if (busController.text.isEmpty)
+    else if (selectedBus == null)
     {
 
       Fluttertoast.showToast(
@@ -300,6 +299,7 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: firstNameController,
                   decoration: new InputDecoration(
                     labelText: 'First Name',
@@ -350,6 +350,7 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: lastNameController,
                   decoration: new InputDecoration(
                     labelText: 'Last Name',
@@ -400,6 +401,7 @@ class AddChildState extends State<AddChildPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: parentNameController,
                   decoration: new InputDecoration(
                     labelText: 'Parent Name',
@@ -639,7 +641,9 @@ class AddChildState extends State<AddChildPage>
                   if (snapshot.hasError) {
                     return Text("Bus Ids failed to load");
                   } else {
-                    busIndex = widget.driversBus != null ? matchBusIds(snapshot.data, widget.driversBus) : 0;
+                    busIndex = (widget.driversBus != null && busIndex == null)
+                        ? matchBusIds(snapshot.data, widget.driversBus)
+                        : (busIndex == null) ? 0 : busIndex;
                     return Container(
                       child: DropdownButton<Bus>(
                         value: snapshot.data[busIndex],
@@ -647,23 +651,24 @@ class AddChildState extends State<AddChildPage>
                         iconSize: 24,
                         elevation: 16,
                         style: TextStyle(
-                            color: Colors.deepPurple
+                            color: primaryColor,
                         ),
                         underline: Container(
                           height: 2,
-                          color: Colors.deepPurpleAccent,
+                          color: primaryColor,
                         ),
                         onChanged: (Bus newValue) {
                           setState(() {
                             busIndex = snapshot.data.indexOf(newValue);
-                            busController.text = newValue.id == null ? "" : '${newValue.id}';
+                            selectedBus = newValue;
+                            busController.text = newValue.id == null ? "" : '${newValue.name}';
                           });
                         },
                         items: snapshot.data
                             .map<DropdownMenuItem<Bus>>((Bus value) {
                           return DropdownMenuItem<Bus>(
                             value: value,
-                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.id}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
+                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                           );
                         }).toList(),
                       ),
@@ -685,13 +690,13 @@ class AddChildState extends State<AddChildPage>
     return ButtonBar(
       children: <Widget>[
         OutlineButton(
-          child: Text('Additional Options', style: TextStyle(color: Colors.deepPurple),),
+          child: Text('Additional Options', style: TextStyle(color: primaryColor),),
           onPressed: ()
           {
             if (additionalFilledOut())
               Navigator.push(context, MaterialPageRoute(builder: (context) => AdditionalOptionsPage(firstName: firstNameController.text,
                 lastName: lastNameController.text, parentName: parentNameController.text,
-                contactNumber: parseNumber(contactNumberController.text), imagePath: childImagePath,)));
+                contactNumber: parseNumber(contactNumberController.text), busId: selectedBus.id.toString(), imagePath: childImagePath,)));
           },
         ),
         RaisedButton(
@@ -702,7 +707,7 @@ class AddChildState extends State<AddChildPage>
               storage.readToken().then((value) {
                 CreateChildBase(value, firstNameController.text, lastNameController.text,
                     parentNameController.text, parseNumber(contactNumberController.text),
-                    busController.text, childImagePath, context);
+                    selectedBus.id.toString(), childImagePath, context);
               });
           },
           color: primaryColor,
