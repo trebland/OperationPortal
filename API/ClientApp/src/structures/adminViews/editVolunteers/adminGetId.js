@@ -69,12 +69,13 @@ export class AdminGetId extends Component {
 
     getSpecificVolunteer = () => {
 
-        // https://www.operation-portal.com/api/volunteer-info?id=' + gi
-        // http://localhost:5000/api/volunteer-info?id=' + gi
+        
         var gi = Number.parseInt(this.state.id, 10)
+        let live = 'https://www.operation-portal.com/api/volunteer-info?id=' + gi
+        let local = 'http://localhost:5000/api/volunteer-info?id=' + gi
 
         try{
-            fetch('https://www.operation-portal.com/api/volunteer-info?id=' + gi , {
+            fetch('/api/volunteer-info?id=' + gi , {
             // method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -15,22 +15,20 @@ export class GeneralCalendar extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            eventsapi: [{}],
             groups: [{}],
             redirect: false,
-            redirectEvents: false,
             clicked: {}
         }
         this.getInfo()
     }
 
     getInfo = () => {
-        // https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year
-        // http://localhost:5000/api/calendar?month=' + month + '&year=' + year
+        
         let date = new Date()
         let month = date.getMonth() + 1
         let year = date.getFullYear()
-        fetch('https://www.operation-portal.com/api/calendar?month=' + month + '&year=' + year , {
+
+        fetch('/api/calendar?month=' + month + '&year=' + year , {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -50,14 +48,14 @@ export class GeneralCalendar extends Component {
         })
         .then((data) => {
             let res = JSON.parse(data)
-            let g = res.groups
-            let eve = res.events
-            
-            let e = eve.map((details) => {
+            let gro = res.groups
+
+            let g = gro.map((details) => {
                 let year = Number.parseInt(details.date.substring(0, 4))
                 // starts at 0 for january 
                 let month = Number.parseInt(details.date.substring(5, 7)) 
                 let day = Number.parseInt(details.date.substring(8, 10))
+                                  
                 let ret = {
                     id: details.id,
                     year: year,
@@ -65,9 +63,11 @@ export class GeneralCalendar extends Component {
                     day: day,
                     'title': details.name,
                     'allDay': true,
-                    desc: details.description,
+                    desc: 'Groupname:' + details.name,
                     'start': new Date(year, month - 1, day),
-                    'end': new Date(year, month - 1, day)
+                    'end': new Date(year, month - 1, day),
+                    group: true
+
                 }
                 return ret
             })
@@ -75,7 +75,6 @@ export class GeneralCalendar extends Component {
             if(this.mounted === true){
                 this.setState({
                     groups: g,
-                    eventsapi: e
                 })
             }
         })
@@ -100,14 +99,6 @@ export class GeneralCalendar extends Component {
                 pathname: '/'
             }}/>
         }
-        else if(this.state.redirectEvents){
-            return <Redirect to={{
-                pathname: '/event-details',
-                state: {
-                    clicked: this.state.clicked
-                }
-            }}/>
-        }
     }
 
     
@@ -117,17 +108,9 @@ export class GeneralCalendar extends Component {
         })
     }
 
-    getEventDetails = (ep) => {
-        console.log(ep.year)
-        this.setState({
-            clicked: ep,
-            redirectEvents: true
-        })
-        console.log(this.state.clicked)
-    }
 
     render () {
-
+        // var a = this.state.groups.concat(this.state.eventsapi)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -139,10 +122,29 @@ export class GeneralCalendar extends Component {
                         selectable
                         popup
                         localizer = {localizer}
-                        events = {this.state.eventsapi}
+                        events = {this.state.groups}
                         startAccessor = "start"
                         endAccessor = "end"
-                        onSelectEvent={e => {this.getEventDetails(e)}}
+                        onSelectEvent={e => {alert('Group name: ' + e.title)}}
+                        eventPropGetter={
+                            (event, start, end, isSelected) => {
+                              let newStyle = {
+                                backgroundColor: "lightgrey",
+                                color: 'white',
+                                borderRadius: "5px",
+                                border: "none"
+                              };
+                        
+                              if (event.group){
+                                newStyle.backgroundColor = "green"
+                              }
+                        
+                              return {
+                                className: "",
+                                style: newStyle
+                              };
+                            }
+                        }
                     />
                 </div>
                 {this.renderRedirect()}

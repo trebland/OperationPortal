@@ -3,7 +3,6 @@ import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap
 import { Redirect } from 'react-router-dom'
 
 export class LoginBox extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -13,7 +12,9 @@ export class LoginBox extends Component {
       redirect: false,
       jwt: "",
       loggedin: false,
-      redirectDash: false
+      redirectDash: false,
+      profile: {},
+      role: ''
     };
     this.handleUserNameChange = this.handleUserNameChange.bind(this)
     this.handlePasswordChange = this.handlePasswordChange.bind(this)
@@ -53,11 +54,8 @@ export class LoginBox extends Component {
     }
     formBody = formBody.join("&");
 
-    // https://www.operation-portal.com/api/auth/token
-    // http://localhost:5000/api/auth/token
-
     try{
-        fetch('https://www.operation-portal.com/api/auth/token' , {
+        fetch('/api/auth/token' , {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -91,6 +89,9 @@ export class LoginBox extends Component {
           }
           console.log(this.state.jwt)
         })
+        .then(() => {
+          this.getRole()
+        })
         // set redirect after getting token so that the page doesnt change
         .then(() => {
           this.setState({
@@ -101,7 +102,46 @@ export class LoginBox extends Component {
     catch(e) {
       console.log("didnt post")
     }
-}
+  }
+
+  getRole = () => {
+    try {
+      fetch('/api/auth/user' , {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.state.jwt}`
+        },
+      })
+      .then((res) => {
+        console.log(res.status)
+        if((res.status === 200 || res.status === 201) && this.mounted === true){
+            console.log("retrieval successful")
+            return res.text()
+        }
+        else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+            console.log("Failed to retrieve")
+            this.setState({
+              redirect: false
+            })
+            return
+        }
+      })
+      .then((data) => {
+        console.log("reached this statement")
+        let res = JSON.parse(data)
+        res = res.profile.role
+        if(this.mounted == true) {
+          this.setState({
+            role: res
+          })
+        }
+        console.log(this.state.role)
+      })
+    }
+    catch(e) {
+      console.log("didnt post")
+    }
+  }
 
 
   setRedirect = () => {
@@ -118,7 +158,7 @@ export class LoginBox extends Component {
   }
 
   renderRedirect = () => {
-    if (this.state.redirect && this.state.username === "staff@occ.com") {
+    if (this.state.redirect && this.state.role === "Staff") {
       return <Redirect to={{
         pathname: '/admin-dashboard',
         state: { 
@@ -127,13 +167,14 @@ export class LoginBox extends Component {
         }
       }}/>
     }
-    else if(this.state.redirect) {
+    else if(this.state.redirect && ((this.state.role === "Volunteer") || (this.state.role === "BusDriver"))) {
       return (
         <Redirect to={{
           pathname: '/dashboard',
           state: {
             jwt: this.state.jwt,
-            loggedin: true
+            loggedin: true,
+            role: this.state.role
           }
         }}/>
       )
