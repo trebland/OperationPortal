@@ -315,9 +315,6 @@ export class AdminBusEdit extends Component {
                         </div>
                     </Form>
                 </div>
-                <div className="box" style={styling.outerDiv}>
-                    
-                </div>
             </div>
         );
     }

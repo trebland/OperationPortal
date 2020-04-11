@@ -16,7 +16,10 @@ export class AdminDashboard extends Component {
             redirectCBC: false,
             redirectVol: false,
             redirectBus: false,
+            redirectTraining: false,
             redirectSBC: false,
+            redirectJobs: false,
+            redirectClasses: false,
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin
         }
@@ -85,6 +88,15 @@ export class AdminDashboard extends Component {
                 }
             }}/>
         }
+        else if (this.state.redirectTraining) {
+            return <Redirect to={{
+                pathname: '/admin-training-list',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
+        }
         else if(this.state.redirectSBC){
             return <Redirect to={{
                 pathname: '/staff-birthday-calendar',
@@ -93,6 +105,24 @@ export class AdminDashboard extends Component {
                     jwt: this.state.jwt
                 }
             }}/>
+        }
+        else if (this.state.redirectJobs) {
+            return <Redirect to={{
+                pathname: '/admin-job-list',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
+        }
+        else if (this.state.redirectClasses) {
+            return <Redirect to={{
+                pathname: '/admin-class-list',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
         }
         
     }
@@ -112,6 +142,12 @@ export class AdminDashboard extends Component {
     setRedirectBus = () => {
         this.setState({
             redirectBus: true
+        })
+    }
+
+    setRedirectTraining = () => {
+        this.setState({
+            redirectTraining: true
         })
     }
 
@@ -139,6 +175,18 @@ export class AdminDashboard extends Component {
         })
     }
 
+    setRedirectJobs = () => {
+        this.setState({
+            redirectJobs: true
+        })
+    }
+
+    setRedirectClasses = () => {
+        this.setState({
+            redirectClasses: true
+        })
+    }
+
     setRedirectLogout = () => {
         this.setState({
             redirectLogout: true
@@ -148,7 +196,7 @@ export class AdminDashboard extends Component {
 
   render () {
     return(
-        <div>
+        <div style={styling.mainDiv}>
             {this.renderRedirect()}
             <Button variant="primary" size="lg" style={styling.logout} onClick={this.setRedirectLogout}>
                     Logout
@@ -180,12 +228,25 @@ export class AdminDashboard extends Component {
                     View Volunteers
                 </Button>
 
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectBus}>
-                    Bus Routes
-                </Button>
-
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectSBC}>
                     Staff Birthday Calendar
+                </Button>
+            </center>  
+            <center>
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectBus}>
+                    Manage Buses
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectTraining}>
+                    Manage Trainings
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectJobs}>
+                    Manage Volunteer Jobs
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectClasses}>
+                    Manage Classes
                 </Button>
             </center>  
         </div>
@@ -209,6 +270,9 @@ const styling = {
     logout: {
         marginTop: '15px',
         marginLeft: '15px'
+    },
+    mainDiv: {
+        marginBottom: '20px'
     }
 }
 

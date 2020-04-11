@@ -24,7 +24,13 @@ import { AdminEventDetails } from './structures/adminViews/calendarFunctions/adm
 import { AdminEditEvent } from './structures/adminViews/calendarFunctions/editEvent'
 import { AdminBusList } from './structures/adminViews/adminBus/adminBusList'
 import { AdminBusCreate } from './structures/adminViews/adminBus/adminBusCreate'
-import { AdminBusEdit} from './structures/adminViews/adminBus/adminBusEdit'
+import { AdminBusEdit } from './structures/adminViews/adminBus/adminBusEdit'
+import { AdminTrainingList } from './structures/adminViews/adminTraining/adminTrainingList'
+import { AdminTrainingCreate } from './structures/adminViews/adminTraining/adminTrainingCreate'
+import { AdminTrainingEdit } from './structures/adminViews/adminTraining/adminTrainingEdit'
+import { AdminJobList } from './structures/adminViews/adminJob/adminJobList'
+import { AdminJobCreate } from './structures/adminViews/adminJob/adminJobCreate'
+import { AdminJobEdit } from './structures/adminViews/adminJob/adminJobEdit'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -60,7 +66,12 @@ export default class App extends Component {
             <Route exact path='/admin-bus-list' component={AdminBusList} />
             <Route exact path='/admin-bus-create' component={AdminBusCreate} />
             <Route path='/admin-bus-edit/:id' component={AdminBusEdit}/>
-
+            <Route exact path='/admin-training-list' component={AdminTrainingList} />
+            <Route exact path='/admin-training-create' component={AdminTrainingCreate} />
+            <Route path='/admin-training-edit/:id' component={AdminTrainingEdit} />
+            <Route exact path='/admin-job-list' component={AdminJobList} />
+            <Route exact path='/admin-job-create' component={AdminJobCreate} />
+            <Route path='/admin-job-edit/:id' component={AdminJobEdit} />
             
             <Route component={NotFound} />
           </Switch>

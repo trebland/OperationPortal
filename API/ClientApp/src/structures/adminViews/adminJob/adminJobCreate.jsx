@@ -2,7 +2,7 @@
 import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
-export class AdminBusCreate extends Component {
+export class AdminJobCreate extends Component {
     constructor(props) {
         super(props)
 
@@ -11,13 +11,15 @@ export class AdminBusCreate extends Component {
                 jwt: props.location.state.jwt,
                 loggedin: props.location.state.loggedin,
                 name: '',
-                route: '',
+                min: 0,
+                max: 0,
                 redirect: false,
                 result: '',
                 success: false
             };
-            this.handleNameChange = this.handleNameChange.bind(this)
-            this.handleRouteChange = this.handleRouteChange.bind(this)
+            this.handleNameChange = this.handleNameChange.bind(this);
+            this.handleMinChange = this.handleMinChange.bind(this);
+            this.handleNameChange = this.handleNameChange.bind(this);
             this.onSubmit = this.onSubmit.bind(this);
         }
         else {
@@ -38,9 +40,15 @@ export class AdminBusCreate extends Component {
         })
     }
 
-    handleRouteChange = (e) => {
+    handleMinChange = (e) => {
         this.setState({
-            route: e.target.value
+            min: e.target.value
+        })
+    }
+
+    handleMaxChange = (e) => {
+        this.setState({
+            max: e.target.value
         })
     }
 
@@ -50,32 +58,48 @@ export class AdminBusCreate extends Component {
         if (!this.state.name) {
             this.setState({
                 success: false,
-                result: 'Bus name cannot be empty'
+                result: 'Job name cannot be empty'
             })
             return
         }
 
-        if (!this.state.name.length > 300) {
+        if (this.state.min < 0) {
             this.setState({
                 success: false,
-                result: 'Bus name is too long (limit 300 characters)'
+                result: 'Minimum number of volunteers for ajob must be non-negative'
+            })
+            return
+        }
+
+        if (this.state.max <= 0) {
+            this.setState({
+                success: false,
+                result: 'Maximum number of volunteers for a job must be positive'
+            })
+            return
+        }
+
+        if (this.state.max < this.state.min) {
+            this.setState({
+                success: false,
+                result: 'Maximum number of volunteers for a job cannot be less than the minimum number of volunteers'
             })
             return
         }
 
         try {
-            fetch('/api/bus-creation', {
+            fetch('/api/volunteer-jobs-creation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.state.jwt}`
                 },
-                body: JSON.stringify({Name: this.state.name, Route: this.state.route})
+                body: JSON.stringify({Name: this.state.name, Min: this.state.min, Max: this.state.max})
             })
             .then((res) => {
                 if ((res.status === 200 || res.status === 201) && this.mounted === true) {
                     this.setState({
-                        result: 'Added the new bus successfully!',
+                        result: 'Added the new job successfully!',
                         success: true,
                     })
                     return
@@ -96,7 +120,8 @@ export class AdminBusCreate extends Component {
                 else {
                     this.setState({
                         name: '',
-                        route: '',
+                        min: 0,
+                        max: 0
                     })
                 }
             })
@@ -115,7 +140,7 @@ export class AdminBusCreate extends Component {
     renderRedirect = () => {
         if (this.state.redirect) {
             return <Redirect to={{
-                pathname: '/admin-bus-list',
+                pathname: '/admin-job-list',
                 state: {
                     jwt: this.state.jwt,
                     loggedin: this.state.loggedin
@@ -136,18 +161,21 @@ export class AdminBusCreate extends Component {
                     Back to List
           </Button>
                 <div style={styling.header}>
-                    <h1>Create Bus</h1>
+                    <h1>Create Job</h1>
                 </div>
                 <div className="box" style={styling.outerDiv}>
                     <Form style={styling.formDiv}>
                         <FormGroup>
-                            <FormLabel>Bus Name</FormLabel>
-                            <FormControl type="text" placeholder="Bus Name" value={this.state.name} onChange={this.handleNameChange} />
+                            <FormLabel>Job Name</FormLabel>
+                            <FormControl type="text" placeholder="Job Name" value={this.state.name} onChange={this.handleNameChange} />
                         </FormGroup>
-
-                        <FormGroup controlId="formBasicPassword">
-                            <FormLabel>Route Description</FormLabel>
-                            <Form.Control as="textarea" placeholder="Route Description" value={this.state.route} onChange={this.handleRouteChange} />
+                        <FormGroup>
+                            <FormLabel>Minimum Volunteers</FormLabel>
+                            <FormControl type="number" value={this.state.min} onChange={this.handleMinChange} />
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Maximum Volunteers</FormLabel>
+                            <FormControl type="number" value={this.state.max} onChange={this.handleMaxChange} />
                         </FormGroup>
                         <p style={ this.state.success ? { color: 'green' } : { color: 'red'} }>{this.state.result}</p>
                         <div>
@@ -155,7 +183,7 @@ export class AdminBusCreate extends Component {
                                 {this.renderRedirect()}
                                 <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} style={{ justifyContent: 'center' }}>
                                     Create
-                          </Button>
+                                </Button>
                             </center>
                         </div>
                     </Form>

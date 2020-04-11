@@ -2,7 +2,7 @@
 import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
-export class AdminBusCreate extends Component {
+export class AdminTrainingCreate extends Component {
     constructor(props) {
         super(props)
 
@@ -11,13 +11,11 @@ export class AdminBusCreate extends Component {
                 jwt: props.location.state.jwt,
                 loggedin: props.location.state.loggedin,
                 name: '',
-                route: '',
                 redirect: false,
                 result: '',
                 success: false
             };
             this.handleNameChange = this.handleNameChange.bind(this)
-            this.handleRouteChange = this.handleRouteChange.bind(this)
             this.onSubmit = this.onSubmit.bind(this);
         }
         else {
@@ -38,44 +36,30 @@ export class AdminBusCreate extends Component {
         })
     }
 
-    handleRouteChange = (e) => {
-        this.setState({
-            route: e.target.value
-        })
-    }
-
     onSubmit = (e) => {
         e.preventDefault();
 
         if (!this.state.name) {
             this.setState({
                 success: false,
-                result: 'Bus name cannot be empty'
-            })
-            return
-        }
-
-        if (!this.state.name.length > 300) {
-            this.setState({
-                success: false,
-                result: 'Bus name is too long (limit 300 characters)'
+                result: 'Training name cannot be empty'
             })
             return
         }
 
         try {
-            fetch('/api/bus-creation', {
+            fetch('/api/volunteer-training-creation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.state.jwt}`
                 },
-                body: JSON.stringify({Name: this.state.name, Route: this.state.route})
+                body: JSON.stringify({Name: this.state.name})
             })
             .then((res) => {
                 if ((res.status === 200 || res.status === 201) && this.mounted === true) {
                     this.setState({
-                        result: 'Added the new bus successfully!',
+                        result: 'Added the new training successfully!',
                         success: true,
                     })
                     return
@@ -95,8 +79,7 @@ export class AdminBusCreate extends Component {
                 }
                 else {
                     this.setState({
-                        name: '',
-                        route: '',
+                        name: ''
                     })
                 }
             })
@@ -115,7 +98,7 @@ export class AdminBusCreate extends Component {
     renderRedirect = () => {
         if (this.state.redirect) {
             return <Redirect to={{
-                pathname: '/admin-bus-list',
+                pathname: '/admin-training-list',
                 state: {
                     jwt: this.state.jwt,
                     loggedin: this.state.loggedin
@@ -136,26 +119,22 @@ export class AdminBusCreate extends Component {
                     Back to List
           </Button>
                 <div style={styling.header}>
-                    <h1>Create Bus</h1>
+                    <h1>Create Training</h1>
                 </div>
                 <div className="box" style={styling.outerDiv}>
                     <Form style={styling.formDiv}>
                         <FormGroup>
-                            <FormLabel>Bus Name</FormLabel>
-                            <FormControl type="text" placeholder="Bus Name" value={this.state.name} onChange={this.handleNameChange} />
+                            <FormLabel>Training Name</FormLabel>
+                            <FormControl type="text" placeholder="Training Name" value={this.state.name} onChange={this.handleNameChange} />
                         </FormGroup>
 
-                        <FormGroup controlId="formBasicPassword">
-                            <FormLabel>Route Description</FormLabel>
-                            <Form.Control as="textarea" placeholder="Route Description" value={this.state.route} onChange={this.handleRouteChange} />
-                        </FormGroup>
                         <p style={ this.state.success ? { color: 'green' } : { color: 'red'} }>{this.state.result}</p>
                         <div>
                             <center>
                                 {this.renderRedirect()}
                                 <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} style={{ justifyContent: 'center' }}>
                                     Create
-                          </Button>
+                                </Button>
                             </center>
                         </div>
                     </Form>

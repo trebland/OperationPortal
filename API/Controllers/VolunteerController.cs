@@ -592,6 +592,51 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Gets a particular volunteer training
+        /// </summary>
+        /// <param name="id">The id of the training</param>
+        /// <returns>A VolunteerTrainingModel object</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-training")]
+        public async Task<IActionResult> VolunteerTraining(int id)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel training;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            try
+            {
+                training = repo.GetTraining(id);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            if (training == null)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Training = training
+            });
+        }
+
+        /// <summary>
         /// Marks a user as having completed a training
         /// </summary>
         /// <param name="vm">A view model with a training id and volunteer id</param>
@@ -853,6 +898,51 @@ namespace API.Controllers
                 });
             }
             catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets a specific volunteer job
+        /// </summary>
+        /// <param name="id">The id of the job to retrieve</param>
+        /// <returns>An error message if an error occurred, or a blank string and a list of VolunteerJobModel objects otherwise</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-job")]
+        public async Task<IActionResult> VolunteerJob(int id)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerJobModel job = null;
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            try
+            {
+                job = repo.GetVolunteerJob(id, DateTime.MinValue);
+
+                if (job == null)
+                {
+                    return Utilities.ErrorJson("Invalid id");
+                }
+
+                return new JsonResult(new
+                {
+                    Error = "",
+                    Job = job
+                });
+            }
+            catch (Exception e)
             {
                 return Utilities.ErrorJson(e.Message);
             }

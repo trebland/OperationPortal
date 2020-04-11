@@ -2,9 +2,9 @@
 import { Button, Card } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import '../cards.css'
-import { EditButton } from '../../customButtons'
+import { EditButton, DeleteButton } from '../../customButtons'
 
-export class AdminBusList extends Component {
+export class AdminTrainingList extends Component {
     constructor(props) {
         super(props)
 
@@ -21,15 +21,16 @@ export class AdminBusList extends Component {
             redirect: false,
             create: false,
             edit: false,
+            delSuccess: false,
             editId: 0,
-            buses: [],
+            trainings: [],
         };
 
-        this.getBuses()
+        this.getTrainings()
     }
 
-    getBuses() {
-        fetch('/api/bus-list', {
+    getTrainings() {
+        fetch('/api/volunteer-trainings', {
             // method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,18 +39,16 @@ export class AdminBusList extends Component {
         })
         .then((res) => {
             if ((res.status === 200 || res.status === 201) && this.mounted === true) {
-                return res.text()
+                return res.json()
             }
             else if ((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true) {
                 return
             }
         })
         .then((data) => {
-            let res = JSON.parse(data)
-            res = res.buses
             if (this.mounted === true) {
                 this.setState({
-                    buses: res
+                    trainings: data.trainings
                 })
             }
         })
@@ -80,7 +79,7 @@ export class AdminBusList extends Component {
         }
         else if (this.state.create) {
             return <Redirect to={{
-                pathname: '/admin-bus-create',
+                pathname: '/admin-training-create',
                 state: {
                     jwt: this.state.jwt,
                     loggedin: this.state.loggedin
@@ -89,7 +88,7 @@ export class AdminBusList extends Component {
         }
         else if (this.state.edit) {
             return <Redirect to={{
-                pathname: '/admin-bus-edit/' + this.state.editId,
+                pathname: '/admin-training-edit/' + this.state.editId,
                 state: {
                     jwt: this.state.jwt,
                     loggedin: this.state.loggedin
@@ -98,35 +97,18 @@ export class AdminBusList extends Component {
         }
     }
 
-    renderBuses = () => {
-        if (this.state.buses != null) {
-            const p = this.state.buses.map((b, index) => {
+    renderTrainings = () => {
+        if (this.state.trainings != null) {
+            const p = this.state.trainings.map((t, index) => {
                 return (
                     <div key={index}>
                         <Card style={{ width: '25rem' }}>
                             <Card.Header as='h5'>
-                                {b.name}
+                                {t.name}
                             </Card.Header>
                             <Card.Body>
-                                <Card.Title>
-                                    Information
-                                </Card.Title>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <th>Route Description:</th>
-                                            <td>{b.route}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Driver's Name:</th>
-                                            <td>{b.driverName}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <Card.Text>
-                                    
-                                </Card.Text>
-                                <EditButton onButtonClick={this.setEdit} value={b.id}/>
+                                <EditButton onButtonClick={this.setEdit} value={t.id} />
+                                <DeleteButton onButtonClick={this.onDelete} value={t.id} />
                             </Card.Body>
                         </Card>
 
@@ -160,6 +142,41 @@ export class AdminBusList extends Component {
         })
     }
 
+    onDelete = (id) => {
+        fetch('/api/volunteer-training-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.jwt}`
+            },
+            body: JSON.stringify({ Id: id })
+        })
+        .then((res) => {
+            if ((res.status === 200 || res.status === 201) && this.mounted === true) {
+                this.setState({
+                    delSuccess: true,
+                })
+                return
+            }
+            else if ((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true) {
+                this.setState({
+                    delSuccess: false,
+                })
+                return res.json()
+            }
+        })
+        .then((data) => {
+            if (!this.state.delSuccess) {
+                alert("The delete could not be completed: " + data.error);
+            }
+            else {
+                this.setState({
+                    trainings: this.state.trainings.filter(t => t.id !== id)
+                })
+            }
+        })
+    }
+
     render() {
         if (!this.state.loggedin) {
             return <Redirect to={{
@@ -173,14 +190,14 @@ export class AdminBusList extends Component {
                     Back to Dashboard
                 </Button>
 
-                <h1 style={styling.head}>Manage Buses</h1>
+                <h1 style={styling.head}>Manage Trainings</h1>
 
                 <Button variant="success" size="lg" style={{ marginLeft: '7%' }} onClick={this.setCreate}>
-                    Add Bus
+                    Add Training
                 </Button>
 
                 <div style={styling.deckDiv}>
-                    {this.renderBuses()}
+                    {this.renderTrainings()}
                 </div>
 
             </div>
@@ -218,5 +235,8 @@ const styling = {
         marginTop: '15px',
         marginRight: '15px',
         marginBottom: '15px'
+    },
+    right: {
+        float: 'right'
     }
 }
