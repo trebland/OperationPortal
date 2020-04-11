@@ -23,6 +23,9 @@ import { EventDetails } from './structures/welcomeOptions/eventDetails'
 import { UserEventDetails } from './structures/userViews/userEventDetails'
 import { AdminEventDetails } from './structures/adminViews/calendarFunctions/adminEventDetails'
 import { AdminEditEvent } from './structures/adminViews/calendarFunctions/editEvent'
+import { AdminBusList } from './structures/adminViews/adminBus/adminBusList'
+import { AdminBusCreate } from './structures/adminViews/adminBus/adminBusCreate'
+import { AdminBusEdit} from './structures/adminViews/adminBus/adminBusEdit'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -56,6 +59,9 @@ export default class App extends Component {
             <Route exact path='/user-event-details' component={UserEventDetails} />
             <Route exact path='/admin-event-details' component={AdminEventDetails} />
             <Route exact path='/admin-event-edit' component={AdminEditEvent} />
+            <Route exact path='/admin-bus-list' component={AdminBusList} />
+            <Route exact path='/admin-bus-create' component={AdminBusCreate} />
+            <Route path='/admin-bus-edit/:id' component={AdminBusEdit}/>
 
             
             <Route component={NotFound} />

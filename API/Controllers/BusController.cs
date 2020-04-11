@@ -135,6 +135,15 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
+            if (string.IsNullOrEmpty(bus.Name))
+            {
+                return Utilities.ErrorJson("Bus name cannot be empty");
+            }
+            if (bus.Name.Length > 300)
+            {
+                return Utilities.ErrorJson("Bus name is too long (limit 300 characters)");
+            }
+
             // Get the bus to ensure that it is valid
             dbBus = busRepo.GetBus(bus.Id);
             if (bus.Id == 0 || bus == null)
@@ -142,7 +151,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid id");
             }
 
-            busRepo.UpdateBusRoute(bus.Id, bus.Route);
+            busRepo.UpdateBusRoute(bus.Id, bus.Name, bus.Route);
 
             return new JsonResult(new
             {

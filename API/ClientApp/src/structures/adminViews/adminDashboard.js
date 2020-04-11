@@ -78,7 +78,7 @@ export class AdminDashboard extends Component {
         }
         else if(this.state.redirectBus){
             return <Redirect to={{
-                pathname: '/admin-bus',
+                pathname: '/admin-bus-list',
                 state: {
                     loggedin: this.state.loggedin,
                     jwt: this.state.jwt
