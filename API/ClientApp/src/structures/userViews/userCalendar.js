@@ -24,7 +24,7 @@ export class UserCalendar extends Component {
             saturdays: [{}]
         }
         this.getInfo()
-        this.getSaturdays()
+        // this.getSaturdays()
     }
 
     getInfo = () => {
@@ -35,7 +35,8 @@ export class UserCalendar extends Component {
           // method: 'GET',
           headers: {
               'Content-Type': 'application/json',
-              'Accept': 'application/json'
+              'Accept': 'application/json',
+              'Authorization': `Bearer ${this.state.jwt}`
             }
         })
         .then((res) => {
@@ -51,8 +52,31 @@ export class UserCalendar extends Component {
         })
         .then((data) => {
             let res = JSON.parse(data)
+            console.log(res)
             let gro = res.groups
             let eve = res.events
+            let sch = res.scheduledDates
+
+            let s = sch.map((details) => {
+                let year = Number.parseInt(details.substring(0, 4))
+                // starts at 0 for january 
+                let month = Number.parseInt(details.substring(5, 7)) 
+                let day = Number.parseInt(details.substring(8, 10))
+                let ret = {
+                    year: year,
+                    month: month,
+                    day: day,
+                    'title': 'Volunteering',
+                    'role': 'none',
+                    'allDay': true,
+                    desc: 'You are volunteering on this day.',
+                    'start': new Date(year, month - 1, day),
+                    'end': new Date(year, month - 1, day),
+                    group: false,
+                    volunteer: true
+                }
+                return ret
+            })
             
             let e = eve.map((details) => {
                 let year = Number.parseInt(details.date.substring(0, 4))
@@ -69,7 +93,8 @@ export class UserCalendar extends Component {
                     desc: details.description,
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day),
-                    group: false
+                    group: false,
+                    volunteer: false
                 }
                 return ret
             })
@@ -90,16 +115,19 @@ export class UserCalendar extends Component {
                     desc: 'Groupname:' + details.name,
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day),
-                    group: true
+                    group: true,
+                    volunteer: false
 
                 }
                 return ret
             })
+            console.log(s)
 
             if(this.mounted === true){
                 this.setState({
                     groups: g,
-                    eventsapi: e
+                    eventsapi: e,
+                    saturdays: s
                 })
             }
         })
@@ -164,60 +192,60 @@ export class UserCalendar extends Component {
     }
 
     // only get saturdays for current month
-    getSaturdays = () => {
-        var my_date = new Date()
-        var year = my_date.getFullYear()
-        var month = my_date.getMonth()
+    // getSaturdays = () => {
+    //     var my_date = new Date()
+    //     var year = my_date.getFullYear()
+    //     var month = my_date.getMonth()
 
-        var saturdays = [];
+    //     var saturdays = [];
 
-        for (var i = 0; i <= new Date(year, month, 0).getDate(); i++) {    
-            var date = new Date(year, month, i);
+    //     for (var i = 0; i <= new Date(year, month, 0).getDate(); i++) {    
+    //         var date = new Date(year, month, i);
 
-            if (date.getDay() == 6) {
-                saturdays.push(date);
-            } 
-        }
-        for(var i = 0; i < saturdays.length; i++) {
-            var day = saturdays[i].getDate()
-            var nue = (month + 1) + '-' + day + '-' + year
-            try {
-                fetch('/api/calendar/details?date=' + nue , {
-                // method: 'GET',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                    }
-                })
-                .then((res) => {
-                    console.log(res.status)
-                    if((res.status === 200 || res.status === 201) && this.mounted === true){
-                        console.log('Retrieval successful')
-                        return res.text()
-                    }
-                    else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
-                        console.log('Retrieval failed')
-                        return
-                    }
-                })
-                .then((data) => {
-                    let res = JSON.parse(data)
-                    if(this.mounted === true) {
-                        this.setState({
-                            saturdays: res
-                        })
-                    }
-                    console.log(this.state.saturdays)
-                })
-                // .then(() => {
+    //         if (date.getDay() == 6) {
+    //             saturdays.push(date);
+    //         } 
+    //     }
+    //     for(var i = 0; i < saturdays.length; i++) {
+    //         var day = saturdays[i].getDate()
+    //         var nue = (month + 1) + '-' + day + '-' + year
+    //         try {
+    //             fetch('/api/calendar/details?date=' + nue , {
+    //             // method: 'GET',
+    //                 headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Accept': 'application/json'
+    //                 }
+    //             })
+    //             .then((res) => {
+    //                 console.log(res.status)
+    //                 if((res.status === 200 || res.status === 201) && this.mounted === true){
+    //                     console.log('Retrieval successful')
+    //                     return res.text()
+    //                 }
+    //                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+    //                     console.log('Retrieval failed')
+    //                     return
+    //                 }
+    //             })
+    //             .then((data) => {
+    //                 let res = JSON.parse(data)
+    //                 if(this.mounted === true) {
+    //                     this.setState({
+    //                         saturdays: res
+    //                     })
+    //                 }
+    //                 console.log(this.state.saturdays)
+    //             })
+    //             // .then(() => {
 
-                // })
-            }
-            catch(e){
-                console.log(e)
-            }
-        }
-    }
+    //             // })
+    //         }
+    //         catch(e){
+    //             console.log(e)
+    //         }
+    //     }
+    // }
 
     signUpSaturday = () => {
         let a = this.state.date
@@ -277,7 +305,7 @@ export class UserCalendar extends Component {
     }
 
     render () {
-        var a = this.state.groups.concat(this.state.eventsapi)
+        var a = this.state.saturdays.concat(this.state.groups).concat(this.state.events)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
