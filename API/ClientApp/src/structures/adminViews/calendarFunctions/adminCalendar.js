@@ -257,7 +257,7 @@ export class AdminCalendar extends Component {
 
 const styling = {
     cal: {
-        height: '600px',
+        height: '550px',
         padding: '20px 20px'
     },
     butt: {

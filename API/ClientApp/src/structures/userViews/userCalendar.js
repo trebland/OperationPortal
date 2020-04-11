@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
-import events from './dummydata/events'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Button, Popover, OverlayTrigger } from 'react-bootstrap/'
+import { Button, Form } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 
 // https://www.npmjs.com/package/react-big-calendar
@@ -19,7 +18,8 @@ export class UserCalendar extends Component {
             groups: [{}],
             redirect: false,
             redirectEvents: false,
-            clicked: {}
+            clicked: {},
+            jwt: props.location.state.jwt
         }
         this.getInfo()
     }
@@ -48,7 +48,7 @@ export class UserCalendar extends Component {
         })
         .then((data) => {
             let res = JSON.parse(data)
-            let g = res.groups
+            let gro = res.groups
             let eve = res.events
             
             let e = eve.map((details) => {
@@ -65,7 +65,30 @@ export class UserCalendar extends Component {
                     'allDay': true,
                     desc: details.description,
                     'start': new Date(year, month - 1, day),
-                    'end': new Date(year, month - 1, day)
+                    'end': new Date(year, month - 1, day),
+                    group: false
+                }
+                return ret
+            })
+
+            let g = gro.map((details) => {
+                let year = Number.parseInt(details.date.substring(0, 4))
+                // starts at 0 for january 
+                let month = Number.parseInt(details.date.substring(5, 7)) 
+                let day = Number.parseInt(details.date.substring(8, 10))
+                                  
+                let ret = {
+                    id: details.id,
+                    year: year,
+                    month: month,
+                    day: day,
+                    'title': details.name,
+                    'allDay': true,
+                    desc: 'Groupname:' + details.name,
+                    'start': new Date(year, month - 1, day),
+                    'end': new Date(year, month - 1, day),
+                    group: true
+
                 }
                 return ret
             })
@@ -95,14 +118,19 @@ export class UserCalendar extends Component {
     renderRedirect = () => {
         if(this.state.redirect){
             return <Redirect to={{
-                pathname: '/dashboard'
+                pathname: '/dashboard',
+                state: {
+                    jwt: this.state.jwt
+                }
+                
             }}/>
         }
         else if(this.state.redirectEvents){
             return <Redirect to={{
                 pathname: '/user-event-details',
                 state: {
-                    clicked: this.state.clicked
+                    clicked: this.state.clicked,
+                    jwt: this.state.jwt
                 }
             }}/>
         }
@@ -116,6 +144,7 @@ export class UserCalendar extends Component {
     }
 
     getEventDetails = (ep) => {
+
         console.log(ep.year)
         this.setState({
             clicked: ep,
@@ -124,8 +153,36 @@ export class UserCalendar extends Component {
         console.log(this.state.clicked)
     }
 
-    render () {
+    handleDateChange = (e) => {
+        this.setState({
+            date: e.target.value
+        })
+        console.log(this.state.date)
+    }
 
+    signUpEvent = () => {
+        return (
+            <div style={styling.add}>
+                <h2>Sign Up</h2>
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control type="date" onChange={this.handleDateChange}/>
+                        <Form.Text>
+                            Please sign up for any Saturday to volunteer.
+                        </Form.Text>
+                    </Form.Group>
+                    
+                    <Button variant="link" variant="primary" size="lg">
+                        Sign Up
+                    </Button>
+                </Form>
+            </div>
+        )
+    }
+
+    render () {
+        var a = this.state.groups.concat(this.state.eventsapi)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -137,11 +194,38 @@ export class UserCalendar extends Component {
                         selectable
                         popup
                         localizer = {localizer}
-                        events = {this.state.eventsapi}
+                        events = {a}
                         startAccessor = "start"
                         endAccessor = "end"
-                        onSelectEvent={e => {this.getEventDetails(e)}}
+                        onSelectEvent={e => {
+                            if(e.group){
+                                alert('Group Name: ' + e.title)
+                            }
+                            else {
+                                this.getEventDetails(e)
+                            }
+                            
+                        }}
+                        eventPropGetter={
+                            (event, start, end, isSelected) => {
+                                if(event.group) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "green"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                            }
+                        }
                     />
+                    <br></br>
+                    {this.signUpEvent()}
                 </div>
                 {this.renderRedirect()}
                 
@@ -153,12 +237,15 @@ export class UserCalendar extends Component {
 
 const styling = {
     cal: {
-        height: '600px',
+        height: '550px',
         padding: '20px 20px'
     },
     butt: {
         marginTop: '15px',
         marginLeft: '15px'
+    },
+    add: {
+        marginBottom: '50px'
     }
 }
 
