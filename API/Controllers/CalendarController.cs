@@ -54,6 +54,7 @@ namespace API.Controllers
             List<EventModel> events;
             List<GroupModel> groups;
             List<DateTime> scheduledDates = null;
+            List<DateTime> absenceDates = null;
             CalendarRepository repo = new CalendarRepository(configModel.ConnectionString);
             //int month;
             //int year;
@@ -77,6 +78,10 @@ namespace API.Controllers
                 if (user != null && (User.IsInRole(UserHelpers.UserRoles.Volunteer.ToString()) || User.IsInRole(UserHelpers.UserRoles.VolunteerCaptain.ToString()))){
                     scheduledDates = repo.GetScheduledDates(user.VolunteerId, month, year);
                 }
+                if (user != null)
+                {
+                    absenceDates = repo.GetAbsenceDates(user.VolunteerId, month, year);
+                }
             }
             catch(Exception e)
             {
@@ -87,6 +92,7 @@ namespace API.Controllers
                 Groups = groups,
                 Events = events,
                 ScheduledDates = scheduledDates,
+                AbsenceDates = absenceDates,
                 Error = ""
             });
         }

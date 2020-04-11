@@ -152,6 +152,38 @@ namespace API.Data
             return dates;
         }
 
+        public List<DateTime> GetAbsenceDates(int volunteerId, int month, int year)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<DateTime> dates = new List<DateTime>();
+            string sql = @"SELECT dayattended FROM volunteer_attendance 
+                           WHERE scheduled = CAST(0 as bit) AND volunteerId = @vid 
+                           AND date_part('month', dayattended) = @month AND date_part('year', dayattended) = @year";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
+                    cmd.Parameters.Add("@month", NpgsqlTypes.NpgsqlDbType.Integer).Value = month;
+                    cmd.Parameters.Add("@year", NpgsqlTypes.NpgsqlDbType.Integer).Value = year;
+
+                    da = new NpgsqlDataAdapter(cmd);
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                dates.Add(Convert.ToDateTime(dr["dayattended"]));
+            }
+
+            return dates;
+        }
+
         /// <summary>
         /// Gets the names of groups that are signed up to volunteer in a particular month
         /// </summary>
