@@ -19,9 +19,12 @@ export class UserCalendar extends Component {
             redirect: false,
             redirectEvents: false,
             clicked: {},
-            jwt: props.location.state.jwt
+            jwt: props.location.state.jwt,
+            date: '',
+            saturdays: [{}]
         }
         this.getInfo()
+        this.getSaturdays()
     }
 
     getInfo = () => {
@@ -105,8 +108,8 @@ export class UserCalendar extends Component {
         })
     }
 
+    
 
-  
     componentWillUnmount = () => {
         this.mounted = false
     }
@@ -160,7 +163,99 @@ export class UserCalendar extends Component {
         console.log(this.state.date)
     }
 
-    signUpEvent = () => {
+    // only get saturdays for current month
+    getSaturdays = () => {
+        var my_date = new Date()
+        var year = my_date.getFullYear()
+        var month = my_date.getMonth()
+
+        var saturdays = [];
+
+        for (var i = 0; i <= new Date(year, month, 0).getDate(); i++) {    
+            var date = new Date(year, month, i);
+
+            if (date.getDay() == 6) {
+                saturdays.push(date);
+            } 
+        }
+        for(var i = 0; i < saturdays.length; i++) {
+            var day = saturdays[i].getDate()
+            var nue = (month + 1) + '-' + day + '-' + year
+            try {
+                fetch('/api/calendar/details?date=' + nue , {
+                // method: 'GET',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                    }
+                })
+                .then((res) => {
+                    console.log(res.status)
+                    if((res.status === 200 || res.status === 201) && this.mounted === true){
+                        console.log('Retrieval successful')
+                        return res.text()
+                    }
+                    else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                        console.log('Retrieval failed')
+                        return
+                    }
+                })
+                .then((data) => {
+                    let res = JSON.parse(data)
+                    if(this.mounted === true) {
+                        this.setState({
+                            saturdays: res
+                        })
+                    }
+                    console.log(this.state.saturdays)
+                })
+                // .then(() => {
+
+                // })
+            }
+            catch(e){
+                console.log(e)
+            }
+        }
+    }
+
+    signUpSaturday = () => {
+        let a = this.state.date
+        let year = a.substring(0, 4)
+        let month = a.substring(5, 7)
+        let day = a.substring(8, 10)
+        let nue = year + '-' + month + '-' + day
+        try {
+            fetch('api/calendar/signup/single' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        date: nue
+                    }
+                )
+            }) 
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('sign up successful')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('sign up failed')
+                    return
+                }
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
+    renderSignUpSat = () => {
         return (
             <div style={styling.add}>
                 <h2>Sign Up</h2>
@@ -173,7 +268,7 @@ export class UserCalendar extends Component {
                         </Form.Text>
                     </Form.Group>
                     
-                    <Button variant="link" variant="primary" size="lg">
+                    <Button variant="link" variant="primary" size="lg" onClick={this.signUpSaturday}>
                         Sign Up
                     </Button>
                 </Form>
@@ -225,7 +320,7 @@ export class UserCalendar extends Component {
                         }
                     />
                     <br></br>
-                    {this.signUpEvent()}
+                    {this.renderSignUpSat()}
                 </div>
                 {this.renderRedirect()}
                 
