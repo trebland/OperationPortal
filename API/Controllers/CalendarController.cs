@@ -149,7 +149,7 @@ namespace API.Controllers
                     Events = events,
                     Groups = groups,
                     People = volunteers,
-                    Scheduled = scheduled,
+                    Scheduled = false,
                     Jobs = jobs
                 });
             }
