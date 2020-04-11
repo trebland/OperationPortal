@@ -1427,5 +1427,42 @@ namespace API.Data
 
             return birthdays;
         }
+
+        /// <summary>
+        /// Gets a list of all users with the bus driver role
+        /// </summary>
+        /// <returns>A list of VolunteerModels with only the name and id filled out</returns>
+        public List<VolunteerModel> GetBusDrivers()
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerModel> drivers = new List<VolunteerModel>();
+            string sql = $"SELECT id, firstname, preferredname, lastname FROM volunteers WHERE role = {(int)UserHelpers.UserRoles.BusDriver}";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                drivers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstname"].ToString(),
+                    PreferredName = dr["preferredname"].ToString(),
+                    LastName = dr["lastname"].ToString()
+                });
+            }
+
+            return drivers;
+        }
     }
 }

@@ -294,5 +294,38 @@ namespace API.Controllers
 
             return Utilities.NoErrorJson();
         }
+
+        /// <summary>
+        /// Gets the list of all users with the Bus Driver role
+        /// </summary>
+        /// <returns>An error message if applicable, or a list of VolunteerModels with Id, FirstName, PreferredName, and LastName</returns>
+        [HttpGet]
+        [Route("~/api/bus-drivers")]
+        public async Task<IActionResult> GetBusDrivers()
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerModel> drivers;
+            var user = await userManager.GetUserAsync(User);
+
+            /// Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            try
+            {
+                drivers = repo.GetBusDrivers();
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new {
+                Error = "",
+                Drivers = drivers
+            });
+        }
     }
 }

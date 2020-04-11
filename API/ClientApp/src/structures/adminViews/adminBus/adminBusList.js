@@ -2,6 +2,7 @@
 import { Button, Card } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import '../cards.css'
+import { EditButton } from '../../editButton'
 
 export class AdminBusList extends Component {
     constructor(props) {
@@ -111,23 +112,22 @@ export class AdminBusList extends Component {
                                 <Card.Title>
                                     Information
                                 </Card.Title>
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <th>Route Description:</th>
+                                            <td>{b.route}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Driver's Name:</th>
+                                            <td>{b.driverName}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <Card.Text>
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <th>Route Description:</th>
-                                                <td>{b.route}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Driver's Name:</th>
-                                                <td>{b.driverName}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    
                                 </Card.Text>
-                                <Button variant="primary" onClick={this.setEdit(b.id)}>
-                                    Edit
-                                </Button>
+                                <EditButton onButtonClick={this.setEdit} value={b.id}/>
                             </Card.Body>
                         </Card>
 
@@ -157,7 +157,7 @@ export class AdminBusList extends Component {
     setEdit = (id) => {
         this.setState({
             edit: true,
-            editid: id
+            editId: id
         })
     }
 
