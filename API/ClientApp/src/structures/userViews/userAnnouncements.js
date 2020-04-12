@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import AnnouncementCard from '../announcementCard'
 import { Button } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
+
 
 export class UserAnnouncements extends Component {
     constructor(props){
@@ -9,8 +9,19 @@ export class UserAnnouncements extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            redirect: false
+            redirect: false,
+            announcements: null,
+            tog: true
         }
+        this.getAnnouncements()
+    }
+
+    componentWillUnmount = () => {
+        this.mounted = false
+    }
+    
+    componentDidMount = () => {
+        this.mounted = true
     }
 
     renderRedirect = () => {
@@ -31,6 +42,71 @@ export class UserAnnouncements extends Component {
         })
     }
 
+    getAnnouncements = () => {
+        try {
+            fetch('api/announcements?activeOnly=' + false , {
+                // method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                }
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('announcements received')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('announcements not received')
+                    return
+                }
+            })
+            .then((data) => {
+                if(data != null){
+                    var res = JSON.parse(data)
+                    res = res.announcements
+                    this.setState({
+                        announcements: res
+                    })
+                }
+                
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
+    renderAnnouncements = () => {
+        if(this.state.announcements != null) {
+            let a = this.state.announcements.map((details, index) => {
+
+                let startyear = details.startDate.substring(0, 4)
+                let startmonth = details.startDate.substring(5, 7)
+                let startday = details.startDate.substring(8, 10)
+                let startdate = startmonth + '/' + startday + '/' + startyear
+
+                let endyear = details.endDate.substring(0, 4)
+                let endmonth = details.endDate.substring(5, 7)
+                let endday = details.endDate.substring(8, 10)
+                let enddate = endmonth + '/' + endday + '/' + endyear
+
+                return (
+                    <div key={index}>
+                        <h3>{details.title} {startdate + '-' + enddate}</h3>
+                        <hr></hr>
+                        <p>{details.message}</p>
+                        <br></br>
+                    </div>
+                )
+            })
+            return a
+        }
+        
+    }
+
     render() {
         return (
             <div>
@@ -40,48 +116,10 @@ export class UserAnnouncements extends Component {
                 </Button>
 
                 <h1 style={styling.head}>Weekly Announcements</h1><br/><br/>
+                
                 <div style={styling.outderdiv} >
-                    <AnnouncementCard
-                        date="01/01/20"
-                        header="No hashbrowns on sunday"
-                        paragraph="There will be no hashbrowns on this upcoming sunday"
-                    />
-                    <AnnouncementCard
-                        date="12/31/19"
-                        header="Get ready for Saturday"
-                        paragraph="Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
-                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                    />
-                    <AnnouncementCard
-                        date="12/21/19"
-                        header="I am testing all types of strings"
-                        paragraph="Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." 
-                    />
-                    <AnnouncementCard
-                        date="11/04/19"
-                        header="Lorem Ipsum?"
-                        paragraph="Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
-                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                    />
-                    <AnnouncementCard
-                        date="03/18/19"
-                        header="Lorem Ipsum."
-                        paragraph="Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
-                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                    />
+                    {this.renderAnnouncements()}
+                    
                 </div>
             </div>
         )
@@ -98,5 +136,9 @@ const styling = {
         marginTop: '15px',
         marginLeft: '15px',
         marginBottom: '15px'
+    },
+    show: {
+        marginBottom: '20px',
+        marginTop: '-30px'
     }
 }

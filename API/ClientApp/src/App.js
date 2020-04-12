@@ -10,7 +10,7 @@ import { UserCalendar } from './structures/userViews/userCalendar/userCalendar'
 import { UserAnnouncements } from './structures/userViews/userAnnouncements'
 import { NotFound } from './structures/notFound'
 import { UserProfile } from './structures/userViews/userProfile'
-import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements'
+import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements/adminAnnouncements'
 import { ViewVolunteers } from './structures/adminViews/editVolunteers/viewVolunteers'
 import { AdminProfile } from './structures/adminViews/adminProfile'
 import { AdminCalendar } from './structures/adminViews/calendarFunctions/adminCalendar'
@@ -35,6 +35,7 @@ import { AdminClassList } from './structures/adminViews/adminClass/adminClassLis
 import { AdminClassCreate } from './structures/adminViews/adminClass/adminClassCreate'
 import { AdminClassEdit } from './structures/adminViews/adminClass/adminClassEdit'
 import { UserJobDetails } from './structures/userViews/userCalendar/userJobDetails'
+import { AdminAllAnnouncements } from './structures/adminViews/adminAnnouncements/adminAllAnnouncements'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -56,6 +57,7 @@ export default class App extends Component {
             <Route exact path='/user-announcements' component={UserAnnouncements} />
             <Route exact path='/user-profile' component={UserProfile} />
             <Route exact path='/admin-announcements' component={AdminAnnouncements} />
+            <Route exact path='/admin-all-announcements' component={AdminAllAnnouncements} />
             <Route exact path='/admin-volunteer-list' component={ViewVolunteers} />
             <Route exact path='/admin-profile' component={AdminProfile} />
             <Route exact path='/admin-calendar' component={AdminCalendar} />
