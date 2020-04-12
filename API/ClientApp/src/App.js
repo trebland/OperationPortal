@@ -6,7 +6,7 @@ import { GeneralCalendar } from './structures/welcomeOptions/GeneralCalendar'
 import { RegisterBox } from './structures/welcomeOptions/RegisterBox'
 import { UserDashboard } from './structures/userViews/userDashboard'
 import { AdminDashboard } from './structures/adminViews/adminDashboard'
-import { UserCalendar } from './structures/userViews/userCalendar'
+import { UserCalendar } from './structures/userViews/userCalendar/userCalendar'
 import { UserAnnouncements } from './structures/userViews/userAnnouncements'
 import { NotFound } from './structures/notFound'
 import { UserProfile } from './structures/userViews/userProfile'
@@ -19,7 +19,7 @@ import { StaffCalendar } from './structures/adminViews/staffCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
 import { AdminVolunteerEdit } from './structures/adminViews/editVolunteers/adminVolunteerEdit'
 import { AdminGetId } from './structures/adminViews/editVolunteers/adminGetId'
-import { UserEventDetails } from './structures/userViews/userEventDetails'
+import { UserEventDetails } from './structures/userViews/userCalendar/userEventDetails'
 import { AdminEventDetails } from './structures/adminViews/calendarFunctions/adminEventDetails'
 import { AdminEditEvent } from './structures/adminViews/calendarFunctions/editEvent'
 import { AdminBusList } from './structures/adminViews/adminBus/adminBusList'
@@ -34,6 +34,7 @@ import { AdminJobEdit } from './structures/adminViews/adminJob/adminJobEdit'
 import { AdminClassList } from './structures/adminViews/adminClass/adminClassList'
 import { AdminClassCreate } from './structures/adminViews/adminClass/adminClassCreate'
 import { AdminClassEdit } from './structures/adminViews/adminClass/adminClassEdit'
+import { UserJobDetails } from './structures/userViews/userCalendar/userJobDetails'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -79,6 +80,9 @@ export default class App extends Component {
             <Route exact path='/admin-class-create' component={AdminClassCreate} />
             <Route path='/admin-class-edit/:id' component={AdminClassEdit} />
 
+            <Route path='/user-saturday-jobs' component={UserJobDetails}/>
+
+            
             <Route component={NotFound} />
           </Switch>
         </Router>
