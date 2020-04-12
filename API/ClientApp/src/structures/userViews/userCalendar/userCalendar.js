@@ -18,13 +18,16 @@ export class UserCalendar extends Component {
             groups: [{}],
             redirect: false,
             redirectEvents: false,
+            redirectJobs: false,
             clicked: {},
             jwt: props.location.state.jwt,
             date: '',
-            saturdays: [{}]
+            saturdays: [{}],
+            id: null,
+            job_date: ''
         }
         this.getInfo()
-        // this.getSaturdays()
+
     }
 
     getInfo = () => {
@@ -165,6 +168,16 @@ export class UserCalendar extends Component {
                 }
             }}/>
         }
+        else if(this.state.redirectJobs){
+            return <Redirect to={{
+                pathname: '/user-saturday-jobs',
+                state: {
+                    jwt: this.state.jwt,
+                    id: this.state.id,
+                    date: this.state.job_date
+                }
+            }}/>
+        }
     }
 
     
@@ -184,68 +197,52 @@ export class UserCalendar extends Component {
         console.log(this.state.clicked)
     }
 
+    saturdayJobSignup = (ep) => {
+        var date = ep.month + '/' + ep.day + '/' + ep.year
+        console.log(date)
+        try {
+            fetch('api/auth/user' , {
+                // method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                  }
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('got user')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('did not get user')
+                    return
+                }
+            })
+            .then((data) => {
+                let res = JSON.parse(data)
+                res = res.profile.id
+                console.log(res)
+                this.setState({
+                    id: res,
+                    job_date: date,
+                    redirectJobs: true
+                })
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+        console.log(ep)
+
+    }
+
     handleDateChange = (e) => {
         this.setState({
             date: e.target.value
         })
         console.log(this.state.date)
     }
-
-    // only get saturdays for current month
-    // getSaturdays = () => {
-    //     var my_date = new Date()
-    //     var year = my_date.getFullYear()
-    //     var month = my_date.getMonth()
-
-    //     var saturdays = [];
-
-    //     for (var i = 0; i <= new Date(year, month, 0).getDate(); i++) {    
-    //         var date = new Date(year, month, i);
-
-    //         if (date.getDay() == 6) {
-    //             saturdays.push(date);
-    //         } 
-    //     }
-    //     for(var i = 0; i < saturdays.length; i++) {
-    //         var day = saturdays[i].getDate()
-    //         var nue = (month + 1) + '-' + day + '-' + year
-    //         try {
-    //             fetch('/api/calendar/details?date=' + nue , {
-    //             // method: 'GET',
-    //                 headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Accept': 'application/json'
-    //                 }
-    //             })
-    //             .then((res) => {
-    //                 console.log(res.status)
-    //                 if((res.status === 200 || res.status === 201) && this.mounted === true){
-    //                     console.log('Retrieval successful')
-    //                     return res.text()
-    //                 }
-    //                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
-    //                     console.log('Retrieval failed')
-    //                     return
-    //                 }
-    //             })
-    //             .then((data) => {
-    //                 let res = JSON.parse(data)
-    //                 if(this.mounted === true) {
-    //                     this.setState({
-    //                         saturdays: res
-    //                     })
-    //                 }
-    //                 console.log(this.state.saturdays)
-    //             })
-    //             // .then(() => {
-
-    //             // })
-    //         }
-    //         catch(e){
-    //             console.log(e)
-    //         }
-    //     }
-    // }
 
     signUpSaturday = () => {
         let a = this.state.date
@@ -277,6 +274,9 @@ export class UserCalendar extends Component {
                     return
                 }
             })
+            .then(() => {
+                window.location.reload(false)
+            })
         }
         catch(e) {
             console.log(e)
@@ -287,15 +287,16 @@ export class UserCalendar extends Component {
         return (
             <div style={styling.add}>
                 <h2>Sign Up</h2>
+                <hr></hr>
+                <p>If you wish to sign up for a job, please click on the day that you volunteered for.</p>
                 <Form>
                     <Form.Group>
                         <Form.Label>Date</Form.Label>
                         <Form.Control type="date" onChange={this.handleDateChange}/>
                         <Form.Text>
-                            Please sign up for any Saturday to volunteer.
+                            Please sign up for any Saturday to volunteer. 
                         </Form.Text>
                     </Form.Group>
-                    
                     <Button variant="link" variant="primary" size="lg" onClick={this.signUpSaturday}>
                         Sign Up
                     </Button>
@@ -305,7 +306,7 @@ export class UserCalendar extends Component {
     }
 
     render () {
-        var a = this.state.saturdays.concat(this.state.groups).concat(this.state.events)
+        var a = this.state.saturdays.concat(this.state.groups).concat(this.state.eventsapi)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -322,7 +323,10 @@ export class UserCalendar extends Component {
                         endAccessor = "end"
                         onSelectEvent={e => {
                             if(e.group){
-                                alert('Group Name: ' + e.title)
+                                alert('Attending Group Name: ' + e.title)
+                            }
+                            else if(e.volunteer) {
+                                this.saturdayJobSignup(e)
                             }
                             else {
                                 this.getEventDetails(e)
@@ -339,6 +343,19 @@ export class UserCalendar extends Component {
                                         border: "none"
                                     };
                                     newStyle.backgroundColor = "green"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                                if(event.volunteer) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "orange"
                                     return {
                                         className: "",
                                         style: newStyle

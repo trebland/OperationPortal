@@ -180,14 +180,17 @@ export class AdminCalendar extends Component {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201) && this.mounted === true){
                     console.log('add event successful')
-                    // reload the page to show new event that has been added
-                    window.location.reload(false)
+                    
                     return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                     console.log('add event failed')
                     return
                 }
+            })
+            .then(() => {
+                // reload the page to show new event that has been added
+                window.location.reload(false)
             })
         }
         catch(e){
