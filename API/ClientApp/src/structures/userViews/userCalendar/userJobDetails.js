@@ -13,7 +13,8 @@ export class UserJobDetails extends Component {
             jobs: [{}],
             default_job: -1,
             enabled: false,
-            job_result: null
+            job_result: null,
+            removal: null
         }
         this.getAllJobs()
         this.checkJobsEnabled()
@@ -151,13 +152,13 @@ export class UserJobDetails extends Component {
                     console.log(res.status)
                     if((res.status === 200 || res.status === 201) && this.mounted === true){
                         console.log('added job for user')
+                        this.setState({
+                            redirect: true
+                        })
                         return res.text()
                     }
                     else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                         console.log('did not add job for user')
-                        this.setState({
-                            job_result: false
-                        })
                         return
                     }
                 })
@@ -166,12 +167,47 @@ export class UserJobDetails extends Component {
                 console.log(e)
             }
         }
-        else {
-            this.setState({
-                job_result: false
+        
+    }
+
+    removeJobs = () => {
+        console.log(this.state.id)
+        console.log(this.state.default_job)
+        console.log(this.state.date)
+        try {
+            fetch('api/volunteer-jobs-removal' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        volunteerId: this.state.id,
+                        jobId: this.state.default_job,
+                        date: this.state.date
+                    }
+                )
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('removed user for job')
+                    this.setState({
+                        redirect: true
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('did not remove user for job')
+                    
+                    return
+                }
             })
         }
-        
+        catch(e) {
+            console.log(e)
+        }
     }
 
     renderJobs = () => {
@@ -198,8 +234,11 @@ export class UserJobDetails extends Component {
                         </Form.Text>
                     </Form.Group>
                     
-                    <Button variant="link" variant="primary" size="lg" onClick={this.submitJobs}>
+                    <Button variant="link" variant="primary" size="lg" onClick={this.submitJobs} style={styling.sub}>
                         Sign Up
+                    </Button>
+                    <Button variant="link" variant="primary" size="lg" onClick={this.removeJobs} style={styling.sub}>
+                        Cancel
                     </Button>
                 </Form>
             </div>
@@ -207,17 +246,20 @@ export class UserJobDetails extends Component {
     }
 
     render() {
-        var err = "Job was not added. Either the max volunteers for this job has been reached or you are already signed up for this job."
         return (
             <div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
                     Back to Calendar
                 </Button>
-                <h1 style={styling.head}>Job signup for {this.state.date}</h1>
+                <h1 style={styling.head}>Job signup/cancel for {this.state.date}</h1>
                 <div style={styling.outerdiv}>
+                    <h3>Notice</h3>
+                    <p>
+                        If signup or cancellation is successful, you will be taken back to the calendar. Please
+                        remember to only signup for 1 job. 
+                    </p>
                     {this.renderJobs()}
-                    <p style={{color: 'red'}}>{this.state.job_result === false ? err : ""}</p>
                 </div>
                 
             </div>
@@ -249,5 +291,8 @@ const styling = {
     },
     eves: {
         marginBottom: '20px'
+    },
+    sub: {
+        marginRight: '100px'
     }
 }

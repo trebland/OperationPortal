@@ -4,6 +4,7 @@ import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button, Form } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
+import './legend.css'
 
 // https://www.npmjs.com/package/react-big-calendar
 // http://intljusticemission.github.io/react-big-calendar/examples/index.html#intro
@@ -286,7 +287,7 @@ export class UserCalendar extends Component {
     renderSignUpSat = () => {
         return (
             <div style={styling.add}>
-                <h2>Sign Up</h2>
+                <h2>Volunteer for a Saturday</h2>
                 <hr></hr>
                 <p>If you wish to sign up for a job, please click on the day that you volunteered for.</p>
                 <Form>
@@ -364,6 +365,7 @@ export class UserCalendar extends Component {
                             }
                         }
                     />
+                    <button id='leg'></button>
                     <br></br>
                     {this.renderSignUpSat()}
                 </div>

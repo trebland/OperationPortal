@@ -85,6 +85,10 @@ export class UserEventDetails extends Component {
         })
     }
 
+    signupEvent = (ep) => {
+        
+    }
+
     showEvents = () => {
         if(this.state.details.events != null){
             let eve = this.state.details.events.map((e, index) => {
@@ -93,6 +97,9 @@ export class UserEventDetails extends Component {
                         <h2>{e.name}</h2>
                         <hr></hr>
                         <p>{e.description}</p>
+                        <Button variant="primary" size="sm" style={styling.butt} onClick={() => {this.signupEvent(e)}}>
+                            Signup for this Event
+                        </Button>
                     </div>
                 )
             })
