@@ -112,7 +112,7 @@ namespace API.Controllers
         /// <summary>
         /// Creates a new class
         /// </summary>
-        /// <param name="newClass">A ClassModel object with a teacherid and a name</param>
+        /// <param name="newClass">A ClassModel object with a teacherid and a name, and optionally a location</param>
         /// <returns>An error message, if applicable</returns>
         [HttpPost]
         [Route("~/api/class-creation")]
@@ -154,9 +154,9 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Creates a new class
+        /// Allows editing a class
         /// </summary>
-        /// <param name="model">A ClassModel object with an id and a name</param>
+        /// <param name="model">A ClassModel object with an id and a name, and optionally a location</param>
         /// <returns>An error message, if applicable</returns>
         [HttpPost]
         [Route("~/api/class-edit")]

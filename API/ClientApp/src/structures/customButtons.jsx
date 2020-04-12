@@ -31,3 +31,17 @@ export class DeleteButton extends Component {
         );
     }
 }
+
+export class UserSelectButton extends Component {
+    handleClick = () => {
+        this.props.onButtonClick(this.props.value, this.props.name);
+    }
+
+    render() {
+        return (
+            <Button variant="primary" onClick={this.handleClick}>
+                Select
+            </Button>
+        );
+    }
+}

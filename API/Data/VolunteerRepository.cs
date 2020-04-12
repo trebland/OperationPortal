@@ -1464,5 +1464,47 @@ namespace API.Data
 
             return drivers;
         }
+
+        /// <summary>
+        /// Searches for volunteers by last name, first name, or preferred name
+        /// </summary>
+        /// <param name="searchString">The string to search for</param>
+        /// <returns>A list of VolunteerModel objects with id, last name, preferred name, and first name filled out</returns>
+        public List<VolunteerModel> SearchVolunteers(string searchString)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerModel> volunteers = new List<VolunteerModel>();
+            string sql = @"SELECT id, firstname, preferredname, lastname FROM volunteers 
+                           WHERE UPPER(firstname) LIKE '%' || @search || '%' OR UPPER(preferredname) LIKE '%' || @search || '%' OR UPPER(lastname) LIKE '%' || @search || '%' 
+                           ORDER BY lastname, preferredname, firstname";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@search", NpgsqlTypes.NpgsqlDbType.Varchar).Value = searchString.ToUpper();
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                volunteers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstname"].ToString(),
+                    PreferredName = dr["preferredname"].ToString(),
+                    LastName = dr["lastname"].ToString()
+                });
+            }
+
+            return volunteers;
+        }
     }
 }

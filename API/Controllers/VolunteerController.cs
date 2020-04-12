@@ -1181,5 +1181,44 @@ namespace API.Controllers
                 Birthdays = birthdays
             });
         }
+
+        /// <summary>
+        /// Searches for volunteers by last name, first name, or preferred name
+        /// </summary>
+        /// <param name="searchString">The string to search for</param>
+        /// <returns>An error string, if applicable, and a list of VolunteerModel objects with id, last name, preferred name, and first name filled out</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-search")]
+        public async Task<IActionResult> SearchVolunteers(string searchString)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerModel> volunteers;
+
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (String.IsNullOrEmpty(searchString))
+            {
+                return Utilities.ErrorJson("Search string must be non-empty");
+            }
+
+            try
+            {
+                volunteers = repo.SearchVolunteers(searchString);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Volunteers = volunteers
+            });
+        }
     }
 }
