@@ -365,7 +365,15 @@ export class UserCalendar extends Component {
                             }
                         }
                     />
-                    <button id='leg'></button>
+                    <div class='my-legend'>
+                        <div class='legend-scale'>
+                            <ul class='legend-labels'>
+                                <li><span style={{background:'green'}}></span>groups</li>
+                                <li><span style={{background:'orange'}}></span>volunteer</li>
+                                <li><span style={{background:'blue'}}></span>events</li>
+                            </ul>
+                        </div>
+                    </div>
                     <br></br>
                     {this.renderSignUpSat()}
                 </div>
@@ -388,6 +396,11 @@ const styling = {
     },
     add: {
         marginBottom: '50px'
+    },
+    legends: {
+        display: 'inline-flex',
+        marginRight: '20px',
+        marginTop: '10px'
     }
 }
 
