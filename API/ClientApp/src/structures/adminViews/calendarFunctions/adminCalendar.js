@@ -4,6 +4,7 @@ import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button, Form } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
+import './legend.css'
 
 // https://www.npmjs.com/package/react-big-calendar
 // http://intljusticemission.github.io/react-big-calendar/examples/index.html#intro
@@ -56,7 +57,7 @@ export class AdminCalendar extends Component {
         })
         .then((data) => {
             let res = JSON.parse(data)
-            let g = res.groups
+            let gro = res.groups
             let eve = res.events
             
             let e = eve.map((details) => {
@@ -74,6 +75,29 @@ export class AdminCalendar extends Component {
                     desc: details.description,
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day)
+                }
+                return ret
+            })
+
+            let g = gro.map((details) => {
+                let year = Number.parseInt(details.date.substring(0, 4))
+                // starts at 0 for january 
+                let month = Number.parseInt(details.date.substring(5, 7)) 
+                let day = Number.parseInt(details.date.substring(8, 10))
+                                  
+                let ret = {
+                    id: details.id,
+                    year: year,
+                    month: month,
+                    day: day,
+                    'title': details.name,
+                    'allDay': true,
+                    desc: 'Groupname:' + details.name,
+                    'start': new Date(year, month - 1, day),
+                    'end': new Date(year, month - 1, day),
+                    group: true,
+                    volunteer: false
+
                 }
                 return ret
             })
@@ -230,7 +254,7 @@ export class AdminCalendar extends Component {
     }
 
     render () {
-
+        var a = this.state.groups.concat(this.state.eventsapi)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -242,14 +266,56 @@ export class AdminCalendar extends Component {
                         selectable
                         popup
                         localizer = {localizer}
-                        events = {this.state.eventsapi}
+                        events = {a}
                         startAccessor = "start"
                         endAccessor = "end"
                         onSelectEvent={e => {this.getEventDetails(e)}}
+                        eventPropGetter={
+                            (event, start, end, isSelected) => {
+                                if(event.group) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "green"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                                if(event.volunteer) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "orange"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                            }
+                        }
                     />
+                    
+                    <div className='my-legend'>
+                        <div className='legend-scale'>
+                            <ul className='legend-labels'>
+                                <li><span style={{background:'green'}}></span>groups</li>
+                                <li><span style={{background:'orange'}}></span>volunteer</li>
+                                <li><span style={{background:'#3174ae'}}></span>events</li>
+                            </ul>
+                        </div>
+                    </div>
                     <br></br>
                     {this.addEvent()}
                 </div>
+                
+                <br></br>
                 {this.renderRedirect()}
                 
                 
@@ -270,4 +336,4 @@ const styling = {
     add: {
         marginBottom: '50px'
     }
-}
+} 

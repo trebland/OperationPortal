@@ -370,7 +370,7 @@ export class UserCalendar extends Component {
                             <ul className='legend-labels'>
                                 <li><span style={{background:'green'}}></span>groups</li>
                                 <li><span style={{background:'orange'}}></span>volunteer</li>
-                                <li><span style={{background:'blue'}}></span>events</li>
+                                <li><span style={{background:'#3174ae'}}></span>events</li>
                             </ul>
                         </div>
                     </div>
