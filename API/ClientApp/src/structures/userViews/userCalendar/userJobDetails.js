@@ -228,7 +228,7 @@ export class UserJobDetails extends Component {
                         <Form.Control as="select" value={this.state.default_job} onChange={this.choseJob}>
                             <option>none</option>
                             {j}
-                        </Form.Control>
+                        </Form.Control> 
                         <Form.Text>
                             <b>Please only choose 1 job to signup for.</b>
                         </Form.Text>

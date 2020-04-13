@@ -150,7 +150,6 @@ export class ViewVolunteers extends Component {
                         volunteer: res
                     })
                 }
-                console.log(this.state.profile)
             })
             .then(() => {
                 this.setState({
@@ -227,19 +226,11 @@ export class ViewVolunteers extends Component {
 
                 {this.editVolunteers()}
                 <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
-                    Edit Volunteer Profiles
+                    Search Volunteer ID
                 </Button>
 
                 <h1 style={styling.head}>All Volunteers</h1>
 
-                <div style={styling.outderdiv}>
-                    <h4>Edit Profile Instructions:</h4>
-                    <p>
-                        In order to edit volunteer information, please keep track of their unique ID number when navigating to
-                        Edit Volunteer Profiles page. There you will be prompted<br></br>
-                        to enter the unique ID number and to update any necessary information.
-                    </p>
-                </div>
                 <div style={styling.deckDiv}>
                     {this.renderVolunteers()}
                 </div>
