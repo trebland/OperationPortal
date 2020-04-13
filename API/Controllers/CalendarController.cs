@@ -332,6 +332,7 @@ namespace API.Controllers
             {
                 try
                 {
+                    // TODO: change to appropriate OCC email
                     profile = volunteerRepo.GetVolunteer(user.VolunteerId);
                     await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", "Bus Driver Cancellation",
                         $"A bus driver ({profile.FirstName} {profile.LastName}) has been marked as not attending on {date.Date.ToString("dd/MM/yyyy")}.  Please update bus assignments accordingly.",

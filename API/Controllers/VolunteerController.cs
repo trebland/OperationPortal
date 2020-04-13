@@ -1062,8 +1062,17 @@ namespace API.Controllers
 
             if (job.CurrentNumber <= job.Min)
             {
-                await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date} - {job.Name} may be understaffed", 
-                    $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up.", configModel.EmailOptions);
+                try
+                {
+                    // TODO: change this to appropriate OCC email
+                    await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date.ToString("dd/MM/yyyy")} - {job.Name} may be understaffed",
+                        $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up on {vm.Date.ToString("dd/MM/yyyy")}.", configModel.EmailOptions);
+                }
+                catch (Exception)
+                {
+                    // This is in case the email fails to send - we still want to cancel the job, since the email isn't critical
+                }
+                
             }
 
             try
