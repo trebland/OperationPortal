@@ -242,7 +242,7 @@ export class AdminCalendar extends Component {
 
                     <Form.Group>
                         <Form.Label>Description</Form.Label>
-                        <Form.Control type="text" placeholder="Description of Event" onChange={this.handleDescriptionChange}/>
+                        <Form.Control as="textarea" type="text" placeholder="Description of Event" onChange={this.handleDescriptionChange}/>
                     </Form.Group>
                     
                     <Button variant="link" variant="primary" size="lg" onClick={this.callAddEndpoint}>

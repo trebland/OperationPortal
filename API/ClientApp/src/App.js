@@ -36,6 +36,8 @@ import { AdminClassCreate } from './structures/adminViews/adminClass/adminClassC
 import { AdminClassEdit } from './structures/adminViews/adminClass/adminClassEdit'
 import { UserJobDetails } from './structures/userViews/userCalendar/userJobDetails'
 import { AdminAllAnnouncements } from './structures/adminViews/adminAnnouncements/adminAllAnnouncements'
+import { AdminEditAnnouncements } from './structures/adminViews/adminAnnouncements/adminEditAnnouncements'
+import { AdminAddAnnouncements } from './structures/adminViews/adminAnnouncements/adminAddAnnouncements'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -83,6 +85,8 @@ export default class App extends Component {
             <Route path='/admin-class-edit/:id' component={AdminClassEdit} />
 
             <Route path='/user-saturday-jobs' component={UserJobDetails}/>
+            <Route path='/admin-edit-announcements' component={AdminEditAnnouncements}/>
+            <Route path='/admin-add-announcements' component={AdminAddAnnouncements}/>
 
             
             <Route component={NotFound} />

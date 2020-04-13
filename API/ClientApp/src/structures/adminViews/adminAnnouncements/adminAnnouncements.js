@@ -9,7 +9,14 @@ export class AdminAnnouncements extends Component {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
             redirect: false,
-            tog: false
+            tog: false, // toggles true and false for showing active announcements
+            redirectEdit: false,
+            redirectAdd: false,
+            id: null,
+            title: '',
+            message: '',
+            end: '',
+            start: ''
         }
         this.getAnnouncements()
     }
@@ -25,6 +32,12 @@ export class AdminAnnouncements extends Component {
     setRedirect = () => {
         this.setState({
             redirect: true
+        })
+    }
+
+    setRedirectAdd = () => {
+        this.setState({
+            redirectAdd: true
         })
     }
 
@@ -47,6 +60,31 @@ export class AdminAnnouncements extends Component {
                     state: {
                         jwt: this.state.jwt,
                         loggedin: this.state.loggedin
+                    }
+                }}/>
+            )
+        }
+        else if(this.state.redirectEdit){
+            return (
+                <Redirect to={{
+                    pathname: '/admin-edit-announcements',
+                    state: {
+                        jwt: this.state.jwt,
+                        id: this.state.id,
+                        message: this.state.message,
+                        title: this.state.title,
+                        start: this.state.start,
+                        end: this.state.end
+                    }
+                }}/>
+            )
+        }
+        else if(this.state.redirectAdd){
+            return (
+                <Redirect to={{
+                    pathname: '/admin-add-announcements',
+                    state: {
+                        jwt: this.state.jwt
                     }
                 }}/>
             )
@@ -91,6 +129,38 @@ export class AdminAnnouncements extends Component {
         }
     }
 
+    editAnnouncement = (e) => {
+        var id = e.id
+        var title = e.title
+        var message = e.message
+
+        let start = e.startDate
+        let startyear = start.substring(0, 4)
+        let startmonth = start.substring(5, 7)
+        let startday = start.substring(8, 10)
+        let startdate = startmonth + '/' + startday + '/' + startyear
+
+        let end = e.endDate
+        let endyear = end.substring(0, 4)
+        let endmonth = end.substring(5, 7)
+        let endday = end.substring(8, 10)
+        let enddate = endmonth + '/' + endday + '/' + endyear
+
+        console.log(startdate)
+        console.log(enddate)
+
+        this.setState({
+            id: id,
+            title: title,
+            message: message,
+            redirectEdit: true,
+            start: startdate,
+            end: enddate
+        })
+        console.log(this.state.start)
+        console.log(this.state.end)
+    }
+
     renderAnnouncements = () => {
         if(this.state.announcements != null) {
             let a = this.state.announcements.map((details, index) => {
@@ -110,7 +180,13 @@ export class AdminAnnouncements extends Component {
                         <h3>{details.title} {startdate + '-' + enddate}</h3>
                         <hr></hr>
                         <p>{details.message}</p>
+                        <Button variant="primary" size="sm" onClick={() => this.editAnnouncement(details)}>
+                            Edit this Announcement
+                        </Button>
                         <br></br>
+                        <br></br>
+                        <br></br>
+
                     </div>
                 )
             })
@@ -133,7 +209,7 @@ export class AdminAnnouncements extends Component {
                     Back to Dashboard
                 </Button>
 
-                <Button variant="primary" size="lg" style={styling.ann} className="float-right">
+                <Button variant="primary" size="lg" style={styling.ann} className="float-right" onClick={this.setRedirectAdd}>
                     Add New Annoucements
                 </Button>
                 <h1 style={styling.head}>Weekly Announcements</h1>
@@ -167,7 +243,8 @@ const styling = {
         marginBottom: '15px'
     },
     show: {
-        marginBottom: '20px'
+        marginBottom: '20px',
+        float: 'right'
     }
 }
 
