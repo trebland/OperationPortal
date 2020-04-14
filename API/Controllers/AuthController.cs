@@ -338,7 +338,7 @@ namespace OCCTest.Controllers
 
             if (!UserHelpers.IsValidEmail(email))
             {
-                return Utilities.ErrorJson("Must send a valid email address");
+                return Utilities.ErrorJson("Must provide a valid email address");
             }
 
             if (user == null)
@@ -427,12 +427,7 @@ namespace OCCTest.Controllers
 
             if (!result.Succeeded)
             {
-                foreach(var error in result.Errors)
-                {
-                    errors.Add(error.Description);
-                }
-
-                return Utilities.ErrorJson(String.Join(" ", errors));
+                return Utilities.ErrorJson("The code you provided was invalid.  Please double check the code and try again, or request a new code.");
             }
 
             return Utilities.NoErrorJson();
