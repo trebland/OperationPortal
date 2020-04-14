@@ -590,12 +590,12 @@ namespace API.Data
         /// </summary>
         /// <param name="volunteerId">The id of the volunteer whose trainings are being queried</param>
         /// <returns>A list of training names</returns>
-        public List<string> GetVolunteerTrainings(int volunteerId)
+        public List<VolunteerTrainingModel> GetVolunteerTrainings(int volunteerId)
         {
-            List<string> trainings = new List<string>();
+            List<VolunteerTrainingModel> trainings = new List<VolunteerTrainingModel>();
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da;
-            string sql = @"SELECT name FROM Training AS T 
+            string sql = @"SELECT T.id, T.name FROM Training AS T 
                            INNER JOIN Trainings_Completed AS TC ON T.id = TC.trainingID 
                            INNER JOIN Volunteers AS V ON V.id = TC.volunteerID 
                            WHERE V.id = @id";
@@ -615,7 +615,10 @@ namespace API.Data
 
             foreach(DataRow dr in dt.Rows)
             {
-                trainings.Add(dr["name"].ToString());
+                trainings.Add(new VolunteerTrainingModel {
+                    Id = (int)dr["id"],
+                    Name = dr["name"].ToString()
+                });
             }
 
             return trainings;

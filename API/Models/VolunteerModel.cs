@@ -16,7 +16,7 @@ namespace API.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public bool Orientation { get; set; }
-        public string[] Trainings { get; set; }
+        public VolunteerTrainingModel[] Trainings { get; set; }
         public string Affiliation { get; set; }
         public string Referral { get; set; }
         public string[] Languages { get; set; }

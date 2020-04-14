@@ -78,14 +78,13 @@ export class LoginBox extends Component {
             }
         })
         .then((data) => {
-          let res = JSON.parse(data)
             if (!this.state.loginSuccess) {
-                console.log(res.error)
                 this.setState({
                     result: 'Incorrect username or password'
                 })
             }
             else {
+                let res = JSON.parse(data)
                 res = res.access_token
                 if (this.mounted == true) {
                     this.setState({
