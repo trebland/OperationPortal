@@ -214,7 +214,7 @@ export class LoginBox extends Component {
               <Form style={styling.formDiv}>
                   <FormGroup>
                       <FormLabel>Email</FormLabel>
-                      <FormControl type="username" placeholder="email" value={this.state.username} onChange={this.handleUserNameChange} />
+                      <FormControl type="email" placeholder="email" value={this.state.username} onChange={this.handleUserNameChange} />
                   </FormGroup>
 
                   <FormGroup controlId="formBasicPassword">
