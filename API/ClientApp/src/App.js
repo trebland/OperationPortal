@@ -40,6 +40,7 @@ import { AdminEditAnnouncements } from './structures/adminViews/adminAnnouncemen
 import { AdminAddAnnouncements } from './structures/adminViews/adminAnnouncements/adminAddAnnouncements'
 import { PasswordResetRequest } from './structures/passwordReset/passwordResetRequest'
 import { PasswordResetConfirm } from './structures/passwordReset/passwordResetConfirm'
+import { AdminViewGroups } from './structures/adminViews/calendarFunctions/adminViewGroups'
 
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
@@ -91,6 +92,7 @@ export default class App extends Component {
             <Route path='/admin-add-announcements' component={AdminAddAnnouncements}/>
             <Route path='/password-reset-request' component={PasswordResetRequest}/>
             <Route path='/password-reset-confirm' component={PasswordResetConfirm}/>
+            <Route path='/admin-group-details' component={AdminViewGroups}/>
 
             
             <Route component={NotFound} />

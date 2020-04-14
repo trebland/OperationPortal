@@ -172,7 +172,7 @@ export class UserEventDetails extends Component {
                         </Button>
                         <Button variant="primary" size="sm" style={styling.sc} onClick={() => {this.cancelEvent(e)}}>
                             Cancel for this Event
-                        </Button>
+                        </Button> 
                     </div>
                 )
             })

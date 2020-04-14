@@ -117,7 +117,7 @@ export class AdminEventDetails extends Component {
                         <h2>{e.name} - {nue}</h2>
                         <hr></hr>
                         <p>{e.description}</p>
-                        <Button variant="primary" size="sm" style={styling.butt} onClick={() => {this.getDetails(e)}}>
+                        <Button variant="primary" size="sm" style={styling.sc} onClick={() => {this.getDetails(e)}}>
                             Edit this Event
                         </Button>
                     </div>
@@ -169,6 +169,9 @@ const styling = {
     },
     eves: {
         marginBottom: '75px'
+    },
+    sc: {
+        marginRight: '50px'
     }
 }
 
