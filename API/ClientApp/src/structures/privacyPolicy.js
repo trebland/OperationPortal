@@ -34,53 +34,80 @@ export class PrivacyPolicy extends Component {
                     Back to Dashboard
                 </Button>
                 <div style={styling.outderdiv}>
-                    <h1 style={styling.head}>Privacy Policy of Orlando Children’s Church</h1>
+                    {/* <h1 style={{textAlign: 'center'}}>Privacy Policy of Orlando Children’s Church</h1> */}
+                    <center>
+                        <h2>Privacy Policy For Mobile Application</h2>
+                        <p>Effective Date: 04/01/2020</p>
+                        <p>Applicable To The Following Mobile Application:</p>
+                        <p>Orlando Children's Church</p>
+                    </center>
+                    <br></br>
+
+                    <h4>Article 1 - DEFINITIONS:</h4>
+                    <hr></hr>
+                    <br></br>
+                    <div>
+                        <ol type='a'>
+                            <li>
+                                <b>APPLICABLE MOBILE APPLICATION:</b> This Privacy Policy will refer to and be applicable to the Mobile App 
+                                listed above, which shall hereinafter be referred to as "Mobile App."
+                            </li>
+                            <li>
+                                <b>EFFECTIVE DATE:</b> "Effective Date" means the date this Privacy Policy comes into force and effect.
+                            </li>
+                            <li>
+                                <b>PARTIES:</b> The parties to this privacy policy are the following data controller: Orlando Children's Church 
+                                LLC ("Data Controller") and you, as the user of this Mobile App. Hereinafter, the parties will 
+                                individually be referred to as "Party" and collectively as "Parties."
+                            </li>
+                            <li>
+                                <b>DATA CONTROLLER:</b> Data Controller is the publisher, owner, and operator of the Mobile App and is the Party 
+                                responsible for the collection of information described herein. Data Controller shall be referred to either 
+                                by Data Controller's name or "Data Controller," as listed above. If Data Controller or Data Controller's 
+                                property shall be referred to through first-person pronouns, it shall be through the use of the 
+                                following: us, we, our, ours, etc.
+                            </li>
+                            <li>
+                                <b>YOU:</b> Should you agree to this Privacy Policy and continue your use of the Mobile App, you 
+                                will be referred to herein as either you, the user, or if any second-person pronouns are required and 
+                                applicable, such pronouns as 'your", "yours", etc.
+                            </li>
+                            <li>
+                                <b>PERSONAL DATA:</b> "Personal DATA" means personal data and information that we obtain from you 
+                                in connection with your use of the Mobile App that is capable of identifying you in any manner.
+                            </li>
+                        </ol>
+                    </div>
+                    <br></br>
+
+                    <h4>Article 2 - GENERAL INFORMATION:</h4>
                     <hr></hr>
                     <br></br>
                     <p>
-                        Orlando Children's Church operates the operation-portal website, which provides access to information 
-                        related to our organization which will hereby be referred to as ‘Service’.
-                        This page is used to inform website visitors, as well as application visitors, regarding our policies with 
-                        the collection, use, and disclosure of Personal Information if anyone decided to use our Service, the 
-                        operation-portal website.
-                        If you choose to use our Service, then you agree to the collection and use of information in 
-                        relation with this policy. The Personal Information that we collected is used for providing and 
-                        improving the Service. We will not use or share your information with anyone except as described in this 
-                        Privacy Policy.
+                        This privacy policy (hereinafter "Privacy Policy") describes how we collect and use the Personal Data that we 
+                        receive about you, as well as your rights in relation to that Personal Data, when you visit our Mobile App and 
+                        interact with it in any way, including passively.<br></br><br></br>
+                        This Privacy Policy does not cover any information that we may receive about you through sources other than the 
+                        use of our Mobile App. The Mobile App may link out to other websites or mobile applications, but this Privacy 
+                        Policy does not and will not apply to any of those linked websites or applications.<br></br><br></br>
+                        We are committed to the protection of your privacy while you use our Mobile App.<br></br><br></br>
+                        By continuing to use our Mobile App, you acknowledge that you have had the chance to review and consider this 
+                        Privacy Policy, and you acknowledge that you agree to it. This means that you also consent to the use of your 
+                        information and the method of disclosure as described in this Privacy Policy. If you do not understand the Privacy 
+                        Policy or do not agree to it, then you agree to immediately cease your use of our Mobile App.
+
                     </p>
                     <br></br>
 
-                    <h2 style={styling.head}>Information Collection and Use</h2>
+                    <h4>Article 3 -CONTACT AND DATA PROTECTION OFFICER:</h4>
                     <hr></hr>
                     <br></br>
                     <p>
-                        For a better experience while using our Service, we may require you to provide us with certain personally 
-                        identifiable information, including but not limited to your name, phone number, and image. The information 
-                        that we collect will be used to contact or identify you.
+                        The Party responsible for the processing of your personal data is as follows: Orlando Children's Church LLC. 
+                        The Data Controller may be contacted as follows:
                     </p>
-                    <br></br>
-
-                    <h2 style={styling.head}>Log Data</h2>
-                    <hr></hr>
-                    <br></br>
                     <p>
-                        We want to inform you that whenever you use our Service, we collect information that your browser sends 
-                        to us that is called Log Data. This Log Data may include information such as your computer's 
-                        Internet Protocol (“IP”) address, browser version, pages of our Service that you visit, the time and date 
-                        of your visit, the time spent on those pages, and other statistics.
-                    </p>
-                    <br></br>
-
-                    <h2 style={styling.head}>Cookies</h2>
-                    <hr></hr>
-                    <br></br>
-                    <p>
-                        Cookies are files with a small amount of data that is commonly used as an anonymous unique identifier. 
-                        These are sent to your browser from the website that you visit and are stored on your computer's hard drive.
-                        Our website uses these “cookies” to collect information and to improve our Service. 
-                        You have the option to either accept or refuse these cookies, and know when a cookie is being sent to your 
-                        computer. If you choose to refuse our cookies, you may not be able to use some portions of our Service.
-
+                        
                     </p>
                     <br></br>
 
@@ -151,7 +178,7 @@ export class PrivacyPolicy extends Component {
 
 const styling = {
     head: {
-        textAlign: "center"
+        // textAlign: "center"
     },
     outderdiv: {
         padding: '20px 20px'
