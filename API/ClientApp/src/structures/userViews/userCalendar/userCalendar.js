@@ -23,11 +23,17 @@ export class UserCalendar extends Component {
             clicked: {},
             jwt: props.location.state.jwt,
             date: '',
+            canceldate: '',
             saturdays: [{}],
+            absences: [{}],
             id: null,
-            job_date: ''
+            job_date: '',
+            role: props.location.state.role
         }
         this.getInfo()
+        console.log(this.state.role)
+        this.handleCancelDateChange = this.handleCancelDateChange.bind(this)
+        this.handleDateChange = this.handleDateChange.bind(this)
 
     }
 
@@ -60,8 +66,9 @@ export class UserCalendar extends Component {
             let gro = res.groups
             let eve = res.events
             let sch = res.scheduledDates
+            let abs = res.absenceDates
 
-            let s = sch.map((details) => {
+            let a = abs.map((details) => {
                 let year = Number.parseInt(details.substring(0, 4))
                 // starts at 0 for january 
                 let month = Number.parseInt(details.substring(5, 7)) 
@@ -70,17 +77,44 @@ export class UserCalendar extends Component {
                     year: year,
                     month: month,
                     day: day,
-                    'title': 'Volunteering',
+                    'title': 'Absent',
                     'role': 'none',
                     'allDay': true,
-                    desc: 'You are volunteering on this day.',
+                    desc: 'You not volunteering on this day.',
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day),
                     group: false,
-                    volunteer: true
+                    volunteer: false,
+                    absent: true
                 }
                 return ret
             })
+
+            let s
+            if(sch != undefined) {
+                s = sch.map((details) => {
+                    let year = Number.parseInt(details.substring(0, 4))
+                    // starts at 0 for january 
+                    let month = Number.parseInt(details.substring(5, 7)) 
+                    let day = Number.parseInt(details.substring(8, 10))
+                    let ret = {
+                        year: year,
+                        month: month,
+                        day: day,
+                        'title': 'Volunteering',
+                        'role': 'none',
+                        'allDay': true,
+                        desc: 'You are volunteering on this day.',
+                        'start': new Date(year, month - 1, day),
+                        'end': new Date(year, month - 1, day),
+                        group: false,
+                        volunteer: true,
+                        absent: false
+                    }
+                    return ret
+                })
+            }
+            
             
             let e = eve.map((details) => {
                 let year = Number.parseInt(details.date.substring(0, 4))
@@ -98,7 +132,8 @@ export class UserCalendar extends Component {
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day),
                     group: false,
-                    volunteer: false
+                    volunteer: false,
+                    absent: false
                 }
                 return ret
             })
@@ -120,18 +155,26 @@ export class UserCalendar extends Component {
                     'start': new Date(year, month - 1, day),
                     'end': new Date(year, month - 1, day),
                     group: true,
-                    volunteer: false
+                    volunteer: false,
+                    absent: false
 
                 }
                 return ret
             })
-            console.log(s)
 
-            if(this.mounted === true){
+            if(sch != undefined && this.mounted === true) {
                 this.setState({
                     groups: g,
                     eventsapi: e,
-                    saturdays: s
+                    saturdays: s,
+                    absences: a
+                })
+            }
+            else if(this.mounted === true){
+                this.setState({
+                    groups: g,
+                    eventsapi: e,
+                    absences: a
                 })
             }
         })
@@ -155,7 +198,8 @@ export class UserCalendar extends Component {
             return <Redirect to={{
                 pathname: '/dashboard',
                 state: {
-                    jwt: this.state.jwt
+                    jwt: this.state.jwt,
+                    role: this.state.role
                 }
                 
             }}/>
@@ -165,7 +209,8 @@ export class UserCalendar extends Component {
                 pathname: '/user-event-details',
                 state: {
                     clicked: this.state.clicked,
-                    jwt: this.state.jwt
+                    jwt: this.state.jwt,
+                    role: this.state.role
                 }
             }}/>
         }
@@ -175,7 +220,8 @@ export class UserCalendar extends Component {
                 state: {
                     jwt: this.state.jwt,
                     id: this.state.id,
-                    date: this.state.job_date
+                    date: this.state.job_date,
+                    role: this.state.role
                 }
             }}/>
         }
@@ -245,6 +291,13 @@ export class UserCalendar extends Component {
         console.log(this.state.date)
     }
 
+    handleCancelDateChange = (e) => {
+        this.setState({
+            canceldate: e.target.value
+        })
+        console.log(this.state.canceldate)
+    }
+
     signUpSaturday = () => {
         let a = this.state.date
         let year = a.substring(0, 4)
@@ -284,22 +337,87 @@ export class UserCalendar extends Component {
         }
     }
 
+    cancelSaturday = () => {
+        let a = this.state.canceldate
+        let year = a.substring(0, 4)
+        let month = a.substring(5, 7)
+        let day = a.substring(8, 10)
+        let nue = year + '-' + month + '-' + day
+        try {
+            fetch('api/calendar/cancellation/single' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        'date': nue
+                    }
+                )
+            }) 
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('cancel successful')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('cancel failed')
+                    return res.text()
+                }
+            })
+            .then((data) => {
+                console.log(data)
+            })
+            .then(() => {
+                window.location.reload(false)
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
     renderSignUpSat = () => {
+        if(this.state.role != 'BusDriver') {
+            return (
+                <div style={styling.add}>
+                    <h2>Volunteer for a Saturday</h2>
+                    <hr></hr>
+                    <p>If you wish to sign up for a job, please click on the day that you volunteered for.</p>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>Date</Form.Label>
+                            <Form.Control type="date" onChange={this.handleDateChange}/>
+                            <Form.Text>
+                                Please sign up for any Saturday to volunteer. 
+                            </Form.Text>
+                        </Form.Group>
+                        <Button variant="link" variant="primary" size="lg" onClick={this.signUpSaturday}>
+                            Sign Up
+                        </Button>
+                    </Form>
+                </div>
+            )
+        }
+    }
+
+    renderCancel = () => {
         return (
             <div style={styling.add}>
-                <h2>Volunteer for a Saturday</h2>
+                <h2>Cancel Attendance for a Saturday</h2>
                 <hr></hr>
-                <p>If you wish to sign up for a job, please click on the day that you volunteered for.</p>
                 <Form>
                     <Form.Group>
                         <Form.Label>Date</Form.Label>
-                        <Form.Control type="date" onChange={this.handleDateChange}/>
+                        <Form.Control type="date" onChange={this.handleCancelDateChange}/>
                         <Form.Text>
-                            Please sign up for any Saturday to volunteer. 
+                            Please indicate which saturday you will not be attending. 
                         </Form.Text>
                     </Form.Group>
-                    <Button variant="link" variant="primary" size="lg" onClick={this.signUpSaturday}>
-                        Sign Up
+                    <Button variant="link" variant="primary" size="lg" onClick={this.cancelSaturday}>
+                        Cancel Date
                     </Button>
                 </Form>
             </div>
@@ -307,14 +425,25 @@ export class UserCalendar extends Component {
     }
 
     render () {
-        var a = this.state.saturdays.concat(this.state.groups).concat(this.state.eventsapi)
+        var a = this.state.saturdays.concat(this.state.absences).concat(this.state.groups).concat(this.state.eventsapi)
+        var ro 
+        var ret = ''
+        if(this.state.role != undefined) {
+            ro = this.state.role.split(/(?=[A-Z])/)
+            if(ro.length === 1) {
+                ret = ro[0]
+            }
+            else {
+                ret = ro[0] + ' ' + ro[1]
+            }
+        }
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
                     Back to Dashboard
                 </Button>
                 <div style={styling.cal}>
-                    <h1>Volunteer Calendar</h1>
+                    <h1>{ret} Calendar</h1>
                     <Calendar
                         selectable
                         popup
@@ -328,6 +457,9 @@ export class UserCalendar extends Component {
                             }
                             else if(e.volunteer) {
                                 this.saturdayJobSignup(e)
+                            }
+                            else if(e.absent) {
+                                alert('You will not be attending on this day.')
                             }
                             else {
                                 this.getEventDetails(e)
@@ -362,6 +494,19 @@ export class UserCalendar extends Component {
                                         style: newStyle
                                     }
                                 }
+                                if(event.absent) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "red"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
                             }
                         }
                     />
@@ -369,13 +514,15 @@ export class UserCalendar extends Component {
                         <div className='legend-scale'>
                             <ul className='legend-labels'>
                                 <li><span style={{background:'green'}}></span>groups</li>
-                                <li><span style={{background:'orange'}}></span>volunteer</li>
+                                <li><span style={{background:'red'}}></span>absent</li>
                                 <li><span style={{background:'#3174ae'}}></span>events</li>
+                                <li><span style={{background:'orange'}}></span>volunteering</li>
                             </ul>
                         </div>
                     </div>
                     <br></br>
                     {this.renderSignUpSat()}
+                    {this.renderCancel()}
                 </div>
                 {this.renderRedirect()}
                 
@@ -395,7 +542,7 @@ const styling = {
         marginLeft: '15px'
     },
     add: {
-        marginBottom: '50px'
+        marginBottom: '25px'
     },
     legends: {
         display: 'inline-flex',

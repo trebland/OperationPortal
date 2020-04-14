@@ -11,7 +11,8 @@ export class UserAnnouncements extends Component {
             loggedin: props.location.state.loggedin,
             redirect: false,
             announcements: null,
-            tog: true
+            tog: true,
+            role: props.location.state.role
         }
         this.getAnnouncements()
     }
@@ -30,7 +31,8 @@ export class UserAnnouncements extends Component {
                 pathname: '/dashboard',
                 state: {
                     jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
+                    loggedin: this.state.loggedin,
+                    role: this.state.role
                 }
             }}/>
         }

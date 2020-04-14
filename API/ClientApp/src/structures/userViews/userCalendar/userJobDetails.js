@@ -14,7 +14,8 @@ export class UserJobDetails extends Component {
             default_job: -1,
             enabled: false,
             job_result: null,
-            removal: null
+            removal: null,
+            role: props.location.state.role
         }
         this.getAllJobs()
         this.checkJobsEnabled()
@@ -34,7 +35,8 @@ export class UserJobDetails extends Component {
                 <Redirect to={{
                     pathname: '/user-calendar',
                     state: {
-                        jwt: this.state.jwt
+                        jwt: this.state.jwt,
+                        role: this.state.role
                     }
                 }}/>
             )
