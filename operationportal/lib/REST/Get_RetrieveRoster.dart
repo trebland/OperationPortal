@@ -7,6 +7,7 @@ Future<List<RosterChild>> RetrieveRoster (String token, String busId, String cla
 
   int adjBusId;
   int adjClassId;
+  bool readFullRoster = false;
 
 
   if (busId == "Select Route" || busId.isEmpty)
@@ -19,10 +20,15 @@ Future<List<RosterChild>> RetrieveRoster (String token, String busId, String cla
   else
     adjClassId = int.parse(classId);
 
-  if (adjBusId == 0 && adjClassId == 0)
-    throw Exception('No Route or Class Selected');
+  var mUrl;
 
-  var mUrl = "https://www.operation-portal.com/api/roster" + "?busId=" + '$adjBusId' + "&classId=" + '$adjClassId';
+  if (adjBusId == 0 && adjClassId == 0)
+    {
+      mUrl = "https://www.operation-portal.com/api/roster";
+      readFullRoster = true;
+    }
+  else
+    mUrl = "https://www.operation-portal.com/api/roster" + "?busId=" + '$adjBusId' + "&classId=" + '$adjClassId';
 
   Map<String, String> headers = {
     'Content-type': 'application/json',
@@ -37,15 +43,24 @@ Future<List<RosterChild>> RetrieveRoster (String token, String busId, String cla
       headers: headers);
 
   if (response.statusCode == 200) {
-    ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
+        if (readFullRoster)
+          {
+            ReadFullChildren mPost = ReadFullChildren.fromJson(json.decode(response.body));
 
-    if (mPost.intersectedChildren == null)
-      if (mPost.busChildren == null)
-        return mPost.classChildren;
-      else
-        return mPost.busChildren;
+            return mPost.fullChildren;
+          }
+        else
+          {
+            ReadChildren mPost = ReadChildren.fromJson(json.decode(response.body));
 
-    return mPost.intersectedChildren;
+            if (mPost.intersectedChildren == null)
+              if (mPost.busChildren == null)
+                return mPost.classChildren;
+              else
+                return mPost.busChildren;
+
+            return mPost.intersectedChildren;
+          }
 
   } else {
 
@@ -59,13 +74,37 @@ class ReadChildren {
   List<RosterChild> classChildren;
   List<RosterChild> intersectedChildren;
 
-  ReadChildren({this.busChildren, this.classChildren, this.intersectedChildren});
+  ReadChildren({this.busChildren, this.classChildren, this.intersectedChildren,});
 
   factory ReadChildren.fromJson(Map<String, dynamic> json) {
     return ReadChildren(
-      busChildren: json['busRoster'] != null ? json['busRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
-      classChildren: json['classRoster'] != null ? json['classRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
-      intersectedChildren: json['intersectionRoster'] != null ? json['intersectionRoster'].map<RosterChild>((value) => new RosterChild.fromJson(value)).toList() : null,
+      busChildren: json['busRoster'] != null
+          ? json['busRoster'].map<RosterChild>((value) =>
+      new RosterChild.fromJson(value)).toList()
+          : null,
+      classChildren: json['classRoster'] != null
+          ? json['classRoster'].map<
+          RosterChild>((value) => new RosterChild.fromJson(value)).toList()
+          : null,
+      intersectedChildren: json['intersectionRoster'] != null
+          ? json['intersectionRoster'].map<RosterChild>((
+          value) => new RosterChild.fromJson(value)).toList()
+          : null,
+    );
+  }
+}
+
+class ReadFullChildren {
+  List<RosterChild> fullChildren;
+
+  ReadFullChildren({this.fullChildren});
+
+  factory ReadFullChildren.fromJson(Map<String, dynamic> json) {
+    return ReadFullChildren(
+      fullChildren: json['fullRoster'] != null
+          ? json['fullRoster'].map<
+          RosterChild>((value) => new RosterChild.fromJson(value)).toList()
+          : null,
     );
   }
 }

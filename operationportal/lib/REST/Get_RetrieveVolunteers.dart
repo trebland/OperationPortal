@@ -4,19 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:operationportal/Structs/Volunteer.dart';
 
 
-Future<List<Volunteer>> RetrieveVolunteers (String token, String currentDay)
+Future<List<Volunteer>> RetrieveVolunteers (String token, String currentDay, bool checkedIn)
 async {
-
-  var mUrl = "https://www.operation-portal.com/api/volunteers-for-day?Day=2020-03-04&CheckedIn=true";
+  var mUrl = "https://www.operation-portal.com/api/volunteers-for-day?day=$currentDay&CheckedIn=$checkedIn";
 
 
   Map<String, String> headers = {
     'Content-type': 'application/json',
     'Authorization': 'Bearer ' + token,
-  };
-
-  var queryParameters = {
-    'Day': currentDay,
   };
 
   var response = await http.get(mUrl,

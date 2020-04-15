@@ -398,7 +398,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                             child: ListTile(
                               leading: Container(
                                 child: CircleAvatar(
-                                  backgroundImage: (children[index].picture != null) ? MemoryImage(base64.decode((children[index].picture))) : null,
+                                  backgroundImage: (children[index].picture != null && children[index].picture.isNotEmpty) ? MemoryImage(base64.decode((children[index].picture))) : null,
                                 ),
                               ),
                               title: Text('${children[index].firstName} ' + '${children[index].lastName}',
