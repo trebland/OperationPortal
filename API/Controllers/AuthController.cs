@@ -366,11 +366,11 @@ namespace OCCTest.Controllers
             {
                 await EmailHelpers.SendEmail(email, "Password Reset - OCC",
                     $"Hello {profile.PreferredName + " " + profile.LastName},\n\n" +
-                    "You are recieving this email because you requested a password reset for Orlando Children's Church. " +
+                    "You are receiving this email because you requested a password reset for Orlando Children's Church. " +
                     "In order to reset your password, please follow the link below, or copy/paste the code below when prompted.\n\n" +
                     "Link: https://www.operation-portal.com/password-reset-confirm?email=" + HttpUtility.UrlEncode(email) + "&token=" + HttpUtility.UrlEncode(token) + "\n\n" +
                     $"Code: {token}\n\n" +
-                    "This code will be valid for 15 minutes.  If you did not request a password reset, please ignore this email.",
+                    "This code will be valid for 1 hour.  If you did not request a password reset, please ignore this email.",
                     configModel.EmailOptions);
             }
             catch (Exception)
