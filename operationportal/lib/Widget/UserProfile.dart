@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/Profile.dart';
+import 'package:operationportal/Widget/ProfileLanguageView.dart';
+import 'package:operationportal/Widget/ProfileTrainingView.dart';
 
 class UserProfilePage extends StatefulWidget {
   UserProfilePage({Key key, this.profile}) : super(key: key);
@@ -23,7 +27,7 @@ class UserProfilePage extends StatefulWidget {
 
 class UserProfileState extends State<UserProfilePage>
 {
-  Widget buildPictureNameRow (String firstName, String lastName)
+  Widget buildPictureNameRow ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -42,7 +46,7 @@ class UserProfileState extends State<UserProfilePage>
               ),
               Flexible(
                 child: Text(
-                  firstName + "\n" + lastName,
+                  widget.profile.firstName + "\n" + widget.profile.lastName,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 32),
                 ),
@@ -54,7 +58,7 @@ class UserProfileState extends State<UserProfilePage>
     );
   }
 
-  Widget buildContact ()
+  Widget buildContactInfo ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -72,12 +76,73 @@ class UserProfileState extends State<UserProfilePage>
                       child: Text(
                         "Email",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                     Container(
                       child: Text(
-                        widget.profile.email != null ? widget.profile.email : "N/A",
+                        '${widget.profile.email}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Phone Number",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.profile.phone != null && widget.profile.phone.isNotEmpty ? formatNumber(widget.profile.phone) : "N/A",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
+  Widget buildSecondRowInfo ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Started in",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        '${widget.profile.yearStarted}',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -93,21 +158,136 @@ class UserProfileState extends State<UserProfilePage>
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Phone",
+                        "Weeks Attended",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                     Container(
                       child: Text(
-                        widget.profile.phone != null && widget.profile.phone.isNotEmpty ? widget.profile.phone : "N/A",
+                        '${widget.profile.weeksAttended}',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ],
                 ),
-                margin: EdgeInsets.only(right: 20),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
+  Widget buildThirdRowInfo()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Orientation Completed?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.profile.orientation ? "Yes" : "No",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      Container(
+                        child: Text(
+                          "Contact When Short?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.profile.contactWhenShort ? "Yes" : "No",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      Container(
+                        child: Text(
+                          "Background Check Completed?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.profile.backgroundCheck ? "Yes" : "No",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+    );
+  }
+
+  Widget buildFourthRowInfo ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: FlatButton(
+                  child: Text("Trainings", style: TextStyle(color: textComplementColor)),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileTrainingPage(trainings: widget.profile.trainings,)));
+                  },
+                ),
+                decoration: new BoxDecoration(
+                  color: primaryWidgetColor,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(bottom: 10),
+              ),
+              Container(
+                child: FlatButton(
+                  child: Text("Languages", style: TextStyle(color: textComplementColor)),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileLanguagesPage(languages: widget.profile.languages,)));
+                  },
+                ),
+                decoration: new BoxDecoration(
+                  color: primaryWidgetColor,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(left: 10, bottom: 10),
               ),
             ]
         ),
@@ -117,30 +297,22 @@ class UserProfileState extends State<UserProfilePage>
   }
 
   @override
-  Widget build (BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        return Scaffold (
-          appBar: new AppBar(
-            title: new Text('Profile'),
-          ),
-          body: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: 200,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  buildPictureNameRow(widget.profile.firstName, widget.profile.lastName),
-                  buildContact(),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Volunteer Profile'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildPictureNameRow(),
+          buildContactInfo(),
+          buildSecondRowInfo(),
+          buildThirdRowInfo(),
+          buildFourthRowInfo(),
+        ],
+      ),
     );
   }
 }

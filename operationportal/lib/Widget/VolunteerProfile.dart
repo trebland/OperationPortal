@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/Volunteer.dart';
+import 'package:operationportal/Widget/ProfileLanguageView.dart';
+import 'package:operationportal/Widget/ProfileTrainingView.dart';
 
 class VolunteerProfilePage extends StatefulWidget {
   VolunteerProfilePage({Key key, this.volunteer}) : super(key: key);
@@ -45,7 +49,7 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
     );
   }
 
-  Widget buildFirstRowInfo ()
+  Widget buildContactInfo ()
   {
     return Container(
       child: IntrinsicHeight(
@@ -61,7 +65,68 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Started Volunteering in",
+                        "Email",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        '${widget.volunteer.email}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(right: 20),
+              ),
+              Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        child: Text(
+                          "Phone Number",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.volunteer.phone != null && widget.volunteer.phone.isNotEmpty ? formatNumber(widget.volunteer.phone) : "N/A",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  )
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
+  Widget buildSecondRowInfo ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Started in",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -77,6 +142,44 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
                 ),
                 margin: EdgeInsets.only(right: 20),
               ),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "Weeks Attended",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      child: Text(
+                        '${widget.volunteer.weeksAttended}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
+
+  Widget buildThirdRowInfo()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
               Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,6 +198,37 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      Container(
+                        child: Text(
+                          "Contact When Short?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.volunteer.contactWhenShort ? "Yes" : "No",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        margin: EdgeInsets.only(bottom: 10),
+                      ),
+                      Container(
+                        child: Text(
+                          "Background Check Completed?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          widget.volunteer.backgroundCheck ? "Yes" : "No",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        margin: EdgeInsets.only(bottom: 10),
                       ),
                     ],
                   )
@@ -102,10 +236,56 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
             ]
         ),
       ),
-      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
     );
   }
 
+  Widget buildFourthRowInfo ()
+  {
+    return Container(
+      child: IntrinsicHeight(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>
+            [
+              Container(
+                child: FlatButton(
+                  child: Text("Trainings", style: TextStyle(color: textComplementColor)),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileTrainingPage(trainings: widget.volunteer.trainings,)));
+                  },
+                ),
+                decoration: new BoxDecoration(
+                  color: primaryWidgetColor,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(bottom: 10),
+              ),
+              Container(
+                child: FlatButton(
+                  child: Text("Languages", style: TextStyle(color: textComplementColor)),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileLanguagesPage(languages: widget.volunteer.languages,)));
+                  },
+                ),
+                decoration: new BoxDecoration(
+                  color: primaryWidgetColor,
+                  borderRadius: new BorderRadius.all(
+                      new Radius.circular(20)
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.only(left: 10, bottom: 10),
+              ),
+            ]
+        ),
+      ),
+      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +297,10 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(),
-          buildFirstRowInfo(),
+          buildContactInfo(),
+          buildSecondRowInfo(),
+          buildThirdRowInfo(),
+          buildFourthRowInfo(),
         ],
       ),
     );

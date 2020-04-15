@@ -133,7 +133,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null && birthday.isNotEmpty ? birthday.split(' ')[0] : "N/A",
+                        birthday != null && birthday.isNotEmpty ? birthday : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -169,24 +169,6 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
       ),
       margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
     );
-  }
-
-  String formatNumber (String number)
-  {
-    print(number);
-    String formattedNumber = "";
-    for (int i=0; i<10; i++)
-      {
-        if (i == 0)
-          formattedNumber += '(' + number[i];
-        else if (i == 2)
-          formattedNumber += number[i] + ') ';
-        else if (i == 5)
-          formattedNumber += number[i] + '-';
-        else
-          formattedNumber += number[i];
-      }
-    return formattedNumber;
   }
 
   Widget buildContactInformationRow()
@@ -270,7 +252,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
+          buildBirthdayAndGenderRow(formatDate(widget.child.birthday.toString()), widget.child.gender),
           buildContactInformationRow(),
           Container(
             child: IntrinsicHeight(

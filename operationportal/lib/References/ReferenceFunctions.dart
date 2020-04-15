@@ -10,7 +10,7 @@ DateTime parseBirthday (String birthday)
 
 int calculateBirthday(RosterChild child)
 {
-  return DateTime.now().difference(parseBirthday(child.birthday.split(' ')[0])).inDays ~/ 365.25;
+  return DateTime.now().difference(child.birthday).inDays ~/ 365.25;
 }
 
 List<RosterChild> sortedChildren (List<RosterChild> children)
@@ -38,7 +38,28 @@ List<RosterChild> sortedChildren (List<RosterChild> children)
 String formatDate(String date)
 {
   String formattedDate = "";
+  date = date.split('T')[0];
+  date = date.split(' ')[0];
+
   formattedDate = date.split('-')[1] + '-' + date.split('-')[2] + '-' + date.split('-')[0];
 
   return formattedDate;
+}
+
+String formatNumber (String number)
+{
+  print(number);
+  String formattedNumber = "";
+  for (int i=0; i<10; i++)
+  {
+    if (i == 0)
+      formattedNumber += '(' + number[i];
+    else if (i == 2)
+      formattedNumber += number[i] + ') ';
+    else if (i == 5)
+      formattedNumber += number[i] + '-';
+    else
+      formattedNumber += number[i];
+  }
+  return formattedNumber;
 }

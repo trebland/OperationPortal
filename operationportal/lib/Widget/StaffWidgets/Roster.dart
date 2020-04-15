@@ -403,7 +403,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                               ),
                               title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                   style: TextStyle(color: Colors.white)),
-                              subtitle: Text('${children[index].birthday != null && children[index].birthday.isNotEmpty ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
+                              subtitle: Text('${children[index].birthday != null ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileViewerPage(user: widget.user, child: children[index])));

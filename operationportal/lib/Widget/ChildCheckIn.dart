@@ -120,6 +120,18 @@ class ChildCheckInState extends State<ChildCheckInPage>
                             padding: EdgeInsets.all(10),
                             margin: EdgeInsets.all(10),
                           ),
+                          snapshot.data.birthday == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+                              ? Container(
+                              child: Text("Happy Birthday!", style: TextStyle(fontSize: 20, color: Colors.white),),
+                              decoration: new BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: new BorderRadius.all(
+                                    new Radius.circular(20)
+                                ),
+                              ),
+                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.only(top: 20)
+                          ) : Container(),
                           snapshot.data.isSuspended ?
                           Container(
                               child: Text("Suspended", style: TextStyle(fontSize: 20, color: Colors.white),),
@@ -132,6 +144,18 @@ class ChildCheckInState extends State<ChildCheckInPage>
                               margin: EdgeInsets.only(top: 20),
                             padding: EdgeInsets.all(20),
                           )
+                              : snapshot.data.isCheckedIn
+                              ? Container(
+                              child: Text("Already Signed In", style: TextStyle(fontSize: 20, color: Colors.white),),
+                              decoration: new BoxDecoration(
+                                color: primaryColor,
+                                borderRadius: new BorderRadius.all(
+                                    new Radius.circular(20)
+                                ),
+                              ),
+                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.only(top: 100)
+                          )
                               : Container(
                               child: FlatButton(
                                 child: Text("Confirm Attendance", style: TextStyle(fontSize: 20, color: Colors.white),),
@@ -142,7 +166,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
                                 },
                               ),
                               decoration: new BoxDecoration(
-                                color: primaryWidgetColor,
+                                color: primaryColor,
                                 borderRadius: new BorderRadius.all(
                                     new Radius.circular(20)
                                 ),
