@@ -57,7 +57,10 @@ namespace API.Controllers
         {
             var user = await userManager.GetUserAsync(User);
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            CalendarRepository calendarRepo = new CalendarRepository(configModel.ConnectionString);
             VolunteerModel volunteer;
+            AttendanceModel attendance;
+            bool checkedIn = false;
 
             // Ensure that ONLY staff accounts have access to this API endpoint
             if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
@@ -84,10 +87,26 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid id");
             }
 
+            try
+            {
+                attendance = calendarRepo.GetSingleAttendance(volunteer.Id, DateTime.Now.Date);
+
+                // determine if the current user has been checked in today
+                if (attendance != null && attendance.Attended == true)
+                {
+                    checkedIn = true;
+                }
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
             return new JsonResult(new
             {
                 Error = "",
-                Volunteer = volunteer
+                Volunteer = volunteer,
+                CheckedIn = checkedIn
             });
         }
 

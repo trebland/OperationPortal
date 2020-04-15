@@ -12,6 +12,7 @@ namespace API.Models
         public int NumStudents { get; set; }
         public int TeacherId { get; set; }
         public string TeacherName { get; set; }
+        public byte[] TeacherPicture { get; set; }
         public string Location { get; set; }
     }
 }

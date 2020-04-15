@@ -1356,6 +1356,8 @@ namespace API.Data
                     FirstName = dr["firstName"].ToString(),
                     PreferredName = dr["preferredName"].ToString(),
                     LastName = dr["lastName"].ToString(),
+                    WeeksAttended = (int)dr["weekendsAttended"],
+                    Role = ((UserHelpers.UserRoles)dr["role"]).ToString(),
                     Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
                     Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
                     Affiliation = dr["affiliation"].ToString(),

@@ -30,7 +30,7 @@ namespace API.Data
         {
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da;
-            string sql = @"SELECT CL.*, V.PreferredName, V.LastName 
+            string sql = @"SELECT CL.*, V.PreferredName, V.LastName, V.Picture 
                            FROM Class_List AS CL LEFT OUTER JOIN 
                            Volunteers AS V ON V.Id = CL.TeacherId";
 
@@ -58,7 +58,8 @@ namespace API.Data
                         NumStudents = (int)dr["numstudents"],
                         Location = dr["location"].ToString(),
                         TeacherId = dr["teacherid"] == DBNull.Value ? 0 : (int)dr["TeacherId"],
-                        TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString()
+                        TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString(),
+                        TeacherPicture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"]
                     });
                 }
                 else
@@ -85,7 +86,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             DataRow dr;
             NpgsqlDataAdapter da;
-            string sql = @"SELECT CL.*, V.PreferredName, V.LastName 
+            string sql = @"SELECT CL.*, V.PreferredName, V.LastName, V.Picture 
                            FROM Class_List AS CL LEFT OUTER JOIN 
                            Volunteers AS V ON V.Id = CL.TeacherId 
                            WHERE CL.id = @id";
@@ -118,7 +119,8 @@ namespace API.Data
                 NumStudents = (int)dr["numstudents"],
                 Location = dr["location"].ToString(),
                 TeacherId = dr["teacherid"] == DBNull.Value ? 0 : (int)dr["TeacherId"],
-                TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString()
+                TeacherName = dr["teacherid"] == DBNull.Value ? "N/A" : dr["preferredname"].ToString() + " " + dr["lastname"].ToString(),
+                TeacherPicture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"]
             };
         }
 

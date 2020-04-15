@@ -60,7 +60,7 @@ namespace API
 
             services.Configure<DataProtectionTokenProviderOptions>(o =>
             {
-                o.TokenLifespan = TimeSpan.FromMinutes(15);
+                o.TokenLifespan = TimeSpan.FromMinutes(60);
             });
 
             services.Configure<ConfigurationModel>(options =>

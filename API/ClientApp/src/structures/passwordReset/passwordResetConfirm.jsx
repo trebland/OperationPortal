@@ -10,7 +10,7 @@ export class PasswordResetConfirm extends Component {
         let params = queryString.parse(this.props.location.search)
 
         this.state = {
-            email: params.email || this.props.location.state != null ? this.props.location.state.email : null || "",
+            email: params.email || (this.props.location.state ? this.props.location.state.email : "" ) || "",
             token: params.token || "",
             password: "",
             confirmPassword: "",
@@ -154,6 +154,7 @@ export class PasswordResetConfirm extends Component {
                 </div>
                 <div style={styling.infoText}>
                     <p>Please enter the code emailed to you into the box below, or follow the link that was emailed to you, then enter a new password. </p>
+                    <p>If you did not receive an email, you may have entered the wrong email address for your account.  Please double check which address your account is signed up with.</p>
                     <p>Passwords must be at least 6 characters long and contain at least one number, one uppercase letter, and one non-alphanumeric symbol.</p>
                 </div>
                 <div className="box" style={styling.outerDiv}>
