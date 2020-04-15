@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:operationportal/Structs/RosterChild.dart';
+import 'package:operationportal/Structs/User.dart';
 
-Future<List<RosterChild>> RetrieveRoster (String token, String busId, String classId) async {
+Future<List<RosterChild>> RetrieveRoster (String token, String busId, String classId, User user) async {
 
   int adjBusId;
   int adjClassId;
   bool readFullRoster = false;
-
 
   if (busId == "Select Route" || busId.isEmpty)
     adjBusId = 0;
@@ -22,11 +22,13 @@ Future<List<RosterChild>> RetrieveRoster (String token, String busId, String cla
 
   var mUrl;
 
-  if (adjBusId == 0 && adjClassId == 0)
+  if (adjBusId == 0 && adjClassId == 0 && user.profile.role == "Staff")
     {
       mUrl = "https://www.operation-portal.com/api/roster";
       readFullRoster = true;
     }
+  else if (adjBusId == 0 && adjClassId == 0)
+    throw Exception('No Bus or Class Selected!');
   else
     mUrl = "https://www.operation-portal.com/api/roster" + "?busId=" + '$adjBusId' + "&classId=" + '$adjClassId';
 

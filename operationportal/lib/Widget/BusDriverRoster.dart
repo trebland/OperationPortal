@@ -252,7 +252,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
         ),
         FutureBuilder(
             future: widget.storage.readToken().then((value) {
-              return RetrieveRoster(value, busController.text, "");
+              return RetrieveRoster(value, selectedBus == null ? "" : '${selectedBus.id}', "", widget.user);
             }),
             builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
               switch (snapshot.connectionState) {

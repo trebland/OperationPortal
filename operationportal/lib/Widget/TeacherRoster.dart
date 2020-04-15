@@ -225,7 +225,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
         ),
         FutureBuilder(
             future: widget.storage.readToken().then((value) {
-              return RetrieveRoster(value, "", classIdController.text);
+              return RetrieveRoster(value, "", selectedClass == null ? "" : '${selectedClass.id}', widget.user);
             }),
             builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
               switch (snapshot.connectionState) {
