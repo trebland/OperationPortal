@@ -12,7 +12,8 @@ export class UserDashboard extends Component {
             redirectAnnouncements: false,
             redirectProfile: false,
             redirectCal: false,
-            redirectLogout: false
+            redirectLogout: false,
+            role: props.location.state.role
         }
         console.log(this.state.jwt)
         
@@ -24,7 +25,8 @@ export class UserDashboard extends Component {
                 pathname: '/user-announcements',
                 state: { 
                     jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
+                    loggedin: this.state.loggedin,
+                    role: this.state.role
                 }
             }}/>
         }
@@ -33,7 +35,8 @@ export class UserDashboard extends Component {
                 pathname: '/user-profile',
                 state: {
                     jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
+                    loggedin: this.state.loggedin,
+                    role: this.state.role
                 }
             }}/>
         }
@@ -42,17 +45,14 @@ export class UserDashboard extends Component {
                 pathname: '/user-calendar',
                 state: {
                     jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
+                    loggedin: this.state.loggedin,
+                    role: this.state.role
                 }
             }}/>
         }
         else if(this.state.redirectLogout){
             return <Redirect to={{
-                pathname: '/',
-                state: {
-                    jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
-                }
+                pathname: '/'
             }}/>
         }
         
@@ -83,34 +83,46 @@ export class UserDashboard extends Component {
     }
   
 
-  render () {
-    return(
-        <div>
-            {this.renderRedirect()}
-            <Button variant="primary" size="lg" style={styling.logout} onClick={this.setRedirectLogout}>
-                    Logout
-            </Button>
-            <center>
-                <div style={styling.header}>
-                    <h1>User Dashboard</h1>
-                </div>
-            </center>
-            <center>
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
-                    Edit Profile
+    render () {
+        var ro 
+        var ret = ''
+        if(this.state.role != undefined) {
+            ro = this.state.role.split(/(?=[A-Z])/)
+            if(ro.length === 1) {
+                ret = ro[0]
+            }
+            else {
+                ret = ro[0] + ' ' + ro[1]
+            }
+        }
+        
+        return(
+            <div>
+                {this.renderRedirect()}
+                <Button variant="primary" size="lg" style={styling.logout} onClick={this.setRedirectLogout}>
+                        Logout
                 </Button>
+                <center>
+                    <div style={styling.header}>
+                        <h1>{ret} Dashboard</h1>
+                    </div>
+                </center>
+                <center>
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
+                        Edit Profile
+                    </Button>
 
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectAnnouncements}>
-                    View Announcements
-                </Button>
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectAnnouncements}>
+                        View Announcements
+                    </Button>
 
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
-                    View Calendar
-                </Button>
-            </center>  
-        </div>
-    )
-  }
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
+                        View Calendar
+                    </Button>
+                </center>  
+            </div>
+        )
+    }
 }
 
 const styling = {

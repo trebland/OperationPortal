@@ -17,7 +17,10 @@ export class AdminVolunteerEdit extends Component {
             background: props.location.state.volunteer.backgroundCheck,
             blue: props.location.state.volunteer.blueShirt,
             nametag: props.location.state.volunteer.nameTag,
-            inventory: props.location.state.volunteer.canEditInventory
+            inventory: props.location.state.volunteer.canEditInventory,
+            role: props.location.state.volunteer.role,
+            roleupdate: -1,
+            finished: false
         }
     }
 
@@ -35,10 +38,9 @@ export class AdminVolunteerEdit extends Component {
         this.mounted = false
     }
 
-    editProfile = (e) => {
+    editProfile = () => {
         let local = 'http://localhost:5000/api/volunteer-records-edit' 
         let live = 'https://www.operation-portal.com/api/volunteer-records-edit'
-
         try{
             fetch('/api/volunteer-records-edit' , {
                 method: "POST",
@@ -61,17 +63,17 @@ export class AdminVolunteerEdit extends Component {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201)){
                     console.log("profile edit successfull")
-                    return this.setState({
-                        redirect: true
-                    })
+                    return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500)){
                     console.log("profile edit unsuccessful")
-                    return (
-                        this.setState({
-                            redirect: false
-                        })
-                    )
+                }
+            })
+            .then((data) => {
+                if(data != null) {
+                    this.setState({
+                        redirect: true
+                    })
                 }
             })
         }
@@ -79,8 +81,6 @@ export class AdminVolunteerEdit extends Component {
             console.log("Did not connect")
         }
     }
-
-    
 
     renderRedirect = () => {
         if(this.state.redirect){
@@ -135,8 +135,98 @@ export class AdminVolunteerEdit extends Component {
         })
     }
 
+    getRoleNum = (vol) => {
+        if(vol.role === "Volunteer") {
+            return 1
+        }
+        else if(vol.role === "VolunteerCaptain") {
+            return 2
+        }
+        else if(vol.role === "BusDriver") {
+            return 3
+        }
+        else if(vol.role === "Staff") {
+            return 4
+        }
+    }
+
+    checkRoleNum = (i) => {
+        if(i === 1) {
+            return "Volunteer"
+        }
+        else if(i === 2) {
+            return "VolunteerCaptain"
+        }
+        else if(i === 3) {
+            return "BusDriver"
+        }
+        else if(i === 4) {
+            return "Staff"
+        }
+    }
+
+    getNewRole = (e) => {
+        this.setState({
+            roleupdate: Number.parseInt(e.target.value)
+        })
+        console.log(this.state.roleupdate)
+    }
+
+    assignRole = () => {
+        var check = this.checkRoleNum(this.state.roleupdate)
+        console.log(check)
+        console.log(this.state.role)
+        if(this.state.roleupdate > 0) {
+            try {
+                fetch('api/role-edit' , {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.state.jwt}`
+                    },
+                    body: JSON.stringify({
+                        'id': this.state.id,
+                        'role': check
+                    })
+                })
+                .then((res) => {
+                    console.log(res.status)
+                    if((res.status === 200 || res.status === 201)){
+                        console.log("role assign successfull")
+                        // return this.setState({
+                        //     redirect: true
+                        // })
+                        return res.text()
+                    }
+                    else if((res.status === 401 || res.status === 400 || res.status === 500)){
+                        console.log("role assign unsuccessful")
+                        // return (
+                        //     this.setState({
+                        //         redirect: false
+                        //     })
+                        // )
+                        return res.text()
+                    }
+                })
+                .then((data) => {
+                    this.editProfile()
+                })
+            }
+            catch(e) {
+                console.log(e)
+            }
+        }
+        else if(this.state.roleupdate < 0) {
+            this.editProfile()
+        }
+        
+
+    }
+
+
     showVolunteer = () => {
         const vol = this.state.volunteer
+        var role = this.getRoleNum(vol)
         return (
             <div>
                 <h2>Viewing {vol.firstName + " " + vol.lastName}</h2>
@@ -164,7 +254,14 @@ export class AdminVolunteerEdit extends Component {
 
                     <Form.Group as={Col}>
                         <Form.Label><b>Role</b></Form.Label>
-                        <Form.Control plaintext readOnly defaultValue={vol.role} />
+                        <Form.Control plaintext readOnly defaultValue={'Current: ' + vol.role} />
+                        <Form.Control as="select" onChange={this.getNewRole}>
+                            <option value={-1}>Current</option>
+                            <option value={1}>Volunteer</option>
+                            <option value={2}>Volunteer Captain</option>
+                            <option value={3}>Bus Driver</option>
+                            <option value={4}>Staff</option>
+                        </Form.Control>
                     </Form.Group> 
                 </Form.Row>
 
@@ -303,7 +400,7 @@ export class AdminVolunteerEdit extends Component {
                     </Form.Group> 
                 </Form.Row>
 
-                <Button variant="link" variant="primary" size="lg" onClick={this.editProfile}>
+                <Button variant="link" variant="primary" size="lg" onClick={this.assignRole}>
                     Submit
                 </Button>
             </div>

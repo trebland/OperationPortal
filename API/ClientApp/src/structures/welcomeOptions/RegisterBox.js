@@ -142,6 +142,10 @@ export class RegisterBox extends Component {
                 <FormGroup controlId="formBasicPassword">
                   <FormLabel>Password</FormLabel>
                   <Form.Control type="password" placeholder="Password" value={this.state.password} onChange={this.handlePasswordChange}/>
+                  <Form.Text>
+                    Passwords must be at least 6 characters and include at least one non alphanumeric character ('@', '$', '*', etc.), 
+                    at least one digit ('0'-'9'), and at least one uppercase letter ('A'-'Z').
+                  </Form.Text>
                 </FormGroup>
 
                 <div>

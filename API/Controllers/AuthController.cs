@@ -13,6 +13,7 @@ using OpenIddict.Validation;
 using OpenIddict.EntityFrameworkCore.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using API.Models;
 using API.Data;
 using API.Helpers;
@@ -322,6 +323,114 @@ namespace OCCTest.Controllers
                 Buses = buses
             });
 
+        }
+
+        [HttpPost]
+        [Route("~/api/auth/password-reset-request")]
+        [AllowAnonymous]
+        public async Task<IActionResult> PasswordResetRequest(PasswordResetViewModel vm)
+        {
+            string email = vm.Email;
+            string token;
+            var user = await userManager.FindByNameAsync(email);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+
+            if (!UserHelpers.IsValidEmail(email))
+            {
+                return Utilities.ErrorJson("Must provide a valid email address");
+            }
+
+            if (user == null)
+            {
+                return Utilities.NoErrorJson();
+            }
+
+            try
+            {
+                profile = repo.GetVolunteer(user.VolunteerId);
+            }
+            catch(Exception)
+            {
+                return Utilities.ErrorJson("Unable to get volunteer profile - please try again later.");
+            } 
+
+            if (profile == null)
+            {
+                return Utilities.ErrorJson("Unable to get volunteer profile - please try again later.");
+            }
+
+            token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            try
+            {
+                await EmailHelpers.SendEmail(email, "Password Reset - OCC",
+                    $"Hello {profile.PreferredName + " " + profile.LastName},\n\n" +
+                    "You are recieving this email because you requested a password reset for Orlando Children's Church. " +
+                    "In order to reset your password, please follow the link below, or copy/paste the code below when prompted.\n\n" +
+                    "Link: https://www.operation-portal.com/password-reset-confirm?email=" + HttpUtility.UrlEncode(email) + "&token=" + HttpUtility.UrlEncode(token) + "\n\n" +
+                    $"Code: {token}\n\n" +
+                    "This code will be valid for 15 minutes.  If you did not request a password reset, please ignore this email.",
+                    configModel.EmailOptions);
+            }
+            catch (Exception)
+            {
+                return Utilities.ErrorJson("An error occurred and a password reset email could not be sent.  Please try again later.");
+            }
+
+            return new JsonResult(new { token = token });
+        }
+
+        [HttpPost]
+        [Route("~/api/auth/password-reset-confirm")]
+        [AllowAnonymous]
+        public async Task<IActionResult> PasswordResetConfirm(PasswordResetViewModel vm)
+        {
+            string email = vm.Email;
+            string token = vm.Token;
+            string password = vm.Password;
+            var user = await userManager.FindByNameAsync(email);
+            List<string> errors = new List<string>();
+            IdentityResult passResult;
+            bool passwordFailed = false;
+
+            if (!UserHelpers.IsValidEmail(email))
+            {
+                return Utilities.ErrorJson("Must send a valid email address");
+            }
+
+            if (user == null)
+            {
+                return Utilities.NoErrorJson();
+            }
+
+            // Validate the password prior to changing it, and if it does not work, kick it back to the user.
+            foreach (var validator in userManager.PasswordValidators)
+            {
+                passResult = await validator.ValidateAsync(userManager, null, password);
+
+                if (!passResult.Succeeded)
+                {
+                    passwordFailed = true;
+                    foreach (var error in passResult.Errors)
+                    {
+                        errors.Add(error.Description);
+                    }
+                }
+            }
+            if (passwordFailed)
+            {
+                return Utilities.ErrorJson(String.Join(" ", errors));
+            }
+
+            IdentityResult result = await userManager.ResetPasswordAsync(user, token, password);
+
+            if (!result.Succeeded)
+            {
+                return Utilities.ErrorJson("The code you provided was invalid.  Please double check the code and try again, or request a new code.");
+            }
+
+            return Utilities.NoErrorJson();
         }
     }
 }

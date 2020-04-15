@@ -135,21 +135,23 @@ namespace API.Data
                 LastMaintenance = dr["lastmaintenance"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["lastmaintenance"])
             };
         }
-        
+
 
         /// <summary>
-        /// Updates a bus' route description
+        /// Updates a bus' name and route description
         /// </summary>
         /// <param name="id">The id of the bus</param>
+        /// <param name="name">The bus' new name.</param>
         /// <param name="route">The new description of the bus' route.</param>
-        public void UpdateBusRoute(int id, string route)
+        public void UpdateBusRoute(int id, string name, string route)
         {
-            string sql = "UPDATE BUS SET route = @route WHERE id = @id";
+            string sql = "UPDATE BUS SET name = @name, route = @route WHERE id = @id";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
+                    cmd.Parameters.Add("@name", NpgsqlTypes.NpgsqlDbType.Varchar).Value = name;
                     cmd.Parameters.Add("@route", NpgsqlTypes.NpgsqlDbType.Varchar).Value = route;
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
 

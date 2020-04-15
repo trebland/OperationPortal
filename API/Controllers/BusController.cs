@@ -135,6 +135,15 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Not authorized");
             }
 
+            if (string.IsNullOrEmpty(bus.Name))
+            {
+                return Utilities.ErrorJson("Bus name cannot be empty");
+            }
+            if (bus.Name.Length > 300)
+            {
+                return Utilities.ErrorJson("Bus name is too long (limit 300 characters)");
+            }
+
             // Get the bus to ensure that it is valid
             dbBus = busRepo.GetBus(bus.Id);
             if (bus.Id == 0 || bus == null)
@@ -142,7 +151,7 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid id");
             }
 
-            busRepo.UpdateBusRoute(bus.Id, bus.Route);
+            busRepo.UpdateBusRoute(bus.Id, bus.Name, bus.Route);
 
             return new JsonResult(new
             {
@@ -284,6 +293,39 @@ namespace API.Controllers
             }
 
             return Utilities.NoErrorJson();
+        }
+
+        /// <summary>
+        /// Gets the list of all users with the Bus Driver role
+        /// </summary>
+        /// <returns>An error message if applicable, or a list of VolunteerModels with Id, FirstName, PreferredName, and LastName</returns>
+        [HttpGet]
+        [Route("~/api/bus-drivers")]
+        public async Task<IActionResult> GetBusDrivers()
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerModel> drivers;
+            var user = await userManager.GetUserAsync(User);
+
+            /// Ensure that ONLY staff accounts have access to this API endpoint
+            if (user == null || !await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            try
+            {
+                drivers = repo.GetBusDrivers();
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new {
+                Error = "",
+                Drivers = drivers
+            });
         }
     }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, FormControl, FormGroup, FormLabel, Button } from 'react-bootstrap/'
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 
 export class LoginBox extends Component {
   constructor(props) {
@@ -9,6 +9,7 @@ export class LoginBox extends Component {
       username: "",
       password: "",
       result: "",
+      loginSuccess: false,
       redirect: false,
       jwt: "",
       loggedin: false,
@@ -28,14 +29,12 @@ export class LoginBox extends Component {
     this.setState ({
       username: e.target.value
     })
-    console.log(this.state.username)
   }
 
   handlePasswordChange = (e) => {
     this.setState ({
       password: e.target.value
     })
-    console.log(this.state.password)
   }
 
   onSubmit = (e) => {
@@ -65,32 +64,40 @@ export class LoginBox extends Component {
         .then((res) => {
             console.log(res.status)
             if((res.status === 200 || res.status === 201) && this.mounted === true){
-                console.log("Login successful")
+                this.setState({
+                    loginSuccess: true
+                })
                 return res.text()
             }
             else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
-                console.log("Failed to login")
                 this.setState({
-                  redirect: false
+                    redirect: false,
+                    loginSuccess: false
                 })
-                return <Redirect to={{
-                  pathname: '/login'
-                }}/>
+                return res.text()
             }
         })
         .then((data) => {
-          console.log("reached this statement")
-          let res = JSON.parse(data)
-          res = res.access_token
-          if(this.mounted == true) {
-            this.setState({
-              jwt: res
-            })
-          }
-          console.log(this.state.jwt)
+            if (!this.state.loginSuccess) {
+                this.setState({
+                    result: 'Incorrect username or password'
+                })
+            }
+            else {
+                let res = JSON.parse(data)
+                res = res.access_token
+                if (this.mounted == true) {
+                    this.setState({
+                        jwt: res
+                    })
+                }
+                console.log(this.state.jwt)
+            }
         })
         .then(() => {
-          this.getRole()
+            if (this.state.loginSuccess) {
+                this.getRole()
+            }
         })
         // set redirect after getting token so that the page doesnt change
         .then(() => {
@@ -127,7 +134,7 @@ export class LoginBox extends Component {
         }
       })
       .then((data) => {
-        console.log("reached this statement")
+        console.log("reached this statement in getrole")
         let res = JSON.parse(data)
         res = res.profile.role
         if(this.mounted == true) {
@@ -167,7 +174,10 @@ export class LoginBox extends Component {
         }
       }}/>
     }
-    else if(this.state.redirect && ((this.state.role === "Volunteer") || (this.state.role === "BusDriver"))) {
+    else if(this.state.redirect && 
+           ((this.state.role === "Volunteer") || 
+            (this.state.role === "BusDriver") || 
+            (this.state.role === "VolunteerCaptain"))) {
       return (
         <Redirect to={{
           pathname: '/dashboard',
@@ -206,20 +216,22 @@ export class LoginBox extends Component {
               <Form style={styling.formDiv}>
                   <FormGroup>
                       <FormLabel>Email</FormLabel>
-                      <FormControl type="username" placeholder="email" value={this.state.username} onChange={this.handleUserNameChange} />
+                      <FormControl type="email" placeholder="email" value={this.state.username} onChange={this.handleUserNameChange} />
                   </FormGroup>
 
                   <FormGroup controlId="formBasicPassword">
                       <FormLabel>Password</FormLabel>
                       <Form.Control type="password" placeholder="password"  value={this.state.password} onChange={this.handlePasswordChange}/>
                   </FormGroup>
-                  <p>{this.state.result}</p>
+                    <p style={this.state.loginSuccess ? { color: 'green' } : { color: 'red' }}>{this.state.result}</p>
                   <div>
                       <center>
                           {this.renderRedirect()}
                           <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} style={{justifyContent: 'center'}}>
                               Submit
                           </Button>
+                          <br/>
+                          <Link to={'/password-reset-request'} style={{color: '#333'}}>Forgot Password</Link>
                       </center>
                   </div>
               </Form>

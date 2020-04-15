@@ -16,7 +16,9 @@ export class UserEventDetails extends Component {
             year: props.location.state.year,
             month: props.location.state.month,
             day: props.location.state.day,
-            details: [{}]
+            details: [{}],
+            jwt: props.location.state.jwt,
+            role: props.location.state.role
         }
         console.log(this.state.clicked)
         this.getInfo()
@@ -69,7 +71,11 @@ export class UserEventDetails extends Component {
     renderRedirect = () => {
         if(this.state.redirect){
             return <Redirect to={{
-                pathname: '/user-calendar'
+                pathname: '/user-calendar',
+                state: {
+                    jwt: this.state.jwt,
+                    role: this.state.role
+                }
             }}/>
         }
     }
@@ -81,6 +87,80 @@ export class UserEventDetails extends Component {
         })
     }
 
+    signupEvent = (ep) => {
+        var id = ep.id
+        try {
+            fetch('api/calendar/signup/event' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        eventId: id
+                    }
+                )
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('event signup successful')
+                    this.setState({
+                        redirect: true
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('event signup unsuccessful')
+                    return
+                }
+            })
+
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
+    cancelEvent = (ep) => {
+        var id = ep.id
+        try {
+            fetch('api/calendar/cancellation/event' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        eventId: id
+                    }
+                )
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('event cancellation successful')
+                    this.setState({
+                        redirect: true
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('event cancellation unsuccessful')
+                    return
+                }
+            })
+
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
     showEvents = () => {
         if(this.state.details.events != null){
             let eve = this.state.details.events.map((e, index) => {
@@ -89,13 +169,18 @@ export class UserEventDetails extends Component {
                         <h2>{e.name}</h2>
                         <hr></hr>
                         <p>{e.description}</p>
+                        <Button variant="primary" size="sm" style={styling.sc} onClick={() => {this.signupEvent(e)}}>
+                            Signup for this Event
+                        </Button>
+                        <Button variant="primary" size="sm" style={styling.sc} onClick={() => {this.cancelEvent(e)}}>
+                            Cancel for this Event
+                        </Button> 
                     </div>
                 )
             })
             return eve
 
         }
-        // console.log(events)
 
     }
 
@@ -114,6 +199,11 @@ export class UserEventDetails extends Component {
                 </Button>
                 <h1 style={styling.head}>All events on {date}</h1>
                 <div style={styling.outerdiv}>
+                    <h3>Notice</h3>
+                    <p>
+                        If signup or cancellation is successful, you will be taken back to the calendar. 
+                    </p>
+                    <br></br>
                     {this.showEvents()}
                 </div>
                 
@@ -139,6 +229,9 @@ const styling = {
     },
     eves: {
         marginBottom: '75px'
+    },
+    sc: {
+        marginRight: '50px'
     }
 }
 

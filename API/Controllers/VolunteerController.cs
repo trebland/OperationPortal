@@ -339,13 +339,13 @@ namespace API.Controllers
             }
         }
 
-        //TODO: Uncomment logic for getting guest volunteers as well
         [Route("~/api/volunteers-for-day")]
         [HttpGet]
         public async Task<IActionResult> VolunteersForDay([FromQuery]GetVolunteersForDayModel model)
         {
-            var user = await userManager.GetUserAsync(User);
             List<GuestVolunteerModel> guests = null;
+            
+            var user = await userManager.GetUserAsync(User);
 
             if (user == null ||
                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
@@ -353,7 +353,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-
+            
             if (model.Day == DateTime.MinValue)
             {
                 return Utilities.GenerateMissingInputMessage("date");
@@ -588,6 +588,51 @@ namespace API.Controllers
             {
                 Error = "",
                 Trainings = trainings
+            });
+        }
+
+        /// <summary>
+        /// Gets a particular volunteer training
+        /// </summary>
+        /// <param name="id">The id of the training</param>
+        /// <returns>A VolunteerTrainingModel object</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-training")]
+        public async Task<IActionResult> VolunteerTraining(int id)
+        {
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerTrainingModel training;
+            var user = await userManager.GetUserAsync(User);
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            try
+            {
+                training = repo.GetTraining(id);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            if (training == null)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Training = training
             });
         }
 
@@ -859,6 +904,51 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Gets a specific volunteer job
+        /// </summary>
+        /// <param name="id">The id of the job to retrieve</param>
+        /// <returns>An error message if an error occurred, or a blank string and a list of VolunteerJobModel objects otherwise</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-job")]
+        public async Task<IActionResult> VolunteerJob(int id)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerJobModel job = null;
+
+            // Verify the user is a staff member
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (id == 0)
+            {
+                return Utilities.ErrorJson("Invalid id");
+            }
+
+            try
+            {
+                job = repo.GetVolunteerJob(id, DateTime.MinValue);
+
+                if (job == null)
+                {
+                    return Utilities.ErrorJson("Invalid id");
+                }
+
+                return new JsonResult(new
+                {
+                    Error = "",
+                    Job = job
+                });
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+        }
+
+        /// <summary>
         /// Assigns a volunteer to a specific job.  Must be done by staff or the volunteer in question.
         /// </summary>
         /// <param name="vm">A viewmodel with a VolunteerId, JobId, and Date</param>
@@ -972,8 +1062,17 @@ namespace API.Controllers
 
             if (job.CurrentNumber <= job.Min)
             {
-                await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date} - {job.Name} may be understaffed", 
-                    $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up.", configModel.EmailOptions);
+                try
+                {
+                    // TODO: change this to appropriate OCC email
+                    await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date.ToString("dd/MM/yyyy")} - {job.Name} may be understaffed",
+                        $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up on {vm.Date.ToString("dd/MM/yyyy")}.", configModel.EmailOptions);
+                }
+                catch (Exception)
+                {
+                    // This is in case the email fails to send - we still want to cancel the job, since the email isn't critical
+                }
+                
             }
 
             try
@@ -1089,6 +1188,45 @@ namespace API.Controllers
             {
                 Error = "",
                 Birthdays = birthdays
+            });
+        }
+
+        /// <summary>
+        /// Searches for volunteers by last name, first name, or preferred name
+        /// </summary>
+        /// <param name="searchString">The string to search for</param>
+        /// <returns>An error string, if applicable, and a list of VolunteerModel objects with id, last name, preferred name, and first name filled out</returns>
+        [HttpGet]
+        [Route("~/api/volunteer-search")]
+        public async Task<IActionResult> SearchVolunteers(string searchString)
+        {
+            var user = await userManager.GetUserAsync(User);
+            VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
+            List<VolunteerModel> volunteers;
+
+            if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+            {
+                return Utilities.ErrorJson("Not authorized");
+            }
+
+            if (String.IsNullOrEmpty(searchString))
+            {
+                return Utilities.ErrorJson("Search string must be non-empty");
+            }
+
+            try
+            {
+                volunteers = repo.SearchVolunteers(searchString);
+            }
+            catch(Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return new JsonResult(new
+            {
+                Error = "",
+                Volunteers = volunteers
             });
         }
     }

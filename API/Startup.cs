@@ -57,6 +57,12 @@ namespace API
                 options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
                 options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
             });
+
+            services.Configure<DataProtectionTokenProviderOptions>(o =>
+            {
+                o.TokenLifespan = TimeSpan.FromMinutes(15);
+            });
+
             services.Configure<ConfigurationModel>(options =>
             {
                 options.ConnectionString = Configuration.GetConnectionString("DevConnection");

@@ -590,12 +590,12 @@ namespace API.Data
         /// </summary>
         /// <param name="volunteerId">The id of the volunteer whose trainings are being queried</param>
         /// <returns>A list of training names</returns>
-        public List<string> GetVolunteerTrainings(int volunteerId)
+        public List<VolunteerTrainingModel> GetVolunteerTrainings(int volunteerId)
         {
-            List<string> trainings = new List<string>();
+            List<VolunteerTrainingModel> trainings = new List<VolunteerTrainingModel>();
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da;
-            string sql = @"SELECT name FROM Training AS T 
+            string sql = @"SELECT T.id, T.name FROM Training AS T 
                            INNER JOIN Trainings_Completed AS TC ON T.id = TC.trainingID 
                            INNER JOIN Volunteers AS V ON V.id = TC.volunteerID 
                            WHERE V.id = @id";
@@ -615,7 +615,10 @@ namespace API.Data
 
             foreach(DataRow dr in dt.Rows)
             {
-                trainings.Add(dr["name"].ToString());
+                trainings.Add(new VolunteerTrainingModel {
+                    Id = (int)dr["id"],
+                    Name = dr["name"].ToString()
+                });
             }
 
             return trainings;
@@ -1324,18 +1327,10 @@ namespace API.Data
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"SELECT va.volunteerid,
-                                      v.firstname, v.lastname,
-                                      cl.id as classid, cl.description,
-                                      b.id as busid, b.name as busname
-                               FROM Volunteer_Attendance va
-                               LEFT JOIN Volunteers v
+                string sql = @"SELECT v.*
+                               FROM Volunteers v
+                               LEFT JOIN Volunteer_Attendance va
                                ON va.volunteerid = v.id
-                               LEFT JOIN Class_List cl
-                               ON va.volunteerid = cl.teacherid
-                               LEFT JOIN Bus b
-                               ON va.volunteerid = b.driverid
-
                                WHERE dayattended = @day
                                AND attended = @checkedIn
                                AND scheduled = @signedUp";
@@ -1355,35 +1350,29 @@ namespace API.Data
             List<VolunteerModel> volunteers = new List<VolunteerModel>();
             foreach (DataRow dr in dt.Rows)
             {
-                // Not all volunteers have a class and bus id, so check if the DB values are null
-                int? classId = null;
-                if (!DBNull.Value.Equals(dr["classid"]))
-                {
-                    classId = (int)dr["classid"];
-                }
-
-                int? busId = null;
-                if (!DBNull.Value.Equals(dr["busid"]))
-                {
-                    busId = (int)dr["busid"];
-                }
-
                 volunteers.Add(new VolunteerModel
                 {
-                    //Id = (int)dr["volunteerid"],
+                    Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
+                    PreferredName = dr["preferredName"].ToString(),
                     LastName = dr["lastName"].ToString(),
-                    Class = new Pair
-                    {
-                        Id = classId,
-                        Name = dr["description"].ToString()
-                    },
-                    Bus = new Pair
-                    {
-                        Id = busId,
-                        Name = dr["busname"].ToString()
-                    },
-                    Trainings = GetVolunteerTrainings((int)dr["volunteerid"]).ToArray(),
+                    Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
+                    Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                    Affiliation = dr["affiliation"].ToString(),
+                    Referral = dr["Referral"].ToString(),
+                    Languages = GetVolunteerLanguages((int)dr["id"]).ToArray(),
+                    Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                    ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
+                    Phone = dr["phone"].ToString(),
+                    Email = dr["email"].ToString(),
+                    BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                    PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                    BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    YearStarted = (int)dr["yearstarted"],
+                    CanEditInventory = (bool)dr["caneditinventory"],
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
+                    Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"])
                 });
             }
 
@@ -1426,6 +1415,85 @@ namespace API.Data
             }
 
             return birthdays;
+        }
+
+        /// <summary>
+        /// Gets a list of all users with the bus driver role
+        /// </summary>
+        /// <returns>A list of VolunteerModels with only the name and id filled out</returns>
+        public List<VolunteerModel> GetBusDrivers()
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerModel> drivers = new List<VolunteerModel>();
+            string sql = $"SELECT id, firstname, preferredname, lastname FROM volunteers WHERE role = {(int)UserHelpers.UserRoles.BusDriver}";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                drivers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstname"].ToString(),
+                    PreferredName = dr["preferredname"].ToString(),
+                    LastName = dr["lastname"].ToString()
+                });
+            }
+
+            return drivers;
+        }
+
+        /// <summary>
+        /// Searches for volunteers by last name, first name, or preferred name
+        /// </summary>
+        /// <param name="searchString">The string to search for</param>
+        /// <returns>A list of VolunteerModel objects with id, last name, preferred name, and first name filled out</returns>
+        public List<VolunteerModel> SearchVolunteers(string searchString)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<VolunteerModel> volunteers = new List<VolunteerModel>();
+            string sql = @"SELECT id, firstname, preferredname, lastname FROM volunteers 
+                           WHERE UPPER(firstname) LIKE '%' || @search || '%' OR UPPER(preferredname) LIKE '%' || @search || '%' OR UPPER(lastname) LIKE '%' || @search || '%' 
+                           ORDER BY lastname, preferredname, firstname";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@search", NpgsqlTypes.NpgsqlDbType.Varchar).Value = searchString.ToUpper();
+
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                volunteers.Add(new VolunteerModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstname"].ToString(),
+                    PreferredName = dr["preferredname"].ToString(),
+                    LastName = dr["lastname"].ToString()
+                });
+            }
+
+            return volunteers;
         }
     }
 }

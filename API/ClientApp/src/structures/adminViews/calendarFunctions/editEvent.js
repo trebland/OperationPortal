@@ -150,7 +150,7 @@ export class AdminEditEvent extends Component {
 
                     <Form.Group>
                         <Form.Label>Description</Form.Label>
-                        <Form.Control type="text" placeholder="Description of Event" onChange={this.handleDescriptionChange}/>
+                        <Form.Control as="textarea" type="text" placeholder="Description of Event" onChange={this.handleDescriptionChange}/>
                         <Form.Text>
                             Original: {this.state.event.description}
                         </Form.Text>
