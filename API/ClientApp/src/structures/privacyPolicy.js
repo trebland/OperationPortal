@@ -502,7 +502,7 @@ export class PrivacyPolicy extends Component {
                     <p>
                         If you have any questions about this Privacy Policy or the way we collect information from you, or if you would like to 
                         launch a complaint about anything related to this Privacy Policy, you may contact us at the following email address: 
-                        info@orlandochildrenschurch.org.
+                        tinfo@orlandochildrenschurch.org.
                     </p>
                 </div>
                 
