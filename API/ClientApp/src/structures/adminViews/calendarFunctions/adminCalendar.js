@@ -17,9 +17,12 @@ export class AdminCalendar extends Component {
         this.state = {
             eventsapi: [{}],
             groups: [{}],
+            saturdayinfo: [{}],
             redirect: false,
             redirectEvents: false,
             redirectGroups: false,
+            redirectAbsent: false,
+            redirectVolunteers: false,
             clicked: {},
             jwt: props.location.state.jwt,
             name: '',
@@ -31,7 +34,7 @@ export class AdminCalendar extends Component {
             groupphone: '', 
             groupemail: '',
             groupcount: '', 
-            regexp : /^[0-9\b]+$/,
+            regexp : /^[0-9\b]+$/
         }
         console.log(this.state.jwt)
         this.handleNameChange = this.handleNameChange.bind(this)
@@ -45,6 +48,7 @@ export class AdminCalendar extends Component {
         this.handleGroupPhoneChange = this.handleGroupPhoneChange.bind(this)
 
         this.getInfo()
+        this.getSaturdays()
     }
 
     componentWillUnmount = () => {
@@ -83,6 +87,24 @@ export class AdminCalendar extends Component {
                 }
             }}/>
         }
+        else if(this.state.redirectVolunteers){
+            return <Redirect to={{
+                pathname: '/admin-attending-volunteers',
+                state: {
+                    clicked: this.state.clicked,
+                    jwt: this.state.jwt
+                }
+            }}/>
+        }
+        else if(this.state.redirectAbsent){
+            return <Redirect to={{
+                pathname: '/admin-all-absences',
+                state: {
+                    clicked: this.state.clicked,
+                    jwt: this.state.jwt
+                }
+            }}/>
+        }
     }
 
     setRedirect = () => {
@@ -105,6 +127,24 @@ export class AdminCalendar extends Component {
         this.setState({
             clicked: ep,
             redirectGroups: true
+        })
+        console.log(this.state.clicked)
+    }
+
+    getAbsentDetails = (ep) => {
+        console.log(ep)
+        this.setState({
+            clicked: ep,
+            redirectAbsent: true
+        })
+        console.log(this.state.clicked)
+    }
+
+    getVolunteerDetails = (ep) => {
+        console.log(ep)
+        this.setState({
+            clicked: ep,
+            redirectVolunteers: true
         })
         console.log(this.state.clicked)
     }
@@ -176,6 +216,106 @@ export class AdminCalendar extends Component {
             date: e.target.value
         })
         console.log(this.state.date)
+    }
+
+    getSaturdays = () => {
+        var my_date = new Date()
+        var month = my_date.getMonth()
+        var year = my_date.getFullYear()
+
+        var saturdays = [];
+
+        for (var i = 0; i <= new Date(year, month, 0).getDate(); i++) {    
+            var date = new Date(year, month, i);
+
+            if (date.getDay() == 6) {
+                saturdays.push(date.toISOString())
+            } 
+        };
+        for(var i = 0; i < saturdays.length; i++) {
+            console.log(saturdays[i])
+            this.getSaturdayDetails(saturdays[i])
+        }
+    }
+
+    getSaturdayDetails = (ep) => {
+        console.log(typeof ep)
+        let year = Number.parseInt(ep.substring(0, 4))
+        // starts at 0 for january 
+        let month = Number.parseInt(ep.substring(5, 7)) 
+        let day = Number.parseInt(ep.substring(8, 10))
+        let date = month + '/' + day + '/' + year
+        try {
+            fetch('api/calendar/details?date=' + date , {
+                // method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                  }
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log(date + 'details successful')
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log(date + 'details unsuccessful')
+                    return res.text()
+                }
+            })
+            .then((data) => {
+                var res = JSON.parse(data)
+                var people
+                var absences
+                var dump = [{}]
+                if(res.people != null && res.absences != null) {
+                    people = res.people.map((details) => {
+                        let ret = {
+                            'title': details.preferredName + ' Attending',
+                            desc: details.firstName + ' ' + details.lastName + ' is attending.',
+                            'allDay': true,
+                            'start': new Date(year, month - 1, day),
+                            'end': new Date(year, month - 1, day),
+                            year: year,
+                            month: month,
+                            day: day,
+                            group: false,
+                            volunteer: true,
+                            absent: false
+                        }
+                        return ret
+                    })
+                    absences = res.absences.map((details) => {
+                        let ret = {
+                            'title': details.preferredName + ' not Attending',
+                            desc: details.firstName + ' ' + details.lastName + ' is not attending.',
+                            'allDay': true,
+                            'start': new Date(year, month - 1, day),
+                            'end': new Date(year, month - 1, day),
+                            year: year,
+                            month: month,
+                            day: day,
+                            group: false,
+                            volunteer: false,
+                            absent: true
+                        }
+                        return ret
+                    })
+                    var sat = this.state.saturdayinfo
+                    dump = dump.concat(people).concat(absences)
+                    sat = sat.concat(dump)
+                    this.setState({
+                        saturdayinfo: sat
+                    })
+                    console.log(this.state.saturdayinfo)
+                }
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
     }
 
     getInfo = () => {
@@ -435,7 +575,7 @@ export class AdminCalendar extends Component {
     }
 
     render () {
-        var a = this.state.groups.concat(this.state.eventsapi)
+        var a = this.state.saturdayinfo.concat(this.state.groups).concat(this.state.eventsapi)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -455,7 +595,10 @@ export class AdminCalendar extends Component {
                                     this.getGroupDetails(e)
                                 }
                                 else if(e.volunteer) {
-                                    alert('hi')
+                                    this.getVolunteerDetails(e)
+                                }
+                                else if(e.absent) {
+                                    this.getAbsentDetails(e)
                                 }
                                 else {
                                     this.getEventDetails(e)
@@ -490,6 +633,19 @@ export class AdminCalendar extends Component {
                                         style: newStyle
                                     }
                                 }
+                                if(event.absent) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "red"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
                             }
                         }
                     />
@@ -498,8 +654,9 @@ export class AdminCalendar extends Component {
                         <div className='legend-scale'>
                             <ul className='legend-labels'>
                                 <li><span style={{background:'green'}}></span>groups</li>
-                                <li><span style={{background:'orange'}}></span>volunteer</li>
+                                <li><span style={{background:'red'}}></span>absent</li>
                                 <li><span style={{background:'#3174ae'}}></span>events</li>
+                                <li><span style={{background:'orange'}}></span>volunteers</li>
                             </ul>
                         </div>
                     </div>

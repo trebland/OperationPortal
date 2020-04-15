@@ -41,7 +41,9 @@ import { AdminAddAnnouncements } from './structures/adminViews/adminAnnouncement
 import { PasswordResetRequest } from './structures/passwordReset/passwordResetRequest'
 import { PasswordResetConfirm } from './structures/passwordReset/passwordResetConfirm'
 import { AdminViewGroups } from './structures/adminViews/calendarFunctions/adminViewGroups'
-
+import { AdminAttendingVolunteers } from './structures/adminViews/calendarFunctions/adminAttendingVolunteers'
+import { AdminAllAbsences } from './structures/adminViews/calendarFunctions/adminAllAbsences'
+import { AdminJobRoster } from './structures/adminViews/calendarFunctions/adminJobRoster'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -93,6 +95,9 @@ export default class App extends Component {
             <Route path='/password-reset-request' component={PasswordResetRequest}/>
             <Route path='/password-reset-confirm' component={PasswordResetConfirm}/>
             <Route path='/admin-group-details' component={AdminViewGroups}/>
+            <Route path='/admin-attending-volunteers' component={AdminAttendingVolunteers}/>
+            <Route path='/admin-all-absences' component={AdminAllAbsences}/>
+            <Route path='/admin-job-roster' component={AdminJobRoster}/>
 
             
             <Route component={NotFound} />
