@@ -146,6 +146,13 @@ export class GeneralCalendar extends Component {
                             }
                         }
                     />
+                    <div className='my-legend'>
+                        <div className='legend-scale'>
+                            <ul className='legend-labels'>
+                                <li><span style={{background:'green'}}></span>groups</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 {this.renderRedirect()}
                 
@@ -157,7 +164,7 @@ export class GeneralCalendar extends Component {
 
 const styling = {
     cal: {
-        height: '600px',
+        height: '550px',
         padding: '20px 20px'
     },
     butt: {
