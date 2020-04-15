@@ -298,13 +298,14 @@ namespace API.Controllers
         /// <summary>
         /// Gets the list of all users with the Bus Driver role
         /// </summary>
+        /// <param name="date">Optional parameter.  If included, returns whether the user is checked in for that date</param>
         /// <returns>An error message if applicable, or a list of VolunteerModels with Id, FirstName, PreferredName, and LastName</returns>
         [HttpGet]
         [Route("~/api/bus-drivers")]
-        public async Task<IActionResult> GetBusDrivers()
+        public async Task<IActionResult> GetBusDrivers(DateTime date)
         {
             VolunteerRepository repo = new VolunteerRepository(configModel.ConnectionString);
-            List<VolunteerModel> drivers;
+            List<DriverListModel> drivers;
             var user = await userManager.GetUserAsync(User);
 
             /// Ensure that ONLY staff accounts have access to this API endpoint
@@ -315,7 +316,14 @@ namespace API.Controllers
 
             try
             {
-                drivers = repo.GetBusDrivers();
+                if (date != DateTime.MinValue)
+                {
+                    drivers = repo.GetBusDrivers(date);
+                }
+                else
+                {
+                    drivers = repo.GetBusDrivers();
+                }
             }
             catch(Exception e)
             {

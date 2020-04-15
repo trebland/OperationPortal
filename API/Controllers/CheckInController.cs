@@ -120,5 +120,124 @@ namespace API.Controllers
                 });
             }
         }
+
+        [Route("~/api/check-in/bus-driver")]
+        [HttpPost]
+        public async Task<IActionResult> CheckInBusDriver(DriverCheckInModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
+            VolunteerRepository volRepo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("bus driver id");
+            }
+
+            if (model.Date == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
+            if (model.Date.DayOfWeek != DayOfWeek.Saturday)
+            {
+                return Utilities.ErrorJson("Drivers can only be checked in for Saturdays");
+            }
+
+            if (DateTime.Today.Date.AddDays(7) < model.Date)
+            {
+                return Utilities.ErrorJson("Date is too far in the future.  Bus drivers can only be checked in for the next Saturday");
+            }
+
+            try
+            {
+                profile = volRepo.GetVolunteer(model.Id);
+
+                if (profile == null || profile.Role != UserHelpers.UserRoles.BusDriver.ToString())
+                {
+                    return Utilities.ErrorJson("Not a valid bus driver");
+                }
+
+                repo.CheckInBusDriver(model.Id, model.Date);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+
+        }
+
+        [Route("~/api/check-in/bus-driver-cancel")]
+        [HttpPost]
+        public async Task<IActionResult> CancelBusDriver(DriverCheckInModel model)
+        {
+            var user = await userManager.GetUserAsync(User);
+            CheckInRepository repo = new CheckInRepository(configModel.ConnectionString);
+            CalendarRepository calRepo = new CalendarRepository(configModel.ConnectionString);
+            AttendanceModel attendance;
+            VolunteerRepository volRepo = new VolunteerRepository(configModel.ConnectionString);
+            VolunteerModel profile;
+
+            if (user == null ||
+                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.Staff.ToString())))
+            {
+                return Utilities.ErrorJson("Not authorized.");
+            }
+
+            if (model == null || model.Id == 0)
+            {
+                return Utilities.GenerateMissingInputMessage("bus driver id");
+            }
+
+            if (model.Date == DateTime.MinValue)
+            {
+                return Utilities.GenerateMissingInputMessage("date");
+            }
+
+            if (model.Date.DayOfWeek != DayOfWeek.Saturday)
+            {
+                return Utilities.ErrorJson("Drivers can only be checked in for Saturdays");
+            }
+
+            if (DateTime.Today.Date > model.Date)
+            {
+                return Utilities.ErrorJson("Can not cancel check in in the past");
+            }
+
+            try
+            {
+                profile = volRepo.GetVolunteer(model.Id);
+
+                if (profile == null || profile.Role != UserHelpers.UserRoles.BusDriver.ToString())
+                {
+                    return Utilities.ErrorJson("Not a valid bus driver");
+                }
+
+                attendance = calRepo.GetSingleAttendance(model.Id, model.Date);
+
+                if (attendance == null || !attendance.Attended)
+                {
+                    return Utilities.ErrorJson("Not currently checked in");
+                }
+
+                repo.CancelBusDriver(model.Id, model.Date);
+            }
+            catch (Exception e)
+            {
+                return Utilities.ErrorJson(e.Message);
+            }
+
+            return Utilities.NoErrorJson();
+
+        }
     }
 }

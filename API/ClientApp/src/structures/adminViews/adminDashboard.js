@@ -16,6 +16,7 @@ export class AdminDashboard extends Component {
             redirectCBC: false,
             redirectVol: false,
             redirectBus: false,
+            redirectDriver: false,
             redirectTraining: false,
             redirectSBC: false,
             redirectJobs: false,
@@ -88,6 +89,15 @@ export class AdminDashboard extends Component {
                 }
             }}/>
         }
+        else if (this.state.redirectDriver) {
+            return <Redirect to={{
+                pathname: '/admin-driver-checkin',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
+        }
         else if (this.state.redirectTraining) {
             return <Redirect to={{
                 pathname: '/admin-training-list',
@@ -142,6 +152,12 @@ export class AdminDashboard extends Component {
     setRedirectBus = () => {
         this.setState({
             redirectBus: true
+        })
+    }
+
+    setRedirectDriver = () => {
+        this.setState({
+            redirectDriver: true
         })
     }
 
@@ -230,6 +246,10 @@ export class AdminDashboard extends Component {
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectSBC}>
                     Staff Birthday Calendar
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
+                    Check In Drivers
                 </Button>
             </center>  
             <center>

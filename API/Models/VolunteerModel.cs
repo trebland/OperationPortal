@@ -80,4 +80,13 @@ namespace API.Models
         public int VolunteerId { get; set; }
         public int TrainingId { get; set; }
     }
+
+    public class DriverListModel
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string PreferredName { get; set; }
+        public string LastName { get; set; }
+        public bool CheckedIn { get; set; }
+    }
 }

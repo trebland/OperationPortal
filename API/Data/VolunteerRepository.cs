@@ -1420,12 +1420,12 @@ namespace API.Data
         /// <summary>
         /// Gets a list of all users with the bus driver role
         /// </summary>
-        /// <returns>A list of VolunteerModels with only the name and id filled out</returns>
-        public List<VolunteerModel> GetBusDrivers()
+        /// <returns>A list of DriverListModels with names and ids</returns>
+        public List<DriverListModel> GetBusDrivers()
         {
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
-            List<VolunteerModel> drivers = new List<VolunteerModel>();
+            List<DriverListModel> drivers = new List<DriverListModel>();
             string sql = $"SELECT id, firstname, preferredname, lastname FROM volunteers WHERE role = {(int)UserHelpers.UserRoles.BusDriver}";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -1442,12 +1442,56 @@ namespace API.Data
 
             foreach (DataRow dr in dt.Rows)
             {
-                drivers.Add(new VolunteerModel
+                drivers.Add(new DriverListModel
                 {
                     Id = (int)dr["id"],
                     FirstName = dr["firstname"].ToString(),
                     PreferredName = dr["preferredname"].ToString(),
-                    LastName = dr["lastname"].ToString()
+                    LastName = dr["lastname"].ToString(),
+                    CheckedIn = false
+                });
+            }
+
+            return drivers;
+        }
+
+        /// <summary>
+        /// Gets a list of all users with the bus driver role and whether or not they are checked in on a day
+        /// </summary>
+        /// <param name="date">The date to check if the driver is checked in</param>
+        /// <returns>A list of DriverListModels with the names, id, and checked in filled out</returns>
+        public List<DriverListModel> GetBusDrivers(DateTime date)
+        {
+            NpgsqlDataAdapter da;
+            DataTable dt = new DataTable();
+            List<DriverListModel> drivers = new List<DriverListModel>();
+            string sql = $@"SELECT V.id, V.firstname, V.preferredname, V.lastname, VA.Attended AS checkedIn
+                            FROM volunteers AS V LEFT OUTER JOIN 
+                            volunteer_attendance AS VA on V.id = VA.volunteerid AND VA.dayattended = @date 
+                            WHERE role = {(int)UserHelpers.UserRoles.BusDriver}";
+
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    da = new NpgsqlDataAdapter(cmd);
+
+                    con.Open();
+                    da.Fill(dt);
+                    con.Close();
+                }
+            }
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                drivers.Add(new DriverListModel
+                {
+                    Id = (int)dr["id"],
+                    FirstName = dr["firstname"].ToString(),
+                    PreferredName = dr["preferredname"].ToString(),
+                    LastName = dr["lastname"].ToString(),
+                    CheckedIn = DBNull.Value.Equals(dr["checkedIn"]) ? false : (bool)dr["checkedIn"]
                 });
             }
 

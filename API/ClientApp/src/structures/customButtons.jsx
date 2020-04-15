@@ -45,3 +45,31 @@ export class UserSelectButton extends Component {
         );
     }
 }
+
+export class CheckInButton extends Component {
+    handleClick = () => {
+        this.props.onButtonClick(this.props.value);
+    }
+
+    render() {
+        return (
+            <Button variant="primary" onClick={this.handleClick}>
+                Check In
+            </Button>
+        );
+    }
+}
+
+export class CancelCheckInButton extends Component {
+    handleClick = () => {
+        this.props.onButtonClick(this.props.value);
+    }
+
+    render() {
+        return (
+            <Button variant="danger" onClick={this.handleClick}>
+                Cancel Check-In
+            </Button>
+        );
+    }
+}

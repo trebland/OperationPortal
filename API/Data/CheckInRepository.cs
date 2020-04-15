@@ -137,5 +137,85 @@ namespace API.Data
 
             return numVisits;
         }
+
+        /// <summary>
+        /// Marks a bus driver as present for the given day
+        /// </summary>
+        public void CheckInBusDriver(int driverId, DateTime date)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                con.Open();
+                DataTable dt = new DataTable();
+
+                // See if volunteer is scheduled for this date
+                string sql = @"SELECT dayattended, attended FROM Volunteer_Attendance 
+                               WHERE volunteerid = @driverId 
+                               AND dayattended = @date";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                    NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+
+                // Driver wasn't scheduled for this day, add to table as checked in and scheduled
+                if (dt.Rows.Count == 0)
+                {
+                    sql = @"INSERT INTO Volunteer_Attendance (volunteerid, dayattended, scheduled, attended)
+                            VALUES (@driverId, @date, CAST(1 as bit), CAST(1 as bit))";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                    {
+                        cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
+                        cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Volunteer was scheduled and is checking in now
+                else if (DBNull.Value.Equals(dt.Rows[0]["attended"]) || !(bool)dt.Rows[0]["attended"])
+                {
+                    sql = @"UPDATE Volunteer_Attendance 
+                            SET scheduled = CAST(1 as bit), attended = CAST(1 as bit)
+                            WHERE volunteerid = @driverId
+                            AND dayattended = @date";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                    {
+                        cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
+                        cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                con.Close();
+            }
+        }
+
+        /// <summary>
+        /// Revokes a bus driver being marked present for the given day
+        /// </summary>
+        public void CancelBusDriver(int driverId, DateTime date)
+        {
+            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            {
+                
+                string sql = @"UPDATE Volunteer_Attendance 
+                        SET scheduled = CAST(0 as bit), attended = CAST(0 as bit)
+                        WHERE volunteerid = @driverId
+                        AND dayattended = @date";
+
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
+                {
+                    cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
+                    cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = date;
+
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+
+            }
+        }
     }
 }
