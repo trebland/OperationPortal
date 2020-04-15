@@ -241,6 +241,12 @@ namespace API.Controllers
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 PostChildEditModel child = repo.GetChild(model.Id);
+
+                if (child.Id == 0)
+                {
+                    return Utilities.ErrorJson("Invalid id");
+                }
+
                 return new JsonResult(new PostChildEditModel
                 {
                     Id = child.Id,
@@ -261,7 +267,8 @@ namespace API.Controllers
                     ParentalEmailOptIn = child.ParentalEmailOptIn,
                     OrangeShirtStatus = child.OrangeShirtStatus,
                     StartDate = child.StartDate,
-                    IsSuspended = repo.IsSuspended(model.Id)
+                    IsSuspended = repo.IsSuspended(model.Id),
+                    IsCheckedIn = repo.IsCheckedIn(model.Id)
                 });
             }
             catch (Exception exc)
