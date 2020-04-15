@@ -106,6 +106,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   inputFormatters: [
                     BlacklistingTextInputFormatter(RegExp(" ")),
                   ],

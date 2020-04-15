@@ -6,8 +6,12 @@ import 'package:operationportal/Structs/Volunteer.dart';
 
 Future<List<Volunteer>> RetrieveVolunteers (String token, String currentDay, bool checkedIn)
 async {
-  var mUrl = "https://www.operation-portal.com/api/volunteers-for-day?day=$currentDay&CheckedIn=$checkedIn";
+  var mUrl;
 
+  if (!checkedIn)
+    mUrl = "https://www.operation-portal.com/api/volunteers-for-day?day=$currentDay&CheckedIn=$checkedIn&SignedUp=true";
+  else
+    mUrl = "https://www.operation-portal.com/api/volunteers-for-day?day=$currentDay&CheckedIn=$checkedIn";
 
   Map<String, String> headers = {
     'Content-type': 'application/json',

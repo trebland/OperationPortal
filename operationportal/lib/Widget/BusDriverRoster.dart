@@ -34,6 +34,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
   List<Bus> buses;
 
   bool filterCheckedIn;
+  int numberOnBus;
 
   List<RosterChild> displayChildren;
   List<RosterChild> children;
@@ -75,12 +76,14 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
         newList.add(c);
     }
 
+    numberOnBus = newList.length;
     return newList;
   }
 
   @override
   void initState() {
     filterCheckedIn = false;
+    numberOnBus = 0;
 
     displayChildren = new List<RosterChild>();
     children = new List<RosterChild>();
@@ -98,7 +101,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Container(
           child: IntrinsicHeight(
@@ -189,6 +192,32 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
             secondary: const Icon(Icons.filter_tilt_shift),
           ),
         ),
+        filterCheckedIn
+            ? Container(
+          child: IntrinsicHeight(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>
+                [
+                  Container(
+                    child: Text("Number of Checked In Children: ${filterChildren(childrenData).length}", textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),),
+                    decoration: new BoxDecoration(
+                      color: primaryWidgetColor,
+                      borderRadius: new BorderRadius.all(
+                          new Radius.circular(20)
+                      ),
+                    ),
+                    padding: EdgeInsets.all(20),
+                    margin: EdgeInsets.only(right: 20),
+                  ),
+                ]
+            ),
+          ),
+          margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+        )
+            : Container(),
         Container(
           child: IntrinsicHeight(
             child: Row(
@@ -275,7 +304,7 @@ class BusRosterWidgetState extends State<BusRosterWidgetPage>
                   return null;
               }
             }
-        ),
+        )
       ],
     );
   }

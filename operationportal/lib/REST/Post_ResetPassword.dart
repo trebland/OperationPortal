@@ -1,26 +1,28 @@
+//
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:operationportal/Structs/Child.dart';
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
-Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext context) async {
-  var mUrl = "https://www.operation-portal.com/api/check-in/child";
+Future<void> ResetPassword(BuildContext context, String email) async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Sending Email",)));
+  var mUrl = "https://www.operation-portal.com/api/auth/password-reset-request";
 
   var body = json.encode({
-    'Id': '${toConfirm.id}'
+    "Email": '$email',
   });
 
   var response = await http.post(mUrl,
       body: body,
-      headers: {'Content-type': 'application/json', 'Authorization': 'Bearer ' + token});
+      headers: {'Content-type': 'application/json'});
 
   if (response.statusCode == 200) {
-
     // If the call to the server was successful, parse the JSON.
+
     Fluttertoast.showToast(
-        msg: "Success",
+        msg: "Reset Password Email Sent",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -29,14 +31,11 @@ Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext
         fontSize: 16.0
     );
 
-    return;
+    Navigator.popUntil(context, (route) => route.isFirst);
   } else {
-
-    Confirm_Failure mPost = Confirm_Failure.fromJson(json.decode(response.body));
-
     Fluttertoast.showToast(
-        msg: mPost.error,
-        toastLength: Toast.LENGTH_SHORT,
+        msg: "Account may not exist/Error resetting password",
+        toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
         backgroundColor: Colors.red,
@@ -44,18 +43,7 @@ Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext
         fontSize: 16.0
     );
 
+    Navigator.pop(context);
     throw Exception('Failed to load post');
-  }
-}
-
-class Confirm_Failure {
-  String error;
-
-  Confirm_Failure({this.error});
-
-  factory Confirm_Failure.fromJson(Map<String, dynamic> json) {
-    return Confirm_Failure(
-      error: json['error'],
-    );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:operationportal/REST/Post_ResetPassword.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
 
 
@@ -22,6 +24,8 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class ForgotPasswordState extends State<ForgotPasswordPage>
 {
+
+  final TextEditingController emailController = new TextEditingController();
 
   Widget buildEmailRow () {
     return Container(
@@ -48,6 +52,11 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  inputFormatters: [
+                    BlacklistingTextInputFormatter(RegExp(" ")),
+                  ],
                   decoration: new InputDecoration(
                     labelText: 'Email',
                     border: new OutlineInputBorder(
@@ -81,7 +90,8 @@ class ForgotPasswordState extends State<ForgotPasswordPage>
               style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
-            Navigator.pop(context);
+            if (emailController.text.isNotEmpty)
+              ResetPassword(context, emailController.text);
           },
           color: primaryColor,
         ),
