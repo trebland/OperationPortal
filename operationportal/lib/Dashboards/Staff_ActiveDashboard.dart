@@ -63,7 +63,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Container(
+          child: Image.asset('assets/OCC_BUS_T.png'),
+          width: 150,
+        ),
         actions: <Widget>[
           buildRefreshButton(),
           buildProfileButton(context, widget.user.profile),

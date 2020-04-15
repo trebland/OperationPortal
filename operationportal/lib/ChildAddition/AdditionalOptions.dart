@@ -8,7 +8,8 @@ import 'package:operationportal/Structs/Storage.dart';
 
 
 class AdditionalOptionsPage extends StatefulWidget {
-  AdditionalOptionsPage({Key key, this.firstName, this.lastName, this.parentName, this.contactNumber, this.imagePath}) : super(key: key);
+  AdditionalOptionsPage({Key key, this.firstName, this.lastName,
+    this.parentName, this.contactNumber, this.busId, this.imagePath}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -23,6 +24,7 @@ class AdditionalOptionsPage extends StatefulWidget {
   final String lastName;
   final String parentName;
   final String contactNumber;
+  final String busId;
   final String imagePath;
 
   @override
@@ -66,7 +68,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
   void initState() {
     storage = new Storage();
     currentYear = DateTime.now().year;
-    previousYears = currentYear - 25;
+    previousYears = currentYear - 100;
 
     selectedDate = DateTime.now();
     busDropdownValue = "Select Bus";
@@ -105,56 +107,6 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
       return false;
   }
 
-  Widget buildPreferredNameRow()
-  {
-    return Container(
-      child: IntrinsicHeight(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>
-            [
-              Container(
-                child: Icon(
-                  Icons.person_outline,
-                  size: 40,
-                ),
-                decoration: new BoxDecoration(
-                  color: primaryWidgetColor,
-                  borderRadius: new BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                  ),
-                ),
-                padding: EdgeInsets.only(left: 5),
-              ),
-              Flexible(
-                child: TextField(
-                  textAlign: TextAlign.left,
-                  controller: preferredNameController,
-                  decoration: new InputDecoration(
-                    labelText: 'Parent Name',
-                    border: new OutlineInputBorder(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                      borderSide: new BorderSide(
-                        color: Colors.black,
-                        width: 0.5,
-                      ),
-                    ),
-                  ),
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ),
-            ]
-        ),
-      ),
-      margin: EdgeInsets.only(left: 25, right: 25, bottom: 25),
-    );
-  }
-
   Widget buildGenderColumn ()
   {
     return Column(
@@ -184,6 +136,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   Flexible(
                     child: TextField(
                       textAlign: TextAlign.left,
+                      textCapitalization: TextCapitalization.words,
                       controller: genderController,
                       decoration: new InputDecoration(
                         labelText: "Gender",
@@ -297,9 +250,10 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
         ),
         Container(
-          child: OutlineButton(
+          child: RaisedButton(
             onPressed: () => _selectDate(context),
-            child: Text('Select Birthday'),
+            child: Text('Select Birthday', style: TextStyle(color: textComplementColor)),
+            color: primaryWidgetColor,
           ),
         ),
       ],
@@ -335,6 +289,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
                   Flexible(
                     child: TextField(
                       textAlign: TextAlign.left,
+                      textCapitalization: TextCapitalization.words,
                       controller: preferredNameController,
                       decoration: new InputDecoration(
                         labelText: "Preferred Name",
@@ -366,7 +321,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
     return ButtonBar(
       children: <Widget>[
         OutlineButton(
-          child: Text('Previous', style: TextStyle(color: Colors.deepPurple),),
+          child: Text('Previous', style: TextStyle(color: primaryColor),),
           onPressed: ()
           {
             Navigator.pop(context);
@@ -378,7 +333,7 @@ class AdditionalOptionsState extends State<AdditionalOptionsPage> {
           {
             storage.readToken().then((value) {
               CreateChildFull(value, widget.firstName, widget.lastName, widget.parentName, widget.contactNumber,
-                  widget.imagePath, birthdayController.text, genderController.text, preferredNameController.text,
+                  widget.busId, widget.imagePath, birthdayController.text, genderController.text, preferredNameController.text,
                   context);
             });
           },

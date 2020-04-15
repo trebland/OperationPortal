@@ -174,7 +174,10 @@ export class LoginBox extends Component {
         }
       }}/>
     }
-    else if(this.state.redirect && ((this.state.role === "Volunteer") || (this.state.role === "BusDriver"))) {
+    else if(this.state.redirect && 
+           ((this.state.role === "Volunteer") || 
+            (this.state.role === "BusDriver") || 
+            (this.state.role === "VolunteerCaptain"))) {
       return (
         <Redirect to={{
           pathname: '/dashboard',

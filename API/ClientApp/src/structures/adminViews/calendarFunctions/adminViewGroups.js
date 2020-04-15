@@ -10,7 +10,8 @@ export class AdminViewGroups extends Component {
             jwt: props.location.state.jwt,
             clicked: props.location.state.clicked,
             groups: [{}],
-            result: false
+            result: false,
+            rendergroups: false
         }
         this.getGroups()
     }
@@ -70,7 +71,8 @@ export class AdminViewGroups extends Component {
                 if(res.groups != null) {
                     res = res.groups
                     this.setState({
-                        groups: res
+                        groups: res,
+                        rendergroups: true
                     })
                 }
                 console.log(res)
@@ -142,9 +144,14 @@ export class AdminViewGroups extends Component {
 
     showGroups = () => {
         console.log(this.state.clicked)
-        if(this.state.groups != null){
+        if(this.state.rendergroups === true && this.state.groups != null){
             let eve = this.state.groups.map((e, index) => {
-                console.log(typeof e.phone)
+                var value = e.phone;
+                var numberPattern = /\d+/g;
+                value = value.match( numberPattern ).join([]);
+
+                var num = '(' + value.substring(0, 3) + ') ' + value.substring(3, 6) + '-' + value.substring(6, 10)
+                
 
                 return (
                     <div key={index} style={styling.eves}>
@@ -152,7 +159,7 @@ export class AdminViewGroups extends Component {
                         <hr></hr>
                         <p>Group Leader Name: {e.leaderName}</p>
                         <p>Group Size: {e.count}</p>
-                        <p>Phone Number: {e.phone}</p>
+                        <p>Phone Number: {num}</p> 
                         <p>Email: {e.email}</p>
                         <Button variant="primary" size="sm" style={styling.sc} onClick={() => {this.cancelGroup(e)}}>
                             Cancel Attendance

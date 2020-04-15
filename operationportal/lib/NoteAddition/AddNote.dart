@@ -168,9 +168,10 @@ class AddNoteState extends State<AddNotePage>
           margin: EdgeInsets.only(top: 25, left: 25, right: 25,),
         ),
         Container(
-          child: OutlineButton(
+          child: RaisedButton(
             onPressed: () => _selectDate(context),
-            child: Text('Select Date'),
+            child: Text('Select Date', style: TextStyle(color: textComplementColor)),
+            color: primaryWidgetColor,
           ),
         ),
       ],
@@ -207,11 +208,11 @@ class AddNoteState extends State<AddNotePage>
                   iconSize: 24,
                   elevation: 16,
                   style: TextStyle(
-                      color: Colors.deepPurple
+                      color: primaryColor
                   ),
                   underline: Container(
                     height: 2,
-                    color: Colors.deepPurpleAccent,
+                    color: primaryColor,
                   ),
                   onChanged: (String newValue) {
                     setState(() {
@@ -222,7 +223,7 @@ class AddNoteState extends State<AddNotePage>
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text('$value'),
+                      child: Text('$value',style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                     );
                   }).toList(),
                 ),

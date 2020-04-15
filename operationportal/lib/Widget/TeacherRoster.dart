@@ -110,7 +110,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                 children: <Widget>
                 [
                   Container(
-                    child: Text("Class Id", textAlign: TextAlign.center,
+                    child: Text("Class ID", textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white),),
                     decoration: new BoxDecoration(
                       color: primaryWidgetColor,
@@ -133,11 +133,11 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                           iconSize: 24,
                           elevation: 16,
                           style: TextStyle(
-                              color: Colors.deepPurple
+                              color: primaryColor
                           ),
                           underline: Container(
                             height: 2,
-                            color: Colors.deepPurpleAccent,
+                            color: primaryColor,
                           ),
                           onChanged: (Class newValue) {
                             setState(() {
@@ -225,7 +225,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
         ),
         FutureBuilder(
             future: widget.storage.readToken().then((value) {
-              return RetrieveRoster(value, "", classIdController.text);
+              return RetrieveRoster(value, "", selectedClass == null ? "" : '${selectedClass.id}', widget.user);
             }),
             builder: (BuildContext context, AsyncSnapshot<List<RosterChild>> snapshot) {
               switch (snapshot.connectionState) {
@@ -254,7 +254,7 @@ class TeacherRosterWidgetState extends State<TeacherRosterWidgetPage>
                             child: ListTile(
                               leading: Container(
                                 child: CircleAvatar(
-                                  backgroundImage: (children[index].picture != null) ? MemoryImage(base64.decode((children[index].picture))) : null,
+                                  backgroundImage: (children[index].picture != null && children[index].picture.isNotEmpty) ? MemoryImage(base64.decode((children[index].picture))) : null,
                                 ),
                               ),
                               title: Text('${children[index].firstName} ' + '${children[index].lastName}',

@@ -10,6 +10,7 @@ import 'package:operationportal/Structs/Note.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
+import 'package:operationportal/Widget/StaffWidgets/SuspensionHistory.dart';
 import 'package:operationportal/Widget/SuspensionView.dart';
 
 class ChildProfileViewerPage extends StatefulWidget {
@@ -86,7 +87,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
-  Widget buildBirthdayAndGradeRow (String birthday, int grade)
+  Widget buildBirthdayAndGenderRow (String birthday, String gender)
   {
     return Container(
       child: IntrinsicHeight(
@@ -148,14 +149,14 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "Grade",
+                          "Gender",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
                       Container(
                         child: Text(
-                          grade != null ? '$grade' : "N/A",
+                          gender != null ? gender : "N/A",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -269,7 +270,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGradeRow(widget.child.birthday, widget.child.grade),
+          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
           buildContactInformationRow(),
           Container(
             child: IntrinsicHeight(
@@ -316,10 +317,25 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                         style: TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ),
+                    Container(
+                      child: FlatButton(
+                          child: Text("History", style: TextStyle(color: Colors.white)),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => SuspensionHistoryPage(user: widget.user, child: widget.child)));
+                          },
+                      ),
+                      decoration: new BoxDecoration(
+                        color: primaryWidgetColor,
+                        borderRadius: new BorderRadius.all(
+                          Radius.circular(20),
+                        ),
+                      ),
+                      margin: EdgeInsets.only(left: 20),
+                    ),
                   ]
               ),
             ),
-            margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+            margin: EdgeInsets.only(top: 25, left: 10, right: 10),
           ),
           Container(
             child: IntrinsicHeight(

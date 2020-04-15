@@ -1,3 +1,4 @@
+//
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,15 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:operationportal/Widget/LoadingScreen.dart';
 
-Future<void> RegisterAccount(BuildContext context, String email, String password, String firstName, String lastName) async {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Registering Account",)));
-  var mUrl = "https://www.operation-portal.com/api/auth/register";
+Future<void> ResetPassword(BuildContext context, String email) async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Sending Email",)));
+  var mUrl = "https://www.operation-portal.com/api/auth/password-reset-request";
 
   var body = json.encode({
     "Email": '$email',
-    "Password": '$password',
-    "FirstName": '$firstName',
-    "LastName": '$lastName',
   });
 
   var response = await http.post(mUrl,
@@ -24,7 +22,7 @@ Future<void> RegisterAccount(BuildContext context, String email, String password
     // If the call to the server was successful, parse the JSON.
 
     Fluttertoast.showToast(
-        msg: "Account created successfully",
+        msg: "Reset Password Email Sent",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -35,12 +33,9 @@ Future<void> RegisterAccount(BuildContext context, String email, String password
 
     Navigator.popUntil(context, (route) => route.isFirst);
   } else {
-    // If that call was not successful, throw an error.
-    Register_Response mPost = Register_Response.fromJson(json.decode(response.body));
-
     Fluttertoast.showToast(
-        msg: mPost.error,
-        toastLength: Toast.LENGTH_SHORT,
+        msg: "Account may not exist/Error resetting password",
+        toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
         backgroundColor: Colors.red,
@@ -50,19 +45,5 @@ Future<void> RegisterAccount(BuildContext context, String email, String password
 
     Navigator.pop(context);
     throw Exception('Failed to load post');
-  }
-}
-
-class Register_Response {
-  final String error;
-  final String name;
-
-  Register_Response({this.error, this.name});
-
-  factory Register_Response.fromJson(Map<String, dynamic> json) {
-    return Register_Response(
-      error: json['error'],
-      name: json['name'],
-    );
   }
 }

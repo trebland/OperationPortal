@@ -29,6 +29,7 @@ Future<void> ConfirmChildAttendance (String token, Child toConfirm, BuildContext
         fontSize: 16.0
     );
 
+    return;
   } else {
 
     Confirm_Failure mPost = Confirm_Failure.fromJson(json.decode(response.body));

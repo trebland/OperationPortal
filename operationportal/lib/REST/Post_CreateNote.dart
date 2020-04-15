@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> CreateNote (String token, String author, int childId, String content, String date, String priority, BuildContext context)
 async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Creating Note",)));
   var mUrl = "https://www.operation-portal.com/api/note";
 
   Map<String, String> headers = {
@@ -38,8 +40,10 @@ async {
     );
 
     Navigator.pop(context);
+    Navigator.pop(context);
   } else {
 
+    Navigator.pop(context);
     return null;
   }
 }

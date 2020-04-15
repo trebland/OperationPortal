@@ -31,7 +31,7 @@ class LoadingScreenState extends State<LoadingScreenPage>
                 width: 200.0,
                 margin: EdgeInsets.all(20),
               ),
-              Text(widget.title + (" (Please wait...)"), style: TextStyle(fontSize: 24)),
+              Text(widget.title + (" (Please wait...)"), style: TextStyle(fontSize: 18)),
             ],
           )
         ],

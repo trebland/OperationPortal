@@ -5,9 +5,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> CreateChildBase (String token, String firstName, String lastName, String parentName, String contactNumber, String busId, String childImagePath, BuildContext context) async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Adding Child",)));
   var mUrl = "https://www.operation-portal.com/api/child-creation";
+
 
   var body;
 
@@ -52,14 +55,12 @@ Future<void> CreateChildBase (String token, String firstName, String lastName, S
         fontSize: 16.0
     );
 
-
-    Navigator.pop(context);
-
+    Navigator.popUntil(context, (route) => route.isFirst);
   } else {
     CreateChild_Failure mPost = CreateChild_Failure.fromJson(jsonDecode(response.body));
 
     Fluttertoast.showToast(
-        msg: mPost.error,
+        msg: "Unable to add child",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 1,
@@ -68,6 +69,7 @@ Future<void> CreateChildBase (String token, String firstName, String lastName, S
         fontSize: 16.0
     );
 
+    Navigator.pop(context);
     throw Exception('Failed to load post');
   }
 }

@@ -358,13 +358,13 @@ namespace API.Controllers
             }
         }
 
-        //TODO: Uncomment logic for getting guest volunteers as well
         [Route("~/api/volunteers-for-day")]
         [HttpGet]
         public async Task<IActionResult> VolunteersForDay([FromQuery]GetVolunteersForDayModel model)
         {
-            var user = await userManager.GetUserAsync(User);
             List<GuestVolunteerModel> guests = null;
+            
+            var user = await userManager.GetUserAsync(User);
 
             if (user == null ||
                !(await userManager.IsInRoleAsync(user, UserHelpers.UserRoles.VolunteerCaptain.ToString()) ||
@@ -372,7 +372,7 @@ namespace API.Controllers
             {
                 return Utilities.ErrorJson("Not authorized.");
             }
-
+            
             if (model.Day == DateTime.MinValue)
             {
                 return Utilities.GenerateMissingInputMessage("date");

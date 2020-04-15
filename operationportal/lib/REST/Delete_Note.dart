@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:operationportal/Widget/LoadingScreen.dart';
 
 Future<void> DeleteNote (String token, int id, BuildContext context)
 async {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Deleting Note",)));
   var mUrl = "https://www.operation-portal.com/api/note" + "?id=" + '$id';
 
   Map<String, String> headers = {
@@ -26,9 +28,8 @@ async {
         fontSize: 16.0
     );
 
-    setState(){
 
-    }
+    Navigator.pop(context);
     Navigator.pop(context);
   } else {
     return null;

@@ -17,7 +17,8 @@ export class UserEventDetails extends Component {
             month: props.location.state.month,
             day: props.location.state.day,
             details: [{}],
-            jwt: props.location.state.jwt
+            jwt: props.location.state.jwt,
+            role: props.location.state.role
         }
         console.log(this.state.clicked)
         this.getInfo()
@@ -72,7 +73,8 @@ export class UserEventDetails extends Component {
             return <Redirect to={{
                 pathname: '/user-calendar',
                 state: {
-                    jwt: this.state.jwt
+                    jwt: this.state.jwt,
+                    role: this.state.role
                 }
             }}/>
         }

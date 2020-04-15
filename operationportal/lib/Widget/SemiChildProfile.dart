@@ -71,7 +71,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
-  Widget buildBirthdayAndGradeRow (String birthday, int grade)
+  Widget buildBirthdayAndGenderRow (String birthday, String gender)
   {
     return Container(
       child: IntrinsicHeight(
@@ -133,14 +133,14 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          "Grade",
+                          "Gender",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
                       Container(
                         child: Text(
-                          grade != null ? '$grade' : "N/A",
+                          gender != null ? gender : "N/A",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -173,7 +173,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGradeRow(widget.child.birthday, widget.child.grade),
+          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
           Container(
             child: IntrinsicHeight(
               child: Row(

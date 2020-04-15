@@ -1327,18 +1327,10 @@ namespace API.Data
             DataTable dt = new DataTable();
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
             {
-                string sql = @"SELECT va.volunteerid,
-                                      v.firstname, v.lastname,
-                                      cl.id as classid, cl.description,
-                                      b.id as busid, b.name as busname
-                               FROM Volunteer_Attendance va
-                               LEFT JOIN Volunteers v
+                string sql = @"SELECT v.*
+                               FROM Volunteers v
+                               LEFT JOIN Volunteer_Attendance va
                                ON va.volunteerid = v.id
-                               LEFT JOIN Class_List cl
-                               ON va.volunteerid = cl.teacherid
-                               LEFT JOIN Bus b
-                               ON va.volunteerid = b.driverid
-
                                WHERE dayattended = @day
                                AND attended = @checkedIn
                                AND scheduled = @signedUp";
@@ -1358,35 +1350,29 @@ namespace API.Data
             List<VolunteerModel> volunteers = new List<VolunteerModel>();
             foreach (DataRow dr in dt.Rows)
             {
-                // Not all volunteers have a class and bus id, so check if the DB values are null
-                int? classId = null;
-                if (!DBNull.Value.Equals(dr["classid"]))
-                {
-                    classId = (int)dr["classid"];
-                }
-
-                int? busId = null;
-                if (!DBNull.Value.Equals(dr["busid"]))
-                {
-                    busId = (int)dr["busid"];
-                }
-
                 volunteers.Add(new VolunteerModel
                 {
-                    //Id = (int)dr["volunteerid"],
+                    Id = (int)dr["id"],
                     FirstName = dr["firstName"].ToString(),
+                    PreferredName = dr["preferredName"].ToString(),
                     LastName = dr["lastName"].ToString(),
-                    Class = new Pair
-                    {
-                        Id = classId,
-                        Name = dr["description"].ToString()
-                    },
-                    Bus = new Pair
-                    {
-                        Id = busId,
-                        Name = dr["busname"].ToString()
-                    },
-                    Trainings = GetVolunteerTrainings((int)dr["volunteerid"]).ToArray(),
+                    Orientation = dr["orientation"] == DBNull.Value ? false : (bool)dr["orientation"],
+                    Trainings = GetVolunteerTrainings((int)dr["id"]).ToArray(),
+                    Affiliation = dr["affiliation"].ToString(),
+                    Referral = dr["Referral"].ToString(),
+                    Languages = GetVolunteerLanguages((int)dr["id"]).ToArray(),
+                    Newsletter = dr["newsletter"] == DBNull.Value ? false : (bool)dr["newsletter"],
+                    ContactWhenShort = dr["contactWhenShort"] == DBNull.Value ? false : (bool)dr["contactWhenShort"],
+                    Phone = dr["phone"].ToString(),
+                    Email = dr["email"].ToString(),
+                    BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
+                    PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
+                    BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    YearStarted = (int)dr["yearstarted"],
+                    CanEditInventory = (bool)dr["caneditinventory"],
+                    Picture = DBNull.Value.Equals(dr["picture"]) ? null : (byte[])dr["picture"],
+                    Birthday = dr["birthday"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(dr["birthday"])
                 });
             }
 

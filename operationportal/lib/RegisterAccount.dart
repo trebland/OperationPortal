@@ -106,6 +106,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
                 child: TextField(
                   textAlign: TextAlign.left,
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   inputFormatters: [
                     BlacklistingTextInputFormatter(RegExp(" ")),
                   ],
@@ -157,6 +158,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: _firstNameController,
                   decoration: new InputDecoration(
                     labelText: 'First Name',
@@ -206,6 +208,7 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               Flexible(
                 child: TextField(
                   textAlign: TextAlign.left,
+                  textCapitalization: TextCapitalization.words,
                   controller: _lastNameController,
                   decoration: new InputDecoration(
                     labelText: 'Last Name',

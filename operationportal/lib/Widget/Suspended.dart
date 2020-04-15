@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveSuspendedRoster.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
+import 'package:operationportal/References/ReferenceFunctions.dart';
 import 'package:operationportal/Structs/RosterChild.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
@@ -117,7 +118,7 @@ class SuspendedWidgetState extends State<SuspendedWidgetPage>
                               ),
                               title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
                                   style: TextStyle(color: Colors.white)),
-                              subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? 'Start of Suspension: ' + '${suspended[index].startSuspension.split('T')[0]}' + '\n' + 'End of Suspension: ' + '${suspended[index].endSuspension.split('T')[0]}' : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
+                              subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? formatDate('${suspended[index].startSuspension.split('T')[0]}') + ' to ' + formatDate('${suspended[index].endSuspension.split('T')[0]}') : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
                                 widget.user.profile.role == "Staff"

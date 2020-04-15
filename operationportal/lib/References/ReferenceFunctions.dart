@@ -34,3 +34,11 @@ List<RosterChild> sortedChildren (List<RosterChild> children)
 
   return recentChildren;
 }
+
+String formatDate(String date)
+{
+  String formattedDate = "";
+  formattedDate = date.split('-')[1] + '-' + date.split('-')[2] + '-' + date.split('-')[0];
+
+  return formattedDate;
+}
