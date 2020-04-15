@@ -5,10 +5,11 @@ class Class {
   int numStudents;
   int teacherId;
   String teacherName;
+  String teacherPicture;
   String location;
 
   Class({this.id, this.name,
-  this.numStudents, this.teacherId, this.teacherName, this.location});
+  this.numStudents, this.teacherId, this.teacherName, this.teacherPicture, this.location});
 
   factory Class.fromJson(Map<String, dynamic> json) {
     return Class(
@@ -17,6 +18,7 @@ class Class {
       numStudents: json['numStudents'],
       teacherId: json['teacherId'],
       teacherName: json['teacherName'] != null ? json['teacherName'] : "N/A",
+      teacherPicture: json['teacherPicture'],
       location: json['location'] != null ? json['location'] : "N/A",
     );
   }

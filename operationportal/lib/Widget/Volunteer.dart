@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:operationportal/REST/Get_RetrieveVolunteers.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
@@ -234,6 +236,7 @@ class VolunteerWidgetState extends State<VolunteerWidgetPage>
                             child: ListTile(
                               leading: Container(
                                 child: CircleAvatar(
+                                  backgroundImage: (volunteers[index].picture != null && volunteers[index].picture.isNotEmpty) ? MemoryImage(base64.decode((volunteers[index].picture))) : null,
                                 ),
                               ),
                               title: Text('${volunteers[index].firstName} ' + '${volunteers[index].lastName}',

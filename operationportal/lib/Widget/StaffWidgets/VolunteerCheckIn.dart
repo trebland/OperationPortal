@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,6 +93,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                                   [
                                     Container(
                                       child: CircleAvatar(
+                                        backgroundImage: (snapshot.data.picture != null && snapshot.data.picture.isNotEmpty) ? MemoryImage(base64.decode((snapshot.data.picture))) : null,
                                       ),
                                       height: 200,
                                       width: 200,
@@ -117,22 +120,57 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                             margin: EdgeInsets.all(10),
                           ),
                           Container(
-                              child: FlatButton(
-                                child: Text("Confirm Assignment", style: TextStyle(fontSize: 20, color: Colors.white),),
-                                onPressed: () {
-                                  widget.storage.readToken().then((value) {
-                                    ConfirmVolunteerAttendance(value, snapshot.data.id, context);
-                                  });
-                                },
-                              ),
+                              child: Text("Number of Weeks Attended: ${snapshot.data.weeksAttended}", style: TextStyle(fontSize: 20, color: Colors.white),),
                               decoration: new BoxDecoration(
                                 color: primaryWidgetColor,
                                 borderRadius: new BorderRadius.all(
                                     new Radius.circular(20)
                                 ),
                               ),
+                              padding: EdgeInsets.all(20),
                               margin: EdgeInsets.only(top: 20)
                           ),
+                          snapshot.data.birthday == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+                              ? Container(
+                                child: Text("Happy Birthday!", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                decoration: new BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: new BorderRadius.all(
+                                      new Radius.circular(20)
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(20),
+                                margin: EdgeInsets.only(top: 20)
+                              ) : Container(),
+                          snapshot.data.checkedIn
+                              ? Container(
+                                child: Text("Already Signed In", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                decoration: new BoxDecoration(
+                                  color: primaryColor,
+                                  borderRadius: new BorderRadius.all(
+                                      new Radius.circular(20)
+                                  ),
+                                ),
+                              padding: EdgeInsets.all(20),
+                                margin: EdgeInsets.only(top: 100)
+                              )
+                              : Container(
+                                child: FlatButton(
+                                  child: Text("Sign In Volunteer", style: TextStyle(fontSize: 20, color: Colors.white),),
+                                  onPressed: () {
+                                    widget.storage.readToken().then((value) {
+                                      ConfirmVolunteerAttendance(value, snapshot.data.id, context);
+                                    });
+                                  },
+                                ),
+                                decoration: new BoxDecoration(
+                                  color: primaryColor,
+                                  borderRadius: new BorderRadius.all(
+                                      new Radius.circular(20)
+                                  ),
+                                ),
+                                margin: EdgeInsets.only(top: 100)
+                              ),
                         ],
                       );
                     }

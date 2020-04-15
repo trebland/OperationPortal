@@ -40,8 +40,10 @@ class RetrieveSuccess {
   RetrieveSuccess({this.volunteer});
 
   factory RetrieveSuccess.fromJson(Map<String, dynamic> json) {
+    Volunteer tempVolunteer = Volunteer.fromJson(json['volunteer']);
+    tempVolunteer.checkedIn = json['checkedIn'] != null ? json['checkedIn'] : false;
     return RetrieveSuccess(
-      volunteer: Volunteer.fromJson(json['volunteer']),
+      volunteer: tempVolunteer,
     );
   }
 }

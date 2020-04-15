@@ -1,20 +1,34 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:operationportal/Widget/LoadingScreen.dart';
 
-Future<void> RegisterAccount(BuildContext context, String email, String password, String firstName, String lastName) async {
+Future<void> RegisterAccount(BuildContext context, String email,
+    String password, String firstName, String lastName, String imagePath) async {
   Navigator.push(context, MaterialPageRoute(builder: (context) => LoadingScreenPage(title: "Registering Account",)));
   var mUrl = "https://www.operation-portal.com/api/auth/register";
 
-  var body = json.encode({
+  Map<String, dynamic> bodyToSet = {
     "Email": '$email',
     "Password": '$password',
     "FirstName": '$firstName',
     "LastName": '$lastName',
-  });
+  };
+
+  if (imagePath != null && imagePath.isNotEmpty)
+  {
+    Uint8List bytes = (await File(imagePath).readAsBytes());
+    Map<String, dynamic> addTo = {
+      'Picture': bytes,
+    };
+    bodyToSet.addAll(addTo);
+  }
+
+  var body = json.encode(bodyToSet);
 
   var response = await http.post(mUrl,
       body: body,

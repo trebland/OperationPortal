@@ -52,6 +52,9 @@ class Volunteer_ActiveDashboard_State extends State<Volunteer_ActiveDashboard_Pa
     if (!widget.user.isTeacher && !widget.user.profile.canEditInventory)
       myTabs.add(Tab(text: "Welcome"));
 
+    print(widget.user.isTeacher);
+    print(widget.user.profile.canEditInventory);
+
 
     _tabController = TabController(vsync: this, length: myTabs.length);
 

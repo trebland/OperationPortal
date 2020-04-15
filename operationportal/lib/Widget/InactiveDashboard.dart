@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:operationportal/QR/GenerateQR.dart';
 import 'package:operationportal/References/ReferenceConstants.dart';
@@ -27,7 +29,9 @@ class InactiveDashboardState extends State<InactiveDashboardPage>
             children: <Widget>
             [
               Container(
-                child: CircleAvatar(),
+                child: CircleAvatar(
+                  backgroundImage: (widget.profile.picture != null && widget.profile.picture.isNotEmpty) ? MemoryImage(base64.decode((widget.profile.picture))) : null,
+                ),
                 height: 200,
                 width: 200,
                 margin: EdgeInsets.only(top: 10, right: 20)

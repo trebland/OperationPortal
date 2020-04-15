@@ -12,7 +12,7 @@ class Child {
   String parentName;
   int busId;
   int classId;
-  String birthday;
+  DateTime birthday;
   String gender;
   int grade;
   bool parentalWaiver;
@@ -21,15 +21,20 @@ class Child {
   bool parentalEmailOptIn;
   String picture;
   bool isSuspended;
+  bool isCheckedIn;
 
 
   Child({this.id, this.firstName, this.lastName, this.preferredName,
     this.contactNumber, this.parentName, this.busId, this.classId,
     this.grade, this.gender, this.birthday, this.picture,
     this.parentalWaiver, this.busWaiver, this.haircutWaiver, this.parentalEmailOptIn,
-    this.isSuspended});
+    this.isSuspended, this.isCheckedIn});
 
   factory Child.fromJson(Map<String, dynamic> json) {
+    bool isBirthdayNotEmpty (String birthday)
+    {
+      return birthday.isNotEmpty ? true : false;
+    }
     return Child(
       id: json['id'],
       firstName: json['firstName'],
@@ -41,13 +46,17 @@ class Child {
       classId: json['classId'],
       grade: json['grade'],
       gender: json['gender'],
-      birthday: json['birthday'],
+      birthday: (json['birthday'] != null && isBirthdayNotEmpty(json['birthday']) ) ?
+      new DateTime(int.parse(json['birthday'].split('/')[2].split(' ')[0]),
+        int.parse(json['birthday'].split('/')[0]),
+        int.parse(json['birthday'].split('/')[1]),) : null,
       picture: json['picture'],
       parentalWaiver: json['parentalWaiver'],
       busWaiver: json['busWaiver'],
       haircutWaiver: json['haircutWaiver'],
       parentalEmailOptIn: json['parentalEmailOptIn'],
       isSuspended: json['isSuspended'],
+      isCheckedIn: json['isCheckedIn'] != null ? json['isCheckedIn'] : false,
     );
   }
 }

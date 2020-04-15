@@ -1152,7 +1152,7 @@ namespace API.Data
             return child;
         }
 
-        private bool IsCheckedIn(int childid)
+        public bool IsCheckedIn(int childid)
         {
             DateTime now = DateTime.Now;
             bool checkedIn = false;

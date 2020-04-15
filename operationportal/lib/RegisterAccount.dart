@@ -456,6 +456,41 @@ class RegisterAccountState extends State<RegisterAccountPage> {
     );
   }
 
+  bool FieldsFilled()
+  {
+    if (volunteerImagePath == null || volunteerImagePath.isEmpty)
+      {
+        Fluttertoast.showToast(
+            msg: "Image is required to register",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else if (_passwordController.text != _confirmPasswordController.text)
+      {
+        Fluttertoast.showToast(
+            msg: "Passwords don't match",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        return false;
+      }
+    else
+      return true;
+  }
+
+
   Widget buildRegisterButton (BuildContext context)
   {
     return Container(
@@ -466,18 +501,10 @@ class RegisterAccountState extends State<RegisterAccountPage> {
               style: TextStyle(fontSize: 24, color: textComplementColor)
           ),
           onPressed: () {
-            if (_passwordController.text == _confirmPasswordController.text)
-              RegisterAccount(context, _emailController.text, _passwordController.text, _firstNameController.text, _lastNameController.text);
-            else
-              Fluttertoast.showToast(
-                  msg: "Passwords don't match",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIos: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0
-              );
+            if (FieldsFilled())
+              RegisterAccount(context, _emailController.text,
+                  _passwordController.text, _firstNameController.text,
+                  _lastNameController.text, volunteerImagePath);
           },
           color: primaryColor,
         ),

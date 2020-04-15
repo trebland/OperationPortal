@@ -22,5 +22,6 @@ namespace API.Models
         public int OrangeShirtStatus { get; set; }
         public DateTime StartDate { get; set; }
         public bool IsSuspended { get; set; }
+        public bool IsCheckedIn { get; set; }
     }
 }

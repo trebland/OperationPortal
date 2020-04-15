@@ -173,7 +173,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
+          buildBirthdayAndGenderRow(formatDate(widget.child.birthday.toString()), widget.child.gender),
           Container(
             child: IntrinsicHeight(
               child: Row(

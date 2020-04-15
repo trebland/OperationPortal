@@ -28,7 +28,7 @@ Future<void> CreateChildBase (String token, String firstName, String lastName, S
     bodyToSet.addAll(addTo);
   }
 
-  if (childImagePath == null)
+  if (childImagePath != null && childImagePath.isNotEmpty)
   {
     Uint8List bytes = (await File(childImagePath).readAsBytes());
     Map<String, dynamic> addTo = {

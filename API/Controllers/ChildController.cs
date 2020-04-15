@@ -66,6 +66,12 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 if (model.Busid == 0 && model.Classid == 0)
                 {
+                    // Must be staff to see full roster
+                    if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+                    {
+                        return Utilities.ErrorJson("Not authorized.");
+                    }
+
                     return new JsonResult(new
                     {
                         FullRoster = repo.GetChildren()
@@ -235,6 +241,12 @@ namespace API.Controllers
             {
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 PostChildEditModel child = repo.GetChild(model.Id);
+
+                if (child.Id == 0)
+                {
+                    return Utilities.ErrorJson("Invalid id");
+                }
+
                 return new JsonResult(new PostChildEditModel
                 {
                     Id = child.Id,
@@ -255,7 +267,8 @@ namespace API.Controllers
                     ParentalEmailOptIn = child.ParentalEmailOptIn,
                     OrangeShirtStatus = child.OrangeShirtStatus,
                     StartDate = child.StartDate,
-                    IsSuspended = repo.IsSuspended(model.Id)
+                    IsSuspended = repo.IsSuspended(model.Id),
+                    IsCheckedIn = repo.IsCheckedIn(model.Id)
                 });
             }
             catch (Exception exc)

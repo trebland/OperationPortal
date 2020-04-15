@@ -118,7 +118,7 @@ class SuspendedWidgetState extends State<SuspendedWidgetPage>
                               ),
                               title: Text('${suspended[index].firstName} ' + '${suspended[index].lastName}',
                                   style: TextStyle(color: Colors.white)),
-                              subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? formatDate('${suspended[index].startSuspension.split('T')[0]}') + ' to ' + formatDate('${suspended[index].endSuspension.split('T')[0]}') : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
+                              subtitle: Text('${suspended[index].startSuspension != null && suspended[index].endSuspension != null ? formatDate('${suspended[index].startSuspension}') + ' to ' + formatDate('${suspended[index].endSuspension}') : 'No Suspension Information'}', style: TextStyle(color: Colors.white)),
                               onTap: ()
                               {
                                 widget.user.profile.role == "Staff"
