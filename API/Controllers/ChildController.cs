@@ -66,6 +66,12 @@ namespace API.Controllers
                 ChildRepository repo = new ChildRepository(configModel.ConnectionString);
                 if (model.Busid == 0 && model.Classid == 0)
                 {
+                    // Must be staff to see full roster
+                    if (!User.IsInRole(UserHelpers.UserRoles.Staff.ToString()))
+                    {
+                        return Utilities.ErrorJson("Not authorized.");
+                    }
+
                     return new JsonResult(new
                     {
                         FullRoster = repo.GetChildren()
