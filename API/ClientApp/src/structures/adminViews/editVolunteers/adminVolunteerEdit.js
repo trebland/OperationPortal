@@ -227,6 +227,20 @@ export class AdminVolunteerEdit extends Component {
     showVolunteer = () => {
         const vol = this.state.volunteer
         var role = this.getRoleNum(vol)
+        if(vol.trainings != undefined) {
+            var train = vol.trainings.map((details) => {
+                return (
+                    details.name + ' | '
+                )
+            })
+        }
+        if(vol.languages != undefined) {
+            var language = vol.languages.map((details) => {
+                return (
+                    details + ' | ' 
+                )
+            })
+        }
         return (
             <div>
                 <h2>Viewing {vol.firstName + " " + vol.lastName}</h2>
@@ -292,6 +306,18 @@ export class AdminVolunteerEdit extends Component {
                         <Form.Control plaintext readOnly defaultValue={vol.weeksAttended} />
                     </Form.Group> 
 
+                </Form.Row>
+
+                <Form.Row>
+                    <Form.Group as={Col}>
+                        <Form.Label><b>Trainings</b></Form.Label>
+                        <p>{train}</p>
+                    </Form.Group>
+
+                    <Form.Group as={Col}>
+                        <Form.Label><b>Languages</b></Form.Label>
+                        <p>{language}</p>
+                    </Form.Group>
                 </Form.Row>
 
                 <h2>Edit Information</h2>
