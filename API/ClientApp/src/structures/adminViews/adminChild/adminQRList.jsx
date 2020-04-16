@@ -236,8 +236,7 @@ export class AdminChildQRList extends Component {
                 />
 
                 <div style={styling.deckDiv}>
-                    {this.state.loading ? this.renderLoading() : this.renderNothing()}
-                    {this.state.bus == null ? this.renderNothing() : <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />}
+                    <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />
                 </div>
             </div>
         );
@@ -260,7 +259,7 @@ export class AdminChildQRList extends Component {
                 {this.renderBusDropdown()}
                 
                 <h1 style={styling.head}>QR List</h1>
-                {this.renderPrintAndRoster()}
+                {this.state.bus == null ? this.renderNothing() : this.renderPrintAndRoster()}
             </div>) 
             : (<div>
                 {this.renderRedirect()}
