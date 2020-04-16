@@ -23,7 +23,7 @@ export class AdminChildQRList extends Component {
             redirect: false,
             edit: false,
             editId: 0,
-            busId: 0,
+            bus: null,
             busList: [],
             fullRoster: [],
             roster: [],
@@ -143,7 +143,7 @@ export class AdminChildQRList extends Component {
             const p = this.state.busList.map((b, index) => {
                 return (
                     <div key={index}>
-                        <Dropdown.Item as="button"  onClick={() => this.updateBusId(b.id)}>{b.name}</Dropdown.Item>
+                        <Dropdown.Item as="button"  onClick={() => this.updateSelectedBus(b)}>{b.name}</Dropdown.Item>
                     </div>
                 )
                 
@@ -151,21 +151,18 @@ export class AdminChildQRList extends Component {
             return (
                 <div>
                     <span>
-                        <DropdownButton id="dropdown-basic-button" title="Select Bus" size="lg" style={styling.butt}>
+                        <DropdownButton id="dropdown-basic-button" title={this.state.bus == null ? "Select Bus" : "Current Bus: " + this.state.bus.name} size="lg" style={styling.butt}>
                             {p}
                         </DropdownButton>
-                        <p>
-                            Current Bus: {this.state.busId == 0 ? "No Bus" : this.state.busId}
-                        </p>
                     </span>
                 </div>
             )
         }
     }
 
-    updateBusId = (e) => {
+    updateSelectedBus = (e) => {
         this.setState({
-            busId: e
+            bus: e
         })
     }
 
@@ -173,7 +170,7 @@ export class AdminChildQRList extends Component {
         if (this.state.roster != null) {
             const p = this.state.roster.map((c, index) => {
                 return (
-                    c.bus.id == this.state.busId 
+                    (c.bus.id == this.state.bus.id && !c.isSuspended)
                     ? <div key={index}>
                         <Card style={{ width: '25rem' }}>
                             <Card.Header as='h5'>
@@ -188,14 +185,6 @@ export class AdminChildQRList extends Component {
                                         <tr>
                                             <th style={styling.childTH}>Bus: </th>
                                             <td>{(c.bus && c.bus.id) ? c.bus.name : 'Not Assigned'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Suspension start: </th>
-                                            <td>{c.isSuspended ? (new Date(c.suspendedStart)).toDateString() : 'N/A'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Suspension end: </th>
-                                            <td>{c.isSuspended ? (new Date(c.suspendedEnd)).toDateString() : 'N/A'}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -249,7 +238,6 @@ export class AdminChildQRList extends Component {
                 pathname: '/login',
             }} />
         }
-        console.log("Rendered: " + this.state.busId)
         return (this.state.roster != null && this.state.roster.length > 0)
             ? (<div>
                 {this.renderRedirect()}
@@ -263,7 +251,7 @@ export class AdminChildQRList extends Component {
 
                 <div style={styling.deckDiv}>
                     {this.state.loading ? this.renderLoading() : this.renderNothing()}
-                    {this.state.busId == 0 ? this.renderNotice() : this.renderRoster()}
+                    {this.state.bus == null ? this.renderNotice() : this.renderRoster()}
                 </div>
             </div>) 
             : (<div>
