@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card } from 'react-bootstrap/'
+import { Button, Card, Dropdown, DropdownButton } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import '../cards.css'
 import { EditDetailsButton } from '../../customButtons'
@@ -27,7 +27,7 @@ export class AdminChildQRList extends Component {
             fullRoster: [],
             roster: [],
         };
-
+        this.getBusList()
         this.getChildren()
     }
 
@@ -135,16 +135,27 @@ export class AdminChildQRList extends Component {
     }
 
     renderBusDropdown = () => {
-        if (this.state.busList != null)
-        {
-            return <DropdownButton id="dropdown-item-button" title="Select Bus" size="lg" style={styling.butt}>
-                        const p = this.state.busList.map((b, index) => {
-                            <div key={index}>
-                                <Dropdown.Item as="button">b.name</Dropdown.Item>
-                            </div>
-                        })
+        if (this.state.busList != null) {
+            const p = this.state.busList.map((b, index) => {
+                return (
+                    <div key={index}>
+                        <Dropdown.Item as="button"  onClick={() => this.trevor(b.id)}>{b.name}</Dropdown.Item>
+                    </div>
+                )
+                
+            })
+            return (
+                <div>
+                    <DropdownButton id="dropdown-basic-button" title="Select Bus" size="lg" style={styling.butt}>
+                        {p}
                     </DropdownButton>
+                </div>
+            )
         }
+    }
+
+    trevor = (e) => {
+        console.log(e)
     }
 
     renderRoster = () => {
@@ -193,7 +204,7 @@ export class AdminChildQRList extends Component {
 
     renderNotice = () => {
         return (
-            <div style={textAlign.center}>
+            <div style={{textAlign: 'center'}}>
                 No Bus Selected!
             </div>
         )

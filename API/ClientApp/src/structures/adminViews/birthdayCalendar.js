@@ -18,8 +18,10 @@ export class BirthdayCalendar extends Component {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
             redirect: false,
-            volunteerBirthday: [{}],
-            childrenBirthday: [{}]
+            volunteerBirthday: [],
+            childrenBirthday: [],
+            retrievedC: false,
+            retrievedV: false
         }
         this.getChildrensBirthdays()
         this.getVolunteerBirthdays()
@@ -68,18 +70,29 @@ export class BirthdayCalendar extends Component {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201) && this.mounted === true){
                     console.log('Retrieval for volunteer birthday successful')
+                    this.setState({
+                        retrievedV: true
+                    })
                     return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                     console.log('Retrieval for volunteer birthday failed')
+                    this.setState({
+                        retrievedV: false
+                    })
                     return res.text()
                 }
             })
             .then((data) => {
-                // console.log(data)
-                var res = JSON.parse(data)
-                res = res.birthdays
-                console.log('Volunteer: ' + res)
+                if(this.state.retrievedV) {
+                    var res = JSON.parse(data)
+                    res = res.birthdays
+                    this.setState({
+                        volunteerBirthday: res
+                    })
+                    console.log(this.state.volunteerBirthday)
+                }
+                
             })
         }
         catch(e) {
@@ -104,18 +117,48 @@ export class BirthdayCalendar extends Component {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201) && this.mounted === true){
                     console.log('Retrieval for childrens birthday successful')
+                    this.setState({
+                        retrievedC: true
+                    })
                     return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                     console.log('Retrieval for childrens birthday failed')
+                    this.setState({
+                        retrievedC: false
+                    })
                     return res.text()
                 }
             })
             .then((data) => {
-                console.log(data)
-                var res = JSON.parse(data)
-                res = res.birthdays
-                console.log(res)
+                if(this.state.retrievedV) {
+                    var res = JSON.parse(data)
+                    res = res.birthdays
+                    var c = res.map((details) => {
+                        let year = Number.parseInt(details.date.substring(0, 4))
+                        // starts at 0 for january 
+                        let month = Number.parseInt(details.date.substring(5, 7)) 
+                        let day = Number.parseInt(details.date.substring(8, 10))
+                        let date = month + '/' + day + '/' + year
+                        let ret = {
+                            'title': details.name,
+                            'start': new Date(year, month - 1, day),
+                            'end': new Date(year, month - 1, day),
+                            desc: details.name + 'Birthday: ' + date,
+                            children: true,
+                            volunteer: false
+                        }
+                        return ret
+                    })
+
+                     
+                    
+                    this.setState({
+                        childrenBirthday: res
+                    })
+                    console.log(this.state.childrenBirthday)
+                }
+                
             })
         }
         catch(e) {
