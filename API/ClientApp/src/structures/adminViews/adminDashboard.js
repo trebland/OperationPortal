@@ -18,7 +18,6 @@ export class AdminDashboard extends Component {
             redirectBus: false,
             redirectDriver: false,
             redirectTraining: false,
-            redirectSBC: false,
             redirectJobs: false,
             redirectClasses: false,
             jwt: props.location.state.jwt,
@@ -64,7 +63,7 @@ export class AdminDashboard extends Component {
         }
         else if(this.state.redirectCBC){
             return <Redirect to={{
-                pathname: '/child-birthday-calendar',
+                pathname: '/admin-birthday-calendar',
                 state: {
                     loggedin: this.state.loggedin,
                     jwt: this.state.jwt
@@ -106,15 +105,6 @@ export class AdminDashboard extends Component {
                     jwt: this.state.jwt
                 }
             }} />
-        }
-        else if(this.state.redirectSBC){
-            return <Redirect to={{
-                pathname: '/staff-birthday-calendar',
-                state: {
-                    loggedin: this.state.loggedin,
-                    jwt: this.state.jwt
-                }
-            }}/>
         }
         else if (this.state.redirectJobs) {
             return <Redirect to={{
@@ -164,12 +154,6 @@ export class AdminDashboard extends Component {
     setRedirectTraining = () => {
         this.setState({
             redirectTraining: true
-        })
-    }
-
-    setRedirectSBC = () => {
-        this.setState({
-            redirectSBC: true
         })
     }
 
@@ -223,8 +207,8 @@ export class AdminDashboard extends Component {
                 </div>
             </center>
             <center>
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
-                    Edit Profile
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectVol}>
+                    View Volunteers
                 </Button>
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectAnnouncements}>
@@ -236,20 +220,7 @@ export class AdminDashboard extends Component {
                 </Button>
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCBC}>
-                    Children's Birthday Calendar
-                </Button>
-            </center>  
-            <center>
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectVol}>
-                    View Volunteers
-                </Button>
-
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectSBC}>
-                    Staff Birthday Calendar
-                </Button>
-
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
-                    Check In Drivers
+                    Birthday Calendar
                 </Button>
             </center>  
             <center>
@@ -267,6 +238,15 @@ export class AdminDashboard extends Component {
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectClasses}>
                     Manage Classes
+                </Button>
+            </center>  
+            <center>
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
+                    Edit Profile
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
+                    Check In Drivers
                 </Button>
             </center>  
         </div>

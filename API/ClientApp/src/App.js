@@ -14,8 +14,7 @@ import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements/a
 import { ViewVolunteers } from './structures/adminViews/editVolunteers/viewVolunteers'
 import { AdminProfile } from './structures/adminViews/adminProfile'
 import { AdminCalendar } from './structures/adminViews/calendarFunctions/adminCalendar'
-import { ChildrensCalendar } from './structures/adminViews/childrensCalendar'
-import { StaffCalendar } from './structures/adminViews/staffCalendar'
+import { BirthdayCalendar } from './structures/adminViews/birthdayCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
 import { AdminVolunteerEdit } from './structures/adminViews/editVolunteers/adminVolunteerEdit'
 import { AdminGetId } from './structures/adminViews/editVolunteers/adminGetId'
@@ -71,8 +70,7 @@ export default class App extends Component {
             <Route exact path='/admin-volunteer-list' component={ViewVolunteers} />
             <Route exact path='/admin-profile' component={AdminProfile} />
             <Route exact path='/admin-calendar' component={AdminCalendar} />
-            <Route exact path='/child-birthday-calendar' component={ChildrensCalendar} />
-            <Route exact path='/staff-birthday-calendar' component={StaffCalendar} />
+            <Route exact path='/admin-birthday-calendar' component={BirthdayCalendar} />
             <Route exact path='/privacy-policy' component={PrivacyPolicy} />
             <Route exact path='/admin-volunteer-edit' component={AdminVolunteerEdit} />
             <Route exact path='/admin-get-id' component={AdminGetId} />
