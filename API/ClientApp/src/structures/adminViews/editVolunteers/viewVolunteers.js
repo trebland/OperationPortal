@@ -311,6 +311,14 @@ export class ViewVolunteers extends Component {
     updateSearchText = (e) => {
         console.log(e);
     }
+    
+    renderLoading = () => {
+        return (
+            <div style={styling.center}>
+                <Spinner animation="border" />
+            </div>
+        )
+    }
 
     render() {
 
