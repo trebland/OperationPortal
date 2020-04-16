@@ -229,6 +229,5 @@ const styling = {
     imgContainer: {
         textAlign: 'center',
         minHeight: '300px',
-        marginBottom: '10px',
     }
 }
