@@ -224,11 +224,6 @@ namespace API.Controllers
                 return Utilities.ErrorJson("Invalid class id");
             }
 
-            if (dbClass.NumStudents != 0)
-            {
-                return Utilities.ErrorJson("Classes can only be deleted if they have no children assigned to them.");
-            }
-
             try
             {
                 repo.DeleteClass(model.Id);

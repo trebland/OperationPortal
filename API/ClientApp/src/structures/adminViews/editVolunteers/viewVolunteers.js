@@ -9,7 +9,7 @@ export class ViewVolunteers extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            volunteers_list: [{}],
+            volunteers_list: [],
             redirect: false,
             redirectId: false,
             edit: false,
@@ -205,6 +205,9 @@ export class ViewVolunteers extends Component {
                                 {v.firstName + " " +  v.lastName}
                             </Card.Header>
                             <Card.Body>
+                                <div style={styling.imgContainer}>
+                                    <img style={styling.image} src={v.picture ? `data:image/jpeg;base64,${v.picture}` : 'https://i.imgur.com/tdi3NGag.png'} />
+                                </div>
                                 <Card.Title>
                                     Information
                                 </Card.Title>
@@ -237,7 +240,7 @@ export class ViewVolunteers extends Component {
                                 <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
                                     Edit Volunteer Profiles
                                 </Button>
-                                <Button variant="primary" style={{marginLeft: '5px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
+                                <Button variant="primary" style={{marginLeft: '15px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
                                     Update Trainings
                                 </Button>
                             </Card.Body>
@@ -268,6 +271,7 @@ export class ViewVolunteers extends Component {
                 </Button>
 
                 <h1 style={styling.head}>All Volunteers</h1>
+                <p style={styling.center}>Please be patient, this page may take a moment to load.</p>
 
                 <div style={styling.deckDiv}>
                     {this.renderVolunteers()}
@@ -293,10 +297,6 @@ const styling = {
         marginLeft: '15px',
         marginBottom: '15px'
     },
-    table: {
-        height: '400px',
-        width: '1000px'
-    },
     deckDiv: {
         justifyContent: 'center',
         alignContent: 'center',
@@ -309,5 +309,18 @@ const styling = {
         marginTop: '15px',
         marginRight: '15px',
         marginBottom: '15px'
-    }
+    },
+    image: {
+        maxWidth: '300px',
+        maxHeight: '300px',
+        height: 'auto',
+    },
+    imgContainer: {
+        textAlign: 'center',
+        minHeight: '300px',
+        marginBottom: '10px',
+    },
+    center: {
+        textAlign: "center"
+    },
 }
