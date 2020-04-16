@@ -27,6 +27,7 @@ export class AdminChildQRList extends Component {
             fullRoster: [],
             roster: [],
         };
+        
         this.getBusList()
         this.getChildren()
     }
@@ -155,14 +156,17 @@ export class AdminChildQRList extends Component {
     }
 
     trevor = (e) => {
-        console.log(e)
+        this.setState({
+            busId: e
+        })
     }
 
     renderRoster = () => {
         if (this.state.roster != null) {
             const p = this.state.roster.map((c, index) => {
                 return (
-                    <div key={index}>
+                    c.bus.id == this.state.busId 
+                    ? <div key={index}>
                         <Card style={{ width: '25rem' }}>
                             <Card.Header as='h5'>
                                 {(c.preferredName || c.firstName) + ' ' + (c.preferredName ? '(' + c.firstName + ')' : '') + ' ' + c.lastName} <span style={{ fontWeight: 'bold', color: 'red', float: 'right' }}>{c.isSuspended ? 'SUSPENDED' : ''}</span>
@@ -189,8 +193,8 @@ export class AdminChildQRList extends Component {
                                 </table>
                             </Card.Body>
                         </Card>
-
                     </div>
+                    : <div></div>
                 )
             })
             return (
