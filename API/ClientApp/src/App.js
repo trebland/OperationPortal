@@ -14,8 +14,7 @@ import { AdminAnnouncements } from './structures/adminViews/adminAnnouncements/a
 import { ViewVolunteers } from './structures/adminViews/editVolunteers/viewVolunteers'
 import { AdminProfile } from './structures/adminViews/adminProfile'
 import { AdminCalendar } from './structures/adminViews/calendarFunctions/adminCalendar'
-import { ChildrensCalendar } from './structures/adminViews/childrensCalendar'
-import { StaffCalendar } from './structures/adminViews/staffCalendar'
+import { BirthdayCalendar } from './structures/adminViews/birthdayCalendar'
 import { PrivacyPolicy } from './structures/privacyPolicy'
 import { AdminVolunteerEdit } from './structures/adminViews/editVolunteers/adminVolunteerEdit'
 import { AdminGetId } from './structures/adminViews/editVolunteers/adminGetId'
@@ -45,6 +44,7 @@ import { AdminAttendingVolunteers } from './structures/adminViews/calendarFuncti
 import { AdminAllAbsences } from './structures/adminViews/calendarFunctions/adminAllAbsences'
 import { AdminJobRoster } from './structures/adminViews/calendarFunctions/adminJobRoster'
 import { AdminDriverCheckIn } from './structures/adminViews/adminDriver/adminDriverCheckIn'
+import { AdminUpdateTrainings } from './structures/adminViews/editVolunteers/adminUpdateTrainings'
 import { AdminChildList } from './structures/adminViews/adminChild/adminChildList'
 import { AdminChildEdit } from './structures/adminViews/adminChild/adminChildEdit'
 
@@ -72,8 +72,7 @@ export default class App extends Component {
             <Route exact path='/admin-volunteer-list' component={ViewVolunteers} />
             <Route exact path='/admin-profile' component={AdminProfile} />
             <Route exact path='/admin-calendar' component={AdminCalendar} />
-            <Route exact path='/child-birthday-calendar' component={ChildrensCalendar} />
-            <Route exact path='/staff-birthday-calendar' component={StaffCalendar} />
+            <Route exact path='/admin-birthday-calendar' component={BirthdayCalendar} />
             <Route exact path='/privacy-policy' component={PrivacyPolicy} />
             <Route exact path='/admin-volunteer-edit' component={AdminVolunteerEdit} />
             <Route exact path='/admin-get-id' component={AdminGetId} />
@@ -102,6 +101,7 @@ export default class App extends Component {
             <Route path='/admin-all-absences' component={AdminAllAbsences}/>
             <Route path='/admin-job-roster' component={AdminJobRoster}/>
             <Route path='/admin-driver-checkin' component={AdminDriverCheckIn}/>
+            <Route path='/admin-update-trainings' component={AdminUpdateTrainings}/>
             <Route path='/admin-child-list' component={AdminChildList}/>
             <Route path='/admin-child-edit/:id' component={AdminChildEdit} />
 

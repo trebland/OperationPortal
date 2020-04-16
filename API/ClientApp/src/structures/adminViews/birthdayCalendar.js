@@ -11,7 +11,7 @@ import { Redirect } from 'react-router-dom'
 
 const localizer = momentLocalizer(moment)
 
-export class StaffCalendar extends Component {
+export class BirthdayCalendar extends Component {
 
   constructor(props) {
     super(props)
@@ -48,7 +48,7 @@ export class StaffCalendar extends Component {
                 Back to Dashboard
             </Button>
             <div style={styling.cal}>
-                <h1>Staff Birthday Calendar</h1>
+                <h1>Birthday Calendar</h1>
                 <Calendar
                     localizer = {localizer}
                     events = {events}

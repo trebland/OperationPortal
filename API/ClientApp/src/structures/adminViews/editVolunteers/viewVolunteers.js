@@ -13,7 +13,9 @@ export class ViewVolunteers extends Component {
             redirect: false,
             redirectId: false,
             edit: false,
-            volunteer: []
+            volunteer: [],
+            redirectTraining: false,
+            id: ''
         }
         console.log(this.state.jwt)
         this.getVolunteers()
@@ -37,6 +39,17 @@ export class ViewVolunteers extends Component {
                         jwt: this.state.jwt,
                         loggedin: this.state.loggedin,
                         volunteer: this.state.volunteer
+                    }
+                }}/>
+            )
+        }
+        else if(this.state.redirectTraining) {
+            return (
+                <Redirect to={{
+                    pathname: '/admin-update-trainings',
+                    state: {
+                        jwt: this.state.jwt,
+                        id: this.state.id
                     }
                 }}/>
             )
@@ -117,14 +130,20 @@ export class ViewVolunteers extends Component {
         })
     }
 
+    updateTrainings = (ep, t) => {
+        this.setState({
+            redirectTraining: true,
+            id: ep
+        })
+    }
+
     profileClicked = (ep) => {
         console.log(ep)
         let live = 'https://www.operation-portal.com/api/volunteer-info?id=' + ep
         let local = 'http://localhost:5000/api/volunteer-info?id=' + ep
 
         try{
-            fetch('/api/volunteer-info?id=' + ep
-            , {
+            fetch('/api/volunteer-info?id=' + ep, {
             // method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -162,11 +181,23 @@ export class ViewVolunteers extends Component {
         }
     }
 
-    
-
     renderVolunteers = () => {
         if(this.state.volunteers_list != null){
             const p = this.state.volunteers_list.map((v, index) => {
+                if(v.trainings != undefined) {
+                    var train = v.trainings.map((details) => {
+                        return (
+                            details.name + ' | '
+                        )
+                    })
+                }
+                if(v.languages != undefined) {
+                    var language = v.languages.map((details) => {
+                        return (
+                            details + ' | ' 
+                        )
+                    })
+                }
                 return (
                     <div key={index}>
                         <Card style={{width: '25rem'}}>
@@ -186,9 +217,14 @@ export class ViewVolunteers extends Component {
                                     <br></br>
                                     Role: {v.role}<br></br>
                                     Weeks Attended: {v.weeksAttended}<br></br>
-                                    {/* trainings, languages, picture, bus, class, classes interested, 
-                                        ages interested, 
-                                     */}
+                                    <br></br>
+                                    Trainings:<br></br>
+                                    {train}
+                                    <br></br>
+                                    <br></br>
+                                    Languages:<br></br>
+                                    {language}
+                                    <br></br>
                                     <br></br>
                                     Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
                                     Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>
@@ -201,9 +237,11 @@ export class ViewVolunteers extends Component {
                                 <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
                                     Edit Volunteer Profiles
                                 </Button>
+                                <Button variant="primary" style={{marginLeft: '5px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
+                                    Update Trainings
+                                </Button>
                             </Card.Body>
                         </Card>
-                        
                     </div>
                 )
             })
