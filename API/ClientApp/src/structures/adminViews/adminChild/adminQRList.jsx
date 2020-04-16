@@ -140,7 +140,7 @@ export class AdminChildQRList extends Component {
             const p = this.state.busList.map((b, index) => {
                 return (
                     <div key={index}>
-                        <Dropdown.Item as="button"  onClick={() => this.trevor(b.id)}>{b.name}</Dropdown.Item>
+                        <Dropdown.Item as="button"  onClick={() => this.updateBusId(b.id)}>{b.name}</Dropdown.Item>
                     </div>
                 )
                 
@@ -160,7 +160,7 @@ export class AdminChildQRList extends Component {
         }
     }
 
-    trevor = (e) => {
+    updateBusId = (e) => {
         this.setState({
             busId: e
         })
@@ -213,7 +213,7 @@ export class AdminChildQRList extends Component {
 
     renderNotice = () => {
         return (
-            <div style={{textAlign: 'center'}}>
+            <div style={styling.center}>
                 No Bus Selected!
             </div>
         )
@@ -231,8 +231,9 @@ export class AdminChildQRList extends Component {
                 pathname: '/login',
             }} />
         }
-        return (
-            <div>
+        console.log("Rendered: " + this.state.busId)
+        return this.state.roster != null 
+            ? (<div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
                     Back to Dashboard
@@ -242,16 +243,22 @@ export class AdminChildQRList extends Component {
 
                 {this.renderBusDropdown()}
 
-                <p style={styling.center}>
-                    Please be patient, this page may take a moment to load.
-                </p>
-
                 <div style={styling.deckDiv}>
                     {this.state.busId == 0 ? this.renderNotice() : this.renderRoster()}
                 </div>
+            </div>) 
+            : (<div>
+                {this.renderRedirect()}
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
+                    Back to Dashboard
+                </Button>
 
-            </div>
-        )
+                <h1 style={styling.head}>QR List</h1>
+
+                <p style={styling.center}>
+                    Please wait while we load the information!
+                </p>
+            </div>)
     }
 }
 
