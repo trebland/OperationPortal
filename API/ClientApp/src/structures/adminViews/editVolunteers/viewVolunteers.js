@@ -202,7 +202,7 @@ export class ViewVolunteers extends Component {
                     })
                 }
                 return ( (this.state.nameSearch != "" && this.state.nameSearch.length > 0)
-                ? ( (( v.firstName.includes(this.state.nameSearch) || v.lastName.includes(this.state.nameSearch) ))  
+                ? ( (( v.firstName.toUpperCase().includes(this.state.nameSearch.toUpperCase()) || v.lastName.toUpperCase().includes(this.state.nameSearch.toUpperCase())) )  
                     ? (<div key={index}>
                         <Card style={{width: '25rem'}}>
                             <Card.Header as='h5'>
