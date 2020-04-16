@@ -27,7 +27,7 @@ export class AdminChildQRList extends Component {
             fullRoster: [],
             roster: [],
         };
-        
+
         this.getBusList()
         this.getChildren()
     }
@@ -147,9 +147,14 @@ export class AdminChildQRList extends Component {
             })
             return (
                 <div>
-                    <DropdownButton id="dropdown-basic-button" title="Select Bus" size="lg" style={styling.butt}>
-                        {p}
-                    </DropdownButton>
+                    <span>
+                        <DropdownButton id="dropdown-basic-button" title="Select Bus" size="lg" style={styling.butt}>
+                            {p}
+                        </DropdownButton>
+                        <p>
+                            Current Bus: {this.state.busId == 0 ? "No Bus" : this.state.busId}
+                        </p>
+                    </span>
                 </div>
             )
         }
@@ -194,7 +199,7 @@ export class AdminChildQRList extends Component {
                             </Card.Body>
                         </Card>
                     </div>
-                    : <div></div>
+                    : <div key={index}></div>
                 )
             })
             return (
