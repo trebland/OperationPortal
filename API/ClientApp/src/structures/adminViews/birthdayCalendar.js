@@ -93,11 +93,22 @@ export class BirthdayCalendar extends Component {
                         let month = Number.parseInt(details.date.substring(5, 7)) 
                         let day = Number.parseInt(details.date.substring(8, 10))
                         let date = month + '/' + day + '/' + year
+                        var now = new Date();
+                        var curYear = now.getFullYear();
+                        var curMonth = now.getMonth();
+                        var curDay = now.getDate();
+                        var diff = curYear - year;
+                        if (month > curMonth) diff--;
+                        else {
+                            if (month == curMonth) {
+                                if (day > curDay) diff--;
+                            }
+                        }
                         let ret = {
                             'title': details.name,
-                            'start': new Date(year, month - 1, day),
-                            'end': new Date(year, month - 1, day),
-                            desc: details.name + ' - ' + date,
+                            'start': new Date(curYear, month - 1, day),
+                            'end': new Date(curYear, month - 1, day),
+                            desc: details.name + ' - ' + date + ' (' + diff + ')',
                             children: false,
                             volunteer: true
                         }
@@ -156,11 +167,22 @@ export class BirthdayCalendar extends Component {
                         let month = Number.parseInt(details.date.substring(5, 7)) 
                         let day = Number.parseInt(details.date.substring(8, 10))
                         let date = month + '/' + day + '/' + year
+                        var now = new Date();
+                        var curYear = now.getFullYear();
+                        var curMonth = now.getMonth();
+                        var curDay = now.getDate();
+                        var diff = curYear - year;
+                        if (month > curMonth) diff--;
+                        else {
+                            if (month == curMonth) {
+                                if (day > curDay) diff--;
+                            }
+                        }
                         let ret = {
                             'title': details.name,
-                            'start': new Date(year, month - 1, day),
-                            'end': new Date(year, month - 1, day),
-                            desc: details.name + ' - ' + date,
+                            'start': new Date(curYear, month - 1, day),
+                            'end': new Date(curYear, month - 1, day),
+                            desc: details.name + ' - ' + date + ' (' + diff + ')',
                             children: true,
                             volunteer: false
                         }
@@ -196,6 +218,8 @@ export class BirthdayCalendar extends Component {
                 <div style={styling.cal}>
                     <h1>Birthday Calendar</h1>
                     <Calendar
+                        selectable
+                        popup
                         localizer = {localizer}
                         events = {a}
                         startAccessor = "start"

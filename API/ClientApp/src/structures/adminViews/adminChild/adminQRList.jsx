@@ -55,7 +55,7 @@ export class AdminChildQRList extends Component {
             edit: false,
             editId: 0,
             bus: null,
-            myRef = React.createRef(),
+            myRef: React.createRef(),
             busList: [],
             fullRoster: [],
             roster: [],
