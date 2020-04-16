@@ -112,66 +112,13 @@ export class AdminChildQRList extends Component {
                             </Card.Header>
                             <Card.Body>
                                 <div style={styling.imgContainer}>
-                                    <QRCode value="2" /> />
+                                    <QRCode value={(c.id)} />
                                 </div>
-
                                 <table style={styling.childTable}>
                                     <tbody>
                                         <tr>
                                             <th style={styling.childTH}>Bus: </th>
                                             <td>{(c.bus && c.bus.id) ? c.bus.name : 'Not Assigned'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Class: </th>
-                                            <td>{(c.class && c.class.id) ? c.class.name : 'Not Assigned'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Last Date Attended: </th>
-                                            <td>{(new Date(c.lastDateAttended)).toDateString() != 'Mon Jan 01 0001' ? (new Date(c.lastDateAttended)).toDateString() : 'N/A'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Gender: </th>
-                                            <td>{c.gender || 'None saved'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Birthday: </th>
-                                            <td>{c.birthday ? (c.birthday.split(' '))[0] + ' (age ' + this.calculateAge(c.birthday) + ')' : 'None saved'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Grade: </th>
-                                            <td>{c.grade || 'N/A'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Parent Name: </th>
-                                            <td>{c.parentName || 'None saved'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Contact Number: </th>
-                                            <td>{c.contactNumber || 'None saved'}</td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Parental waiver: </th>
-                                            <td>{c.parentalWaiver ? 'True' : 'False'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Parental email opt-in: </th>
-                                            <td>{c.parentalEmailOptIn ? 'True' : 'False'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Bus waiver: </th>
-                                            <td>{c.busWaiver ? 'True' : 'False'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Haircut waiver: </th>
-                                            <td>{c.haircutWaiver ? 'True' : 'False'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Currently checked in: </th>
-                                            <td>{c.checkedIn ? 'True' : 'False'} </td>
-                                        </tr>
-                                        <tr>
-                                            <th style={styling.childTH}>Orange shirt status: </th>
-                                            <td>{c.orangeShirt ? (c.orangeShirt == 1 ? 'Completed' : 'Relinquished') : 'Pending'}</td>
                                         </tr>
                                         <tr>
                                             <th style={styling.childTH}>Suspension start: </th>
