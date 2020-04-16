@@ -35,7 +35,7 @@ export class AdminJobRoster extends Component {
         if(this.state.redirect) {
             return (
                 <Redirect to={{
-                    pathname: '/admin-calendar',
+                    pathname: '/admin-attending-volunteers',
                     state: {
                         jwt: this.state.jwt,
                         clicked: this.state.clicked
@@ -138,7 +138,7 @@ export class AdminJobRoster extends Component {
             <div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
-                    Back to Calendar
+                    Back Volunteers Attending
                 </Button>
                 <h1 style={styling.head}>Job Roster for {date}</h1>
                 <div style={styling.deckDiv}>

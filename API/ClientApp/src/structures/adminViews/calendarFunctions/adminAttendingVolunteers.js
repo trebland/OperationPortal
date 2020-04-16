@@ -135,9 +135,21 @@ export class AdminAttendingVolunteers extends Component {
                                     <br></br>
                                     Role: {v.role}<br></br>
                                     Weeks Attended: {v.weeksAttended}<br></br>
-                                    {/* trainings, languages, picture, bus, class, classes interested, 
-                                        ages interested, 
-                                     */}
+                                    <br></br>
+                                    Trainings:<br></br>
+                                    {v.trainings.map((details) => {
+                                        return (
+                                            details + ' | '
+                                        )
+                                    })}
+                                    <br></br>
+                                    Languages:<br></br>
+                                    {v.languages.map((details) => {
+                                        return (
+                                            details + ' | '
+                                        )
+                                    })}
+                                    <br></br>
                                     <br></br>
                                     Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
                                     Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>

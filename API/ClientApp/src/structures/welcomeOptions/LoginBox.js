@@ -134,7 +134,6 @@ export class LoginBox extends Component {
         }
       })
       .then((data) => {
-        console.log("reached this statement in getrole")
         let res = JSON.parse(data)
         res = res.profile.role
         if(this.mounted == true) {
