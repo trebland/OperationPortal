@@ -99,15 +99,6 @@ export class AdminChildQRList extends Component {
                 }
             }} />
         }
-        else if (this.state.edit) {
-            return <Redirect to={{
-                pathname: '/admin-child-edit/' + this.state.editId,
-                state: {
-                    jwt: this.state.jwt,
-                    loggedin: this.state.loggedin
-                }
-            }} />
-        }
     }
 
     renderRoster = () => {
@@ -192,8 +183,6 @@ export class AdminChildQRList extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <EditDetailsButton onButtonClick={this.setEdit} value={c.id} />
                             </Card.Body>
                         </Card>
 
@@ -214,13 +203,6 @@ export class AdminChildQRList extends Component {
         })
     }
 
-    setEdit = (id) => {
-        this.setState({
-            edit: true,
-            editId: id
-        })
-    }
-
     render() {
         if (!this.state.loggedin) {
             return <Redirect to={{
@@ -234,7 +216,7 @@ export class AdminChildQRList extends Component {
                     Back to Dashboard
                 </Button>
 
-                <h1 style={styling.head}>View/Edit Children</h1>
+                <h1 style={styling.head}>QR List</h1>
 
                 <p style={styling.center}>Please be patient, this page may take a moment to load.</p>
 
