@@ -194,7 +194,7 @@ namespace API.Controllers
                     // Fields that can be updated:
                     FirstName = updatedChild.FirstName,
                     LastName = updatedChild.LastName,
-                    PreferredName = updatedChild.LastName,
+                    PreferredName = updatedChild.PreferredName,
                     ContactNumber = updatedChild.ContactNumber,
                     ParentName = updatedChild.ParentName,
                     BusId = updatedChild.BusId,
@@ -252,7 +252,7 @@ namespace API.Controllers
                     Id = child.Id,
                     FirstName = child.FirstName,
                     LastName = child.LastName,
-                    PreferredName = child.LastName,
+                    PreferredName = child.PreferredName,
                     ContactNumber = child.ContactNumber,
                     ParentName = child.ParentName,
                     BusId = child.BusId,

@@ -15,6 +15,7 @@ export class AdminDashboard extends Component {
             redirectLogout: false,
             redirectCBC: false,
             redirectVol: false,
+            redirectChild: false,
             redirectBus: false,
             redirectDriver: false,
             redirectTraining: false,
@@ -79,6 +80,15 @@ export class AdminDashboard extends Component {
                     jwt: this.state.jwt
                 }
             }}/>
+        }
+        else if (this.state.redirectChild) {
+            return <Redirect to={{
+                pathname: '/admin-child-list',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
         }
         else if(this.state.redirectBus){
             return <Redirect to={{
@@ -146,6 +156,12 @@ export class AdminDashboard extends Component {
     setRedirectVol = () => {
         this.setState({
             redirectVol: true
+        })
+    }
+
+    setRedirectChild = () => {
+        this.setState({
+            redirectChild: true
         })
     }
 
@@ -242,6 +258,10 @@ export class AdminDashboard extends Component {
             <center>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectVol}>
                     View Volunteers
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectChild}>
+                    View/Edit Children
                 </Button>
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectSBC}>

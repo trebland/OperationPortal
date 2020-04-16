@@ -45,6 +45,8 @@ import { AdminAttendingVolunteers } from './structures/adminViews/calendarFuncti
 import { AdminAllAbsences } from './structures/adminViews/calendarFunctions/adminAllAbsences'
 import { AdminJobRoster } from './structures/adminViews/calendarFunctions/adminJobRoster'
 import { AdminDriverCheckIn } from './structures/adminViews/adminDriver/adminDriverCheckIn'
+import { AdminChildList } from './structures/adminViews/adminChild/adminChildList'
+import { AdminChildEdit } from './structures/adminViews/adminChild/adminChildEdit'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -100,6 +102,8 @@ export default class App extends Component {
             <Route path='/admin-all-absences' component={AdminAllAbsences}/>
             <Route path='/admin-job-roster' component={AdminJobRoster}/>
             <Route path='/admin-driver-checkin' component={AdminDriverCheckIn}/>
+            <Route path='/admin-child-list' component={AdminChildList}/>
+            <Route path='/admin-child-edit/:id' component={AdminChildEdit} />
 
             
             <Route component={NotFound} />

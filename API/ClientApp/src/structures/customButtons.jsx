@@ -15,6 +15,20 @@ export class EditButton extends Component {
     }
 }
 
+export class EditDetailsButton extends Component {
+    handleClick = () => {
+        this.props.onButtonClick(this.props.value);
+    }
+
+    render() {
+        return (
+            <Button variant="primary" onClick={this.handleClick}>
+                Edit/Details
+            </Button>
+        );
+    }
+}
+
 export class DeleteButton extends Component {
     handleClick = () => {
         if (!window.confirm("Are you sure you want to delete this?  Deletion cannot be reversed.")) {

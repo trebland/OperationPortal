@@ -204,7 +204,7 @@ namespace API.Data
                     parm = -1;
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@contactnumber", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                        cmd.Parameters.Add($"@contactnumber", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ContactNumber;
                     }
 
                     if (updated[++parm])
@@ -435,7 +435,7 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ContactNumber;
                     }
 
                     if (updated[++parm])
@@ -1108,6 +1108,10 @@ namespace API.Data
             child.PreferredName = dr["preferredname"].ToString();
             child.ParentName = dr["parentname"].ToString();
             child.ContactNumber = dr["contactnumber"].ToString();
+            child.ParentalEmailOptIn = DBNull.Value.Equals(dr["parentalemailoptin"]) ? false : (bool)dr["parentalemailoptin"];
+            child.BusWaiver = DBNull.Value.Equals(dr["buswaiver"]) ? false : (bool)dr["buswaiver"];
+            child.ParentalWaiver = DBNull.Value.Equals(dr["parentalwaiver"]) ? false : (bool)dr["parentalwaiver"];
+            child.HaircutWaiver = DBNull.Value.Equals(dr["haircutpermission"]) ? false : (bool)dr["haircutpermission"];
             child.Grade = grade;
             child.Class = new Pair
             {
@@ -1192,6 +1196,7 @@ namespace API.Data
             child.ParentName = dr["parentname"].ToString();
             child.BusId = DBNull.Value.Equals(dr["busid"]) ? 0 : (int)dr["busid"];
             child.Birthday = dr["birthday"].ToString();
+            child.Grade = (int)dr["grade"];
             child.Gender = dr["gender"].ToString();
             child.ParentalWaiver = DBNull.Value.Equals(dr["parentalwaiver"]) ? false : (bool)dr["parentalwaiver"];
             child.ClassId = DBNull.Value.Equals(dr["classid"]) ? 0 : (int)dr["classid"];
