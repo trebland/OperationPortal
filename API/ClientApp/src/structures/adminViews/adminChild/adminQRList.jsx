@@ -180,14 +180,6 @@ export class AdminChildQRList extends Component {
                                 <div style={styling.imgContainer}>
                                     <QRCode value={(c.id)} />
                                 </div>
-                                <table style={styling.childTable}>
-                                    <tbody>
-                                        <tr>
-                                            <th style={styling.childTH}>Bus: </th>
-                                            <td>{(c.bus && c.bus.id) ? c.bus.name : 'Not Assigned'}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </Card.Body>
                         </Card>
                     </div>
@@ -245,13 +237,13 @@ export class AdminChildQRList extends Component {
                     Back to Dashboard
                 </Button>
 
-                <h1 style={styling.head}>QR List</h1>
-
                 {this.renderBusDropdown()}
+
+                <h1 style={styling.head}>QR List</h1>
 
                 <div style={styling.deckDiv}>
                     {this.state.loading ? this.renderLoading() : this.renderNothing()}
-                    {this.state.bus == null ? this.renderNotice() : this.renderRoster()}
+                    {this.state.bus == null ? this.renderNothing() : this.renderRoster()}
                 </div>
             </div>) 
             : (<div>
