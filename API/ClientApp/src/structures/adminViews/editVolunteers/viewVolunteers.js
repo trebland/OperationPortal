@@ -250,7 +250,7 @@ export class ViewVolunteers extends Component {
                             </Card.Body>
                         </Card>
                     </div>)
-                    : (<div></div>)
+                    : (<div key={index}></div>)
                 )
                 : (<div key={index}>
                     <Card style={{width: '25rem'}}>
@@ -336,7 +336,7 @@ export class ViewVolunteers extends Component {
 
                 {this.editVolunteers()}
                 <Form inline>
-                    <FormControl type="text" placeholder="Search" className="mr-sm-2" value={this.nameSearch} onChange={this.updateSearchText}/>
+                    <FormControl style={{marginLeft: '15px'}} type="text" placeholder="Search" className="mr-sm-2" value={this.nameSearch} onChange={this.updateSearchText}/>
                     {/* <Button variant="outline-success" onClick={}>Search Volunteers</Button> */}
                 </Form>
                 <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
