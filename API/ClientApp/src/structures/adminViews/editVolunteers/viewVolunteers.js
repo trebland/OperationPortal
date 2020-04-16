@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card, Form, FormControl } from 'react-bootstrap/'
+import { Button, Card, Form, FormControl, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import './cards.css'
 
@@ -16,9 +16,11 @@ export class ViewVolunteers extends Component {
             volunteer: [],
             redirectTraining: false,
             searchText: React.createRef(),
-            id: ''
+            id: '',
+            nameSearch: ''
         }
         console.log(this.state.jwt)
+        this.updateSearchText = this.updateSearchText.bind(this)
         this.getVolunteers()
     }
 
@@ -199,8 +201,8 @@ export class ViewVolunteers extends Component {
                         )
                     })
                 }
-                return ( (this.state.searchText != "" && this.state.searchText.length > 0)
-                ? ( (( v.firstName.contains(this.state.searchText.current.text) || v.lastName.contains(this.state.searchText.current.text) ))  
+                return ( (this.state.nameSearch != "" && this.state.nameSearch.length > 0)
+                ? ( (( v.firstName.contains(this.state.nameSearch) || v.lastName.contains(this.state.nameSearch) ))  
                     ? (<div key={index}>
                         <Card style={{width: '25rem'}}>
                             <Card.Header as='h5'>
@@ -309,7 +311,10 @@ export class ViewVolunteers extends Component {
 
 
     updateSearchText = (e) => {
-        console.log(e);
+        this.setState({
+            nameSearch: e.target.value
+        })
+        console.log(this.state.nameSearch)
     }
     
     renderLoading = () => {
@@ -331,8 +336,8 @@ export class ViewVolunteers extends Component {
 
                 {this.editVolunteers()}
                 <Form inline>
-                    <FormControl type="text" placeholder="Search" className="mr-sm-2" ref={this.state.searchText} />
-                    <Button variant="outline-success" onClick={() => this.updateSearchText(this.state.searchText.current.text)}>Search Volunteers</Button>
+                    <FormControl type="text" placeholder="Search" className="mr-sm-2" value={this.nameSearch} onChange={this.updateSearchText}/>
+                    {/* <Button variant="outline-success" onClick={}>Search Volunteers</Button> */}
                 </Form>
                 <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
                     Search Volunteer ID
@@ -353,10 +358,13 @@ export class ViewVolunteers extends Component {
 
                 <h1 style={styling.head}>Volunteer List</h1>
 
-                <p style={styling.center}>
-                    Please wait while we load the information!
+                <div  style={styling.center}>
+                    <p>
+                        Please wait while we load the information!
+                    </p>
                     {this.renderLoading()}
-                </p>
+                </div>
+                
             </div>)
     }
 }
