@@ -112,7 +112,7 @@ export class AdminChildQRList extends Component {
                             </Card.Header>
                             <Card.Body>
                                 <div style={styling.imgContainer}>
-                                    <img style={styling.image} src={c.picture ? `data:image/jpeg;base64,${c.picture}` : 'https://i.imgur.com/tdi3NGag.png'} />
+                                    <QRCode value="2" /> />
                                 </div>
 
                                 <table style={styling.childTable}>
