@@ -55,6 +55,7 @@ export class AdminChildQRList extends Component {
             edit: false,
             editId: 0,
             bus: null,
+            myRef = React.createRef(),
             busList: [],
             fullRoster: [],
             roster: [],
@@ -227,17 +228,16 @@ export class AdminChildQRList extends Component {
     }
 
     renderPrintAndRoster = () => {
-        const componentRef = useRef();
         return (
             <div>
                 <ReactToPrint
                     trigger={() => <Button variant="primary" size="lg" style={styling.butt}>Print QR Sheet</Button>}
-                    content={() => componentRef.current}
+                    content={() => this.state.myRef.current}
                 />
 
                 <div style={styling.deckDiv}>
                     {this.state.loading ? this.renderLoading() : this.renderNothing()}
-                    {this.state.bus == null ? this.renderNothing() : <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={componentRef} />}
+                    {this.state.bus == null ? this.renderNothing() : <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />}
                 </div>
             </div>
         );
