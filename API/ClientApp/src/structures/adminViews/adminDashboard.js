@@ -284,7 +284,7 @@ export class AdminDashboard extends Component {
                     Check In Drivers
                 </Button>
 
-                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectQR}>
                     Print QR Sheets
                 </Button>
             </center>  
