@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card } from 'react-bootstrap/'
+import { Button, Card, Form, FormControl } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import './cards.css'
 
@@ -9,12 +9,13 @@ export class ViewVolunteers extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            volunteers_list: [{}],
+            volunteers_list: [],
             redirect: false,
             redirectId: false,
             edit: false,
             volunteer: [],
             redirectTraining: false,
+            searchText: React.createRef(),
             id: ''
         }
         console.log(this.state.jwt)
@@ -198,13 +199,17 @@ export class ViewVolunteers extends Component {
                         )
                     })
                 }
-                return (
-                    <div key={index}>
+                return ( (this.state.searchText != "" && this.state.searchText.length > 0)
+                ? ( (( v.firstName.contains(this.state.searchText.current.text) || v.lastName.contains(this.state.searchText.current.text) ))  
+                    ? (<div key={index}>
                         <Card style={{width: '25rem'}}>
                             <Card.Header as='h5'>
                                 {v.firstName + " " +  v.lastName}
                             </Card.Header>
                             <Card.Body>
+                                <div style={styling.imgContainer}>
+                                    <img style={styling.image} src={v.picture ? `data:image/jpeg;base64,${v.picture}` : 'https://i.imgur.com/tdi3NGag.png'} />
+                                </div>
                                 <Card.Title>
                                     Information
                                 </Card.Title>
@@ -237,13 +242,62 @@ export class ViewVolunteers extends Component {
                                 <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
                                     Edit Volunteer Profiles
                                 </Button>
-                                <Button variant="primary" style={{marginLeft: '5px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
+                                <Button variant="primary" style={{marginLeft: '15px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
                                     Update Trainings
                                 </Button>
                             </Card.Body>
                         </Card>
-                    </div>
+                    </div>)
+                    : (<div></div>)
                 )
+                : (<div key={index}>
+                    <Card style={{width: '25rem'}}>
+                        <Card.Header as='h5'>
+                            {v.firstName + " " +  v.lastName}
+                        </Card.Header>
+                        <Card.Body>
+                            <div style={styling.imgContainer}>
+                                <img style={styling.image} src={v.picture ? `data:image/jpeg;base64,${v.picture}` : 'https://i.imgur.com/tdi3NGag.png'} />
+                            </div>
+                            <Card.Title>
+                                Information
+                            </Card.Title>
+                            <Card.Text>
+                                ID: {v.id}<br></br>
+                                Preferred Name: {v.preferredName}<br></br>
+                                Email: {v.email}<br></br>
+                                Phone: {v.phone}<br></br>
+                                Birthday: {v.birthday}<br></br>
+                                <br></br>
+                                Role: {v.role}<br></br>
+                                Weeks Attended: {v.weeksAttended}<br></br>
+                                <br></br>
+                                Trainings:<br></br>
+                                {train}
+                                <br></br>
+                                <br></br>
+                                Languages:<br></br>
+                                {language}
+                                <br></br>
+                                <br></br>
+                                Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
+                                Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>
+                                Name Tag: {v.nameTag  ? 'Yes' : 'No'}<br></br>
+                                Personal Interview: {v.personalInterviewCompleted  ? 'Yes' : 'No'}<br></br>
+                                Background Check: {v.backgroundCheck  ? 'Yes' : 'No'}<br></br>
+                                Year Started: {v.yearStarted}<br></br>
+                                Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
+                            </Card.Text>
+                            <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
+                                Edit Volunteer Profiles
+                            </Button>
+                            <Button variant="primary" style={{marginLeft: '15px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
+                                Update Trainings
+                            </Button>
+                        </Card.Body>
+                    </Card>
+                </div>)
+            ) 
             })
             return (
                 <div className="row">
@@ -253,28 +307,57 @@ export class ViewVolunteers extends Component {
         }
     }
 
-    render() {
-        
+
+    updateSearchText = (e) => {
+        console.log(e);
+    }
+    
+    renderLoading = () => {
         return (
-            <div>
+            <div style={styling.center}>
+                <Spinner animation="border" />
+            </div>
+        )
+    }
+
+    render() {
+
+        return (this.state.volunteers_list != null && this.state.volunteers_list.length > 0)
+            ? (<div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
                     Back to Dashboard
                 </Button>
 
                 {this.editVolunteers()}
+                <Form inline>
+                    <FormControl type="text" placeholder="Search" className="mr-sm-2" ref={this.state.searchText} />
+                    <Button variant="outline-success" onClick={() => this.updateSearchText(this.state.searchText.current.text)}>Search Volunteers</Button>
+                </Form>
                 <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
                     Search Volunteer ID
                 </Button>
 
-                <h1 style={styling.head}>All Volunteers</h1>
+                <h1 style={styling.head}>Volunteer List</h1>
 
                 <div style={styling.deckDiv}>
                     {this.renderVolunteers()}
                 </div>
                 
-            </div>
-        )
+            </div>) 
+            : (<div>
+                {this.renderRedirect()}
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
+                    Back to Dashboard
+                </Button>
+
+                <h1 style={styling.head}>Volunteer List</h1>
+
+                <p style={styling.center}>
+                    Please wait while we load the information!
+                    {this.renderLoading()}
+                </p>
+            </div>)
     }
 }
 
@@ -293,10 +376,6 @@ const styling = {
         marginLeft: '15px',
         marginBottom: '15px'
     },
-    table: {
-        height: '400px',
-        width: '1000px'
-    },
     deckDiv: {
         justifyContent: 'center',
         alignContent: 'center',
@@ -309,5 +388,18 @@ const styling = {
         marginTop: '15px',
         marginRight: '15px',
         marginBottom: '15px'
-    }
+    },
+    image: {
+        maxWidth: '300px',
+        maxHeight: '300px',
+        height: 'auto',
+    },
+    imgContainer: {
+        textAlign: 'center',
+        minHeight: '300px',
+        marginBottom: '10px',
+    },
+    center: {
+        textAlign: "center"
+    },
 }
