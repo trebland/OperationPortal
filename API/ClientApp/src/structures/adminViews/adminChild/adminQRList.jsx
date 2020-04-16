@@ -22,6 +22,7 @@ export class AdminChildQRList extends Component {
             redirect: false,
             edit: false,
             editId: 0,
+            busId: 0,
             fullRoster: [],
             roster: [],
         };
@@ -144,6 +145,15 @@ export class AdminChildQRList extends Component {
         }
     }
 
+
+    renderNotice = () => {
+        return (
+            <div>
+                No Bus Selected!
+            </div>
+        )
+    }
+
     setRedirect = () => {
         this.setState({
             redirect: true
@@ -165,10 +175,12 @@ export class AdminChildQRList extends Component {
 
                 <h1 style={styling.head}>QR List</h1>
 
-                <p style={styling.center}>Please be patient, this page may take a moment to load.</p>
+                <p style={styling.center}>
+                    Please be patient, this page may take a moment to load.
+                </p>
 
                 <div style={styling.deckDiv}>
-                    {this.renderRoster()}
+                    {this.state.busId == 0 ? this.renderNotice() : this.renderRoster()}
                 </div>
 
             </div>
