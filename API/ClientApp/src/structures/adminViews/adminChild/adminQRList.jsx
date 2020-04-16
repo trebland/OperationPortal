@@ -228,6 +228,6 @@ const styling = {
     },
     imgContainer: {
         textAlign: 'center',
-        minHeight: '300px',
+        minHeight: '200px',
     }
 }
