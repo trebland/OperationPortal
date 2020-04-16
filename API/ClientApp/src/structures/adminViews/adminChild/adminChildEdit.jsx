@@ -70,7 +70,11 @@ export class AdminChildEdit extends Component {
         }
     }
 
-    componentDidMount() {
+    componentWillUnmount = () => {
+        this.mounted = false
+    }
+  
+    componentDidMount = () => {
         this.mounted = true
     }
 

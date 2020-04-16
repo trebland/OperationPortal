@@ -111,7 +111,7 @@ export class AdminChildList extends Component {
 
     renderRoster = () => {
         if (this.state.roster != null) {
-            const p = this.state.roster.map((c, index) => {
+            const p = this.state.roster.map((c, index) => { 
                 return (
                     <div key={index}>
                         <Card style={{ width: '25rem' }}>
