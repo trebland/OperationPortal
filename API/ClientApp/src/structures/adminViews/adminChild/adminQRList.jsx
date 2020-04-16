@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card, Dropdown, DropdownButton } from 'react-bootstrap/'
+import { Button, Card, Dropdown, DropdownButton, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import '../cards.css'
 import { EditDetailsButton } from '../../customButtons'
@@ -19,6 +19,7 @@ export class AdminChildQRList extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
+            loading: false,
             redirect: false,
             edit: false,
             editId: 0,
@@ -116,11 +117,13 @@ export class AdminChildQRList extends Component {
     // Sets variable to false when ready to leave page
     componentWillUnmount = () => {
         this.mounted = false
+        this.loading = false
     }
 
     // Will set a variable to true when component is fully mounted
     componentDidMount = () => {
         this.mounted = true
+        this.loading = true
     }
 
     renderRedirect = () => {
@@ -219,6 +222,21 @@ export class AdminChildQRList extends Component {
         )
     }
 
+    renderLoading = () => {
+        return (
+            <div style={styling.center}>
+                <Spinner animation="border" />
+            </div>
+        )
+    }
+
+    renderNothing = () => {
+        return (
+            <div>
+            </div>
+        )
+    }
+
     setRedirect = () => {
         this.setState({
             redirect: true
@@ -244,6 +262,7 @@ export class AdminChildQRList extends Component {
                 {this.renderBusDropdown()}
 
                 <div style={styling.deckDiv}>
+                    {this.state.loading ? this.renderLoading() : this.renderNothing()}
                     {this.state.busId == 0 ? this.renderNotice() : this.renderRoster()}
                 </div>
             </div>) 
@@ -257,6 +276,7 @@ export class AdminChildQRList extends Component {
 
                 <p style={styling.center}>
                     Please wait while we load the information!
+                    {this.renderLoading()}
                 </p>
             </div>)
     }
