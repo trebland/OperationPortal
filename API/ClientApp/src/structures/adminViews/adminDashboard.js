@@ -216,11 +216,11 @@ export class AdminDashboard extends Component {
                 </Button>
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
-                    View Calendar
+                    View Administrative Calendar
                 </Button>
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCBC}>
-                    Birthday Calendar
+                    View Birthday Calendar
                 </Button>
             </center>  
             <center>
