@@ -250,7 +250,7 @@ export class AdminChildQRList extends Component {
             }} />
         }
         console.log("Rendered: " + this.state.busId)
-        return this.state.roster != null 
+        return (this.state.roster != null && this.state.roster.length > 0)
             ? (<div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
