@@ -87,8 +87,24 @@ export class BirthdayCalendar extends Component {
                 if(this.state.retrievedV) {
                     var res = JSON.parse(data)
                     res = res.birthdays
+                    var v = res.map((details) => {
+                        let year = Number.parseInt(details.date.substring(0, 4))
+                        // starts at 0 for january 
+                        let month = Number.parseInt(details.date.substring(5, 7)) 
+                        let day = Number.parseInt(details.date.substring(8, 10))
+                        let date = month + '/' + day + '/' + year
+                        let ret = {
+                            'title': details.name,
+                            'start': new Date(year, month - 1, day),
+                            'end': new Date(year, month - 1, day),
+                            desc: details.name + ' - ' + date,
+                            children: false,
+                            volunteer: true
+                        }
+                        return ret
+                    })
                     this.setState({
-                        volunteerBirthday: res
+                        volunteerBirthday: v
                     })
                     console.log(this.state.volunteerBirthday)
                 }
@@ -144,7 +160,7 @@ export class BirthdayCalendar extends Component {
                             'title': details.name,
                             'start': new Date(year, month - 1, day),
                             'end': new Date(year, month - 1, day),
-                            desc: details.name + 'Birthday: ' + date,
+                            desc: details.name + ' - ' + date,
                             children: true,
                             volunteer: false
                         }
@@ -154,7 +170,7 @@ export class BirthdayCalendar extends Component {
                      
                     
                     this.setState({
-                        childrenBirthday: res
+                        childrenBirthday: c
                     })
                     console.log(this.state.childrenBirthday)
                 }
@@ -168,6 +184,10 @@ export class BirthdayCalendar extends Component {
 
 
     render () {
+        var a = this.state.childrenBirthday.concat(this.state.volunteerBirthday)
+        console.log(a)
+        console.log(this.state.childrenBirthday)
+        console.log(this.state.volunteerBirthday)
         return(
             <div>
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -177,10 +197,58 @@ export class BirthdayCalendar extends Component {
                     <h1>Birthday Calendar</h1>
                     <Calendar
                         localizer = {localizer}
-                        events = {events}
+                        events = {a}
                         startAccessor = "start"
                         endAccessor = "end"
+                        onSelectEvent={e => {
+                                if(e.children) {
+                                    alert('Child Birthday: ' + e.desc)
+                                }
+                                else if(e.volunteer) {
+                                    alert('Volunteer Birthday: ' + e.desc)
+                                }
+                            }
+                        }
+                        eventPropGetter={
+                            (event, start, end, isSelected) => {
+                                if(event.children) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "green"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                                if(event.volunteer) {
+                                    let newStyle = {
+                                        backgroundColor: "lightgrey",
+                                        color: 'white',
+                                        borderRadius: "5px",
+                                        border: "none"
+                                    };
+                                    newStyle.backgroundColor = "orange"
+                                    return {
+                                        className: "",
+                                        style: newStyle
+                                    }
+                                }
+                            }
+                        }
                     />
+                    <div className='my-legend'>
+                        <div className='legend-scale'>
+                            <ul className='legend-labels'>
+                                <li><span style={{background:'green'}}></span>children</li>
+                                <li><span style={{background:'orange'}}></span>volunteers</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <br></br>
                 </div>
                 {this.renderRedirect()}
             </div> 
