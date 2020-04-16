@@ -226,6 +226,23 @@ export class AdminChildQRList extends Component {
         })
     }
 
+    renderPrintAndRoster = () => {
+        const componentRef = useRef();
+        return (
+            <div>
+                <ReactToPrint
+                    trigger={() => <Button variant="primary" size="lg" style={styling.butt}>Print QR Sheet</Button>}
+                    content={() => componentRef.current}
+                />
+
+                <div style={styling.deckDiv}>
+                    {this.state.loading ? this.renderLoading() : this.renderNothing()}
+                    {this.state.bus == null ? this.renderNothing() : <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={componentRef} />}
+                </div>
+            </div>
+        );
+    };
+
     render() {
         if (!this.state.loggedin) {
             return <Redirect to={{
@@ -233,7 +250,6 @@ export class AdminChildQRList extends Component {
             }} />
         }
         
-        var componentRef;
         return (this.state.roster != null && this.state.roster.length > 0)
             ? (<div>
                 {this.renderRedirect()}
@@ -242,18 +258,9 @@ export class AdminChildQRList extends Component {
                 </Button>
 
                 {this.renderBusDropdown()}
-                {componentRef = useRef()}
-                <ReactToPrint
-                    trigger={() => <Button variant="primary" size="lg" style={styling.butt}>Print QR Sheet</Button>}
-                    content={() => componentRef.current}
-                />
-
+                
                 <h1 style={styling.head}>QR List</h1>
-
-                <div style={styling.deckDiv}>
-                    {this.state.loading ? this.renderLoading() : this.renderNothing()}
-                    {this.state.bus == null ? this.renderNothing() : <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={componentRef} />}
-                </div>
+                {this.renderPrintAndRoster()}
             </div>) 
             : (<div>
                 {this.renderRedirect()}
