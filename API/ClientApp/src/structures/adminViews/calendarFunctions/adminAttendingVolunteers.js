@@ -111,11 +111,20 @@ export class AdminAttendingVolunteers extends Component {
     renderVolunteers = () => {
         if(this.state.retrieved){
             let eve = this.state.volunteers.map((v, index) => {
-                // let a = e.date
-                // let year = a.substring(0, 4)
-                // let month = a.substring(5, 7)
-                // let day = a.substring(8, 10)
-                // let nue = month + '/' + day + '/' + year
+                if(v.trainings != undefined) {
+                    var train = v.trainings.map((details) => {
+                        return (
+                            details.name + ' | '
+                        )
+                    })
+                }
+                if(v.languages != undefined) {
+                    var language = v.languages.map((details) => {
+                        return (
+                            details + ' | ' 
+                        )
+                    })
+                }
                 return (
                     <div key={index}>
                         <Card style={{width: '25rem'}}>
@@ -137,18 +146,10 @@ export class AdminAttendingVolunteers extends Component {
                                     Weeks Attended: {v.weeksAttended}<br></br>
                                     <br></br>
                                     Trainings:<br></br>
-                                    {v.trainings.map((details) => {
-                                        return (
-                                            details + ' | '
-                                        )
-                                    })}
+                                    {train}
                                     <br></br>
                                     Languages:<br></br>
-                                    {v.languages.map((details) => {
-                                        return (
-                                            details + ' | '
-                                        )
-                                    })}
+                                    {language}
                                     <br></br>
                                     <br></br>
                                     Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>

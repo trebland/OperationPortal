@@ -194,7 +194,7 @@ export class ViewVolunteers extends Component {
                 if(v.languages != undefined) {
                     var language = v.languages.map((details) => {
                         return (
-                            details + ' | '
+                            details + ' | ' 
                         )
                     })
                 }

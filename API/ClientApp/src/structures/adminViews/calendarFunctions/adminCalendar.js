@@ -426,7 +426,7 @@ export class AdminCalendar extends Component {
                 body: JSON.stringify({
                     'date': nue,
                     'name': this.state.name,
-                    'description': this.state.description
+                    'description': this.state.description 
                 })
             })
             .then((res) => {
