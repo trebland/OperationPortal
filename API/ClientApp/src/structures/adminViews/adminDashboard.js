@@ -21,6 +21,7 @@ export class AdminDashboard extends Component {
             redirectTraining: false,
             redirectJobs: false,
             redirectClasses: false,
+            redirectQR: false,
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin
         }
@@ -134,6 +135,15 @@ export class AdminDashboard extends Component {
                 }
             }} />
         }
+        else if (this.state.redirectQR) {
+            return <Redirect to={{
+                pathname: '/admin-qr-list',
+                state: {
+                    loggedin: this.state.loggedin,
+                    jwt: this.state.jwt
+                }
+            }} />
+        }
         
     }
 
@@ -164,6 +174,12 @@ export class AdminDashboard extends Component {
     setRedirectDriver = () => {
         this.setState({
             redirectDriver: true
+        })
+    }
+
+    setRedirectQR = () => {
+        this.setState({
+            redirectQR: true
         })
     }
 
@@ -266,6 +282,10 @@ export class AdminDashboard extends Component {
 
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
                     Check In Drivers
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectDriver}>
+                    Print QR Sheets
                 </Button>
             </center>  
         </div>
