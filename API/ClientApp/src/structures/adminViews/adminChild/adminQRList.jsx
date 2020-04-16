@@ -23,6 +23,7 @@ export class AdminChildQRList extends Component {
             edit: false,
             editId: 0,
             busId: 0,
+            busList: [],
             fullRoster: [],
             roster: [],
         };
@@ -47,6 +48,37 @@ export class AdminChildQRList extends Component {
             }
         }
         return diff;
+    }
+
+
+    getBusList() {
+        fetch('/api/bus-list', {
+            // method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.jwt}`
+            }
+        })
+        .then((res) => {
+            if ((res.status === 200 || res.status === 201) && this.mounted === true) {
+                return res.json()
+            }
+            else if ((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true) {
+                return
+            }
+        })
+        .then((data) => {
+            if (this.mounted === true) {
+                console.log(data.buses)
+
+                this.setState({
+                    busList: data.buses,
+                })
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     getChildren() {
@@ -102,6 +134,19 @@ export class AdminChildQRList extends Component {
         }
     }
 
+    renderBusDropdown = () => {
+        if (this.state.busList != null)
+        {
+            return <DropdownButton id="dropdown-item-button" title="Select Bus" size="lg" style={styling.butt}>
+                        const p = this.state.busList.map((b, index) => {
+                            <div key={index}>
+                                <Dropdown.Item as="button">b.name</Dropdown.Item>
+                            </div>
+                        })
+                    </DropdownButton>
+        }
+    }
+
     renderRoster = () => {
         if (this.state.roster != null) {
             const p = this.state.roster.map((c, index) => {
@@ -148,7 +193,7 @@ export class AdminChildQRList extends Component {
 
     renderNotice = () => {
         return (
-            <div>
+            <div style={textAlign.center}>
                 No Bus Selected!
             </div>
         )
@@ -174,6 +219,8 @@ export class AdminChildQRList extends Component {
                 </Button>
 
                 <h1 style={styling.head}>QR List</h1>
+
+                {this.renderBusDropdown()}
 
                 <p style={styling.center}>
                     Please be patient, this page may take a moment to load.
