@@ -233,7 +233,7 @@ export class AdminChildQRList extends Component {
             }} />
         }
         
-        const componentRef = useRef();
+        var componentRef;
         return (this.state.roster != null && this.state.roster.length > 0)
             ? (<div>
                 {this.renderRedirect()}
@@ -242,6 +242,7 @@ export class AdminChildQRList extends Component {
                 </Button>
 
                 {this.renderBusDropdown()}
+                {componentRef = useRef()}
                 <ReactToPrint
                     trigger={() => <Button variant="primary" size="lg" style={styling.butt}>Print QR Sheet</Button>}
                     content={() => componentRef.current}
