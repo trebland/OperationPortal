@@ -60,7 +60,8 @@ export class AdminAttendingVolunteers extends Component {
                 <Redirect to={{
                     pathname: '/admin-job-roster',
                     state: {
-                        jwt: this.state.jwt
+                        jwt: this.state.jwt,
+                        clicked: this.state.clicked
                     }
                 }}/>
             )
