@@ -498,9 +498,12 @@ export class ViewVolunteers extends Component {
 
     renderTest = () => {
         if (this.state.fullTrainings != null) {
-            const p = this.state.fullTrainings.map((t, index) => {
-                return { key={index}, label: t.name, value: t.id }
+            var mOptions = []
+            this.state.fullTrainings.forEach( function(element, index, array) {
+                mOptions.push({ value: element.id, label: element.name })
             })
+            const p = <Select options={mOptions}
+            isMulti />
             return p;
         }
     }
@@ -614,8 +617,7 @@ export class ViewVolunteers extends Component {
                             <div className="row">
                             <div className="col-md-3"></div>
                             <div className="col-md-6">
-                                <Select options={this.renderTest()}
-                                isMulti />
+                                {this.renderTest()}
                             </div>
                             <div className="col-md-4"></div>
                             </div>
