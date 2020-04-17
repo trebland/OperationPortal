@@ -495,7 +495,7 @@ export class ViewVolunteers extends Component {
         console.log(e)
         var newTrainings = []
         e.forEach( function(element, index, array) {
-            newTrainings.push({ id: element.id, name: element.name })
+            newTrainings.push({ id: element.value, name: element.label })
         })
         console.log(newTrainings)
         this.setState({
