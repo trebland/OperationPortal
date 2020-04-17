@@ -144,7 +144,6 @@ export class ViewVolunteers extends Component {
             if(this.mounted === true){
                 this.setState({
                     fullTrainings: res,
-                    trainings: res
                 })
             }
         })
@@ -469,7 +468,7 @@ export class ViewVolunteers extends Component {
 
     handleTrainingChange = (e) => {
         this.setState({
-            trainings: e.target.value
+            trainings: !trainings.includes(e.target.value) ? trainings.add(e.target.value) : trainings
         })
     }
 
