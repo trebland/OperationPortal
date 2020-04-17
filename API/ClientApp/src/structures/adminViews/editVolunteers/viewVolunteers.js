@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Card, Form, FormControl, Spinner } from 'react-bootstrap/'
+import { Button, Card, Form, FormGroup, FormLabel, FormControl, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
 import './cards.css'
 
