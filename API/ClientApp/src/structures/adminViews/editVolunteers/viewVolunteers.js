@@ -18,6 +18,7 @@ export class ViewVolunteers extends Component {
             edit: false,
             volunteer: [],
             redirectTraining: false,
+            loaded: false,
             id: '',
             // Search Criteria
             name: '',
@@ -31,9 +32,10 @@ export class ViewVolunteers extends Component {
             nameTag: 0,
             personalInterviewCompleted: 0,
             backgroundCheck: 0,
+            licenseSeen: 0,
             canEditInventory: 0,
-            trainings: []
-
+            trainings: [],
+            trainingsHolder: [],
         }
         console.log(this.state.jwt)
         this.updateSearchText = this.updateSearchText.bind(this)
@@ -112,7 +114,8 @@ export class ViewVolunteers extends Component {
             if(this.mounted === true){
                 this.setState({
                     fullVolunteerList: res,
-                    volunteerList: res
+                    volunteerList: res,
+                    loaded: true,
                 })
             }
         })
@@ -164,6 +167,14 @@ export class ViewVolunteers extends Component {
         this.mounted = true
     }
 
+    checkTraining = (volunteerTrainings) => {
+        var trainingIndices = []
+        volunteerTrainings.forEach( (element) => {
+            trainingIndices.push(element.id)
+        })
+        return this.state.trainings.every(val => trainingIndices.includes(val))
+    }
+
     filter = (fullVolunteerList) => {
         let volunteerList = [...fullVolunteerList];
 
@@ -177,25 +188,21 @@ export class ViewVolunteers extends Component {
 
         if (this.state.language) {
             volunteerList = volunteerList.filter(c =>
-                c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
-                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
-                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+                c.languages.map(function (e) {
+                    return e.toLowerCase();
+                   }).indexOf(this.state.language.toLowerCase()) != -1
             );
         }
 
         if (this.state.affiliation) {
             volunteerList = volunteerList.filter(c =>
                 c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
-                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
-                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
             );
         }
 
         if (this.state.referral) {
             volunteerList = volunteerList.filter(c =>
                 c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
-                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
-                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
             );
         }
 
@@ -227,13 +234,17 @@ export class ViewVolunteers extends Component {
             volunteerList = volunteerList.filter(c => this.state.backgroundCheck == 1 ? c.backgroundCheck : !c.backgroundCheck);
         }
 
+        if (this.state.licenseSeen) {
+            volunteerList = volunteerList.filter(c => this.state.licenseSeen == 1 ? c.driversLicense : !c.driversLicense);
+        }
+
         if (this.state.canEditInventory) {
             volunteerList = volunteerList.filter(c => this.state.canEditInventory == 1 ? c.canEditInventory : !c.canEditInventory);
         }
 
-        if (this.state.trainings > 0) {
+        if (this.state.trainings.length > 0) {
             console.log("Filter by Trainings...")
-            volunteerList = volunteerList.filter(c => c.trainings.includes(this.state.trainings));
+            volunteerList = volunteerList.filter(c => this.checkTraining(c.trainings));
         }
 
         return volunteerList;
@@ -261,15 +272,12 @@ export class ViewVolunteers extends Component {
             nameTag: 0,
             personalInterviewCompleted: 0,
             backgroundCheck: 0,
+            licenseSeen: 0,
             canEditInventory: 0,
-            trainings: []
+            trainings: [],
+            trainingsHolder: [],
+            roster: this.state.fullVolunteerList
         })
-
-        if (this.state.fullVolunteerList && this.state.fullVolunteerList.length > 0) {
-            this.setState({
-                roster: this.state.fullVolunteerList
-            })
-        }
     }
 
     editVolunteers = () => {
@@ -396,6 +404,7 @@ export class ViewVolunteers extends Component {
                                     Personal Interview: {v.personalInterviewCompleted  ? 'Yes' : 'No'}<br></br>
                                     Background Check: {v.backgroundCheck  ? 'Yes' : 'No'}<br></br>
                                     Year Started: {v.yearStarted}<br></br>
+                                    Copy of Drivers License: {v.driversLicense  ? 'Yes' : 'No'}<br></br>
                                     Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
                                 </Card.Text>
                                 <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
@@ -491,6 +500,12 @@ export class ViewVolunteers extends Component {
         })
     }
 
+    handleLicenseChange = (e) => {
+        this.setState({
+            licenseSeen: e.target.value
+        })
+    }
+
     handleInventoryChange = (e) => {
         this.setState({
             canEditInventory: e.target.value
@@ -501,36 +516,14 @@ export class ViewVolunteers extends Component {
         console.log(e)
         var newTrainings = []
         e.forEach( function(element, index, array) {
-            newTrainings.push({ id: element.value, name: element.label })
+            newTrainings.push(element.value)
         })
         console.log(newTrainings)
         this.setState({
-            trainings: newTrainings
+            trainings: newTrainings,
+            trainingsHolder: e
         })
         console.log(this.state.trainings);
-    }
-
-    renderTrainings = () => {
-        if (this.state.fullTrainings != null) {
-            // const p = this.state.fullTrainings.map((t, index) => {
-            //     return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
-            // })
-            // return p;
-            // <FormGroup style={styling.formgroupdiv}>
-            //     <FormLabel>Trainings: </FormLabel>
-            //     <Form.Control as="select" multiple value={options} onChange={this.handleTrainingChange}>
-            //         {options.map(options => (
-            //         <option key={option.name} value={option.value}>
-            //             {option.name}
-            //         </option>
-            //         ))}
-            //     </Form.Control>
-            // </FormGroup>
-            const p = this.state.fullTrainings.map((t, index) => {
-                return <option key={t.name} value={t.value}>{t.name}</option>
-            })
-            return p;
-        }
     }
 
     renderTest = () => {
@@ -539,7 +532,9 @@ export class ViewVolunteers extends Component {
             this.state.fullTrainings.forEach( function(element, index, array) {
                 mOptions.push({ value: element.id, label: element.name })
             })
-            const p = <Select 
+            const p = <Select
+            value={this.state.trainingsHolder}
+            style={{ display: 'inline' }} 
             onChange={(e) => this.handleTrainingChange(e)}
             options={mOptions}
             isMulti />
@@ -557,7 +552,7 @@ export class ViewVolunteers extends Component {
 
     render() {
 
-        return (this.state.volunteerList != null && this.state.volunteerList.length > 0)
+        return ((this.state.volunteerList != null && this.state.volunteerList.length > 0) || this.state.loaded)
             ? (<div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -639,6 +634,14 @@ export class ViewVolunteers extends Component {
                             </Form.Control>
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Drivers License: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.licenseSeen} onChange={this.handleLicenseChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Completed</option>
+                                <option value={2}>Not Completed</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
                             <FormLabel style={{ display: 'inline' }}>Can Modify Inventory: </FormLabel>
                             <Form.Control as="select" style={{ display: 'inline' }} value={this.state.canEditInventory} onChange={this.handleInventoryChange}>
                                 <option value={0}>All</option>
@@ -652,15 +655,10 @@ export class ViewVolunteers extends Component {
                                 {this.renderTrainings()}
                             </Form.Control>
                         </FormGroup> */}
-                        <div className="container">
-                            <div className="row">
-                            <div className="col-md-3"></div>
-                            <div className="col-md-6">
-                                {this.renderTest()}
-                            </div>
-                            <div className="col-md-4"></div>
-                            </div>
-                        </div>
+                        <FormGroup style={styling.traingroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Trainings: </FormLabel>
+                            {this.renderTest()}
+                        </FormGroup>
                         <Button variant="primary" size="lg" onClick={this.onFilter} style={{margin: '5px'}}>
                             Filter
                         </Button>
@@ -741,6 +739,12 @@ const styling = {
     },
     formgroupdiv: {
         display: 'inline-block',
+        marginRight: '5px',
+        paddingTop: '2px'
+    },
+    traingroupdiv: {
+        display: 'inline-block',
+        width: '40%',
         marginRight: '5px',
         paddingTop: '2px'
     },

@@ -19,7 +19,7 @@ export class AdminVolunteerEdit extends Component {
             nametag: props.location.state.volunteer.nameTag,
             inventory: props.location.state.volunteer.canEditInventory,
             role: props.location.state.volunteer.role,
-            drivers: '',
+            drivers: props.location.state.volunteer.driversLicense,
             roleupdate: -1,
             finished: false,
             success: false,
@@ -59,7 +59,8 @@ export class AdminVolunteerEdit extends Component {
                     personalInterviewCompleted: this.state.personal,
                     backgroundCheck: this.state.background,
                     yearStarted: this.state.year,
-                    canEditInventory: this.state.inventory
+                    canEditInventory: this.state.inventory,
+                    driversLicense: this.state.drivers
                 })
             })
             .then((res) => {
@@ -111,6 +112,13 @@ export class AdminVolunteerEdit extends Component {
                 }}/>
             )
         }
+    }
+
+    setDriver = () => {
+        this.setState({
+            drivers: !this.state.drivers
+        })
+
     }
 
     setOrientation = () => {
@@ -447,7 +455,7 @@ export class AdminVolunteerEdit extends Component {
                                 label="Yes"
                                 name="formHorizontalRadios"
                                 id="formHorizontalRadios1"
-                                onChange={this.setInventory}
+                                onChange={this.setDriver}
                                 checked={this.state.drivers ? true : false}
                             />
                         </Col>
