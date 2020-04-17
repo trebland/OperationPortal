@@ -190,7 +190,8 @@ class ChildCheckInState extends State<ChildCheckInPage>
   Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
-      setState(() => this.barcode = barcode);
+      setState(() => this.barcode = (barcode != null && barcode.isNotEmpty ? barcode.split('!')[1] : ""));
+      print(this.barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {

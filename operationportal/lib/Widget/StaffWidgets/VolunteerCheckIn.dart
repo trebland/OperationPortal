@@ -188,7 +188,9 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
   Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
-      setState(() => this.barcode = barcode);
+      print("BARCODE: " + barcode);
+      setState(() => this.barcode = (barcode != null && barcode.isNotEmpty ? barcode.split('!')[1] : "Invalid QR"));
+      print(this.barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {
