@@ -231,12 +231,17 @@ export class ViewVolunteers extends Component {
         }
 
         if (this.state.trainings.length > 0) {
-            this.state.trainings.forEach( function(element, index, array) {
-                volunteerList = volunteerList.filter(c => !c.trainings.includes(element));
+            this.state.trainings.forEach( function(bigT, index, array) {
+                volunteerList = volunteerList.filter(c => c.trainings.forEach( function(lilT, lilIndex, array) { if (bigT.id == lilT.id) return true; else if (lilIndex == (c.trainings.length-1)) return false;} ));
             })
         }
 
         return volunteerList;
+    }
+
+    checkTrainings ()
+    {
+
     }
 
     onFilter = () => {
