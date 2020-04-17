@@ -28,7 +28,7 @@ class RosterComponent extends React.Component {
                 )
             })
             return (
-                <div className="row">
+                <div style={styling.deckDiv} className="row">
                     {p}
                 </div>
             )
@@ -235,9 +235,7 @@ export class AdminChildQRList extends Component {
                     content={() => this.state.myRef.current}
                 />
 
-                <div style={styling.deckDiv}>
-                    <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />
-                </div>
+                <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />
             </div>
         );
     };
@@ -301,10 +299,7 @@ const styling = {
     deckDiv: {
         justifyContent: 'center',
         alignContent: 'center',
-        outline: 'none',
-        border: 'none',
-        overflowWrap: 'normal',
-        marginLeft: '7%'
+        marginTop: '50px',
     },
     ann: {
         marginTop: '15px',
