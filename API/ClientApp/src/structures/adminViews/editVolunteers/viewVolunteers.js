@@ -490,7 +490,7 @@ export class ViewVolunteers extends Component {
             //     </Form.Control>
             // </FormGroup>
             const p = this.state.fullTrainings.map((t, index) => {
-                return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
+                return <option key={t.name} value={t.value}>{t.name}</option>
             })
             return p;
         }
@@ -597,7 +597,7 @@ export class ViewVolunteers extends Component {
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
                             <FormLabel>Trainings: </FormLabel>
-                            <Form.Control as="select" value={this.state.trainings} onChange={this.handleTrainingChange}>
+                            <Form.Control as="select" multiple value={this.state.trainings} onChange={this.handleTrainingChange}>
                                 {this.renderTrainings()}
                             </Form.Control>
                         </FormGroup>
