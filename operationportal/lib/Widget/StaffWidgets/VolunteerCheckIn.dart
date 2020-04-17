@@ -130,7 +130,7 @@ class VolunteerCheckInState extends State<VolunteerCheckInPage>
                               padding: EdgeInsets.all(20),
                               margin: EdgeInsets.only(top: 20)
                           ),
-                          snapshot.data.birthday == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+                          (snapshot.data.birthday != null && DateTime.now().difference(snapshot.data.birthday).inDays < 7 && DateTime.now().isBefore(snapshot.data.birthday))
                               ? Container(
                                 child: Text("Happy Birthday!", style: TextStyle(fontSize: 20, color: Colors.white),),
                                 decoration: new BoxDecoration(
