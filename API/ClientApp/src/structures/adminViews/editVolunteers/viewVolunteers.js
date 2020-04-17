@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Button, Card, Form, FormControl, Spinner } from 'react-bootstrap/'
+import { Button, Card, Form, FormGroup, FormLabel, FormControl, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
+import Select from 'react-select'
 import './cards.css'
 
 export class ViewVolunteers extends Component {
@@ -9,18 +10,34 @@ export class ViewVolunteers extends Component {
         this.state = {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
-            volunteers_list: [],
+            fullVolunteerList: [],
+            volunteerList: [],
+            fullTrainings: [],
             redirect: false,
             redirectId: false,
             edit: false,
             volunteer: [],
             redirectTraining: false,
-            searchText: React.createRef(),
             id: '',
-            nameSearch: ''
+            // Search Criteria
+            name: '',
+            language: '',
+            affiliation: '',
+            referral: '',
+            orientation: 0,
+            newsletter: 0,
+            contactWhenShort: 0,
+            blueShirt: 0,
+            nameTag: 0,
+            personalInterviewCompleted: 0,
+            backgroundCheck: 0,
+            canEditInventory: 0,
+            trainings: []
+
         }
         console.log(this.state.jwt)
         this.updateSearchText = this.updateSearchText.bind(this)
+        this.getTrainings()
         this.getVolunteers()
     }
 
@@ -93,10 +110,43 @@ export class ViewVolunteers extends Component {
             res = res.volunteers
             if(this.mounted === true){
                 this.setState({
-                    volunteers_list: res
+                    fullVolunteerList: res,
+                    volunteerList: res
                 })
             }
-            console.log(this.state.volunteers_list)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+    getTrainings = () => {
+        fetch('/api/volunteer-trainings' , {
+            // method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.state.jwt}`
+            }
+        })
+        .then((res) => {
+            console.log(res.status)
+            if((res.status === 200 || res.status === 201) && this.mounted === true){
+                console.log('Retrieval successful')
+                return res.text()
+            }
+            else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                console.log('Retrieval failed')
+                return
+            }
+        })
+        .then((data) => {
+            let res = JSON.parse(data)
+            res = res.trainings
+            if(this.mounted === true){
+                this.setState({
+                    fullTrainings: res,
+                })
+            }
         })
         .catch((err) => {
             console.log(err)
@@ -111,6 +161,114 @@ export class ViewVolunteers extends Component {
     // Will set a variable to true when component is fully mounted
     componentDidMount = () => {
         this.mounted = true
+    }
+
+    filter = (fullVolunteerList) => {
+        let volunteerList = [...fullVolunteerList];
+
+        if (this.state.name) {
+            volunteerList = volunteerList.filter(c =>
+                c.firstName.toLowerCase().indexOf(this.state.name.toLowerCase()) != -1
+                || c.lastName.toLowerCase().indexOf(this.state.name.toLowerCase()) != -1
+                || c.preferredName.toLowerCase().indexOf(this.state.name.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.language) {
+            volunteerList = volunteerList.filter(c =>
+                c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.affiliation) {
+            volunteerList = volunteerList.filter(c =>
+                c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.referral) {
+            volunteerList = volunteerList.filter(c =>
+                c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.orientation) {
+            volunteerList = volunteerList.filter(c => this.state.orientation == 1 ? c.orientation : !c.orientation);
+        }
+        
+        if (this.state.newsletter) {
+            volunteerList = volunteerList.filter(c => this.state.newsletter == 1 ? c.newsletter : !c.newsletter);
+        }
+        
+        if (this.state.contactWhenShort) {
+            volunteerList = volunteerList.filter(c => this.state.contactWhenShort == 1 ? c.contactWhenShort : !c.contactWhenShort);
+        }
+
+        if (this.state.blueShirt) {
+            volunteerList = volunteerList.filter(c => this.state.blueShirt == 1 ? c.blueShirt : !c.blueShirt);
+        }
+
+        if (this.state.nameTag) {
+            volunteerList = volunteerList.filter(c => this.state.nameTag == 1 ? c.nameTag : !c.nameTag);
+        }
+
+        if (this.state.personalInterviewCompleted) {
+            volunteerList = volunteerList.filter(c => this.state.personalInterviewCompleted == 1 ? c.personalInterviewCompleted : !c.personalInterviewCompleted);
+        }
+
+        if (this.state.backgroundCheck) {
+            volunteerList = volunteerList.filter(c => this.state.backgroundCheck == 1 ? c.backgroundCheck : !c.backgroundCheck);
+        }
+
+        if (this.state.canEditInventory) {
+            volunteerList = volunteerList.filter(c => this.state.canEditInventory == 1 ? c.canEditInventory : !c.canEditInventory);
+        }
+
+        if (this.state.trainings > 0) {
+            console.log("Filter by Trainings...")
+            volunteerList = volunteerList.filter(c => c.trainings.includes(this.state.trainings));
+        }
+
+        return volunteerList;
+    }
+
+    onFilter = () => {
+        if (!this.state.fullVolunteerList || this.state.fullVolunteerList.length == 0)
+            return;
+
+        this.setState({
+            volunteerList: this.filter(this.state.fullVolunteerList)
+        })
+    }
+
+    onClearFilter = () => {
+        this.setState({
+            name: '',
+            language: '',
+            affiliation: '',
+            referral: '',
+            orientation: 0,
+            newsletter: 0,
+            contactWhenShort: 0,
+            blueShirt: 0,
+            nameTag: 0,
+            personalInterviewCompleted: 0,
+            backgroundCheck: 0,
+            canEditInventory: 0,
+            trainings: []
+        })
+
+        if (this.state.fullVolunteerList && this.state.fullVolunteerList.length > 0) {
+            this.setState({
+                roster: this.state.fullVolunteerList
+            })
+        }
     }
 
     editVolunteers = () => {
@@ -185,8 +343,8 @@ export class ViewVolunteers extends Component {
     }
 
     renderVolunteers = () => {
-        if(this.state.volunteers_list != null){
-            const p = this.state.volunteers_list.map((v, index) => {
+        if(this.state.volunteerList != null){
+            const p = this.state.volunteerList.map((v, index) => {
                 if(v.trainings != undefined) {
                     var train = v.trainings.map((details) => {
                         return (
@@ -201,9 +359,7 @@ export class ViewVolunteers extends Component {
                         )
                     })
                 }
-                return ( (this.state.nameSearch != "" && this.state.nameSearch.length > 0)
-                ? ( (( v.firstName.toUpperCase().includes(this.state.nameSearch.toUpperCase()) || v.lastName.toUpperCase().includes(this.state.nameSearch.toUpperCase())) )  
-                    ? (<div key={index}>
+                return (<div key={index}>
                         <Card style={{width: '25rem'}}>
                             <Card.Header as='h5'>
                                 {v.firstName + " " +  v.lastName}
@@ -250,56 +406,6 @@ export class ViewVolunteers extends Component {
                             </Card.Body>
                         </Card>
                     </div>)
-                    : (<div key={index}></div>)
-                )
-                : (<div key={index}>
-                    <Card style={{width: '25rem'}}>
-                        <Card.Header as='h5'>
-                            {v.firstName + " " +  v.lastName}
-                        </Card.Header>
-                        <Card.Body>
-                            <div style={styling.imgContainer}>
-                                <img style={styling.image} src={v.picture ? `data:image/jpeg;base64,${v.picture}` : 'https://i.imgur.com/tdi3NGag.png'} />
-                            </div>
-                            <Card.Title>
-                                Information
-                            </Card.Title>
-                            <Card.Text>
-                                ID: {v.id}<br></br>
-                                Preferred Name: {v.preferredName}<br></br>
-                                Email: {v.email}<br></br>
-                                Phone: {v.phone}<br></br>
-                                Birthday: {v.birthday}<br></br>
-                                <br></br>
-                                Role: {v.role}<br></br>
-                                Weeks Attended: {v.weeksAttended}<br></br>
-                                <br></br>
-                                Trainings:<br></br>
-                                {train}
-                                <br></br>
-                                <br></br>
-                                Languages:<br></br>
-                                {language}
-                                <br></br>
-                                <br></br>
-                                Orientation: {v.orientation ? 'Yes' : 'No'}<br></br>
-                                Blue Shirt: {v.blueShirt  ? 'Yes' : 'No'}<br></br>
-                                Name Tag: {v.nameTag  ? 'Yes' : 'No'}<br></br>
-                                Personal Interview: {v.personalInterviewCompleted  ? 'Yes' : 'No'}<br></br>
-                                Background Check: {v.backgroundCheck  ? 'Yes' : 'No'}<br></br>
-                                Year Started: {v.yearStarted}<br></br>
-                                Can Edit Inventory: {v.canEditInventory  ? 'Yes' : 'No'}<br></br>
-                            </Card.Text>
-                            <Button variant="primary" onClick={() => {this.profileClicked(v.id)}}>
-                                Edit Volunteer Profiles
-                            </Button>
-                            <Button variant="primary" style={{marginLeft: '15px'}} onClick={() => {this.updateTrainings(v.id, v.trainings)}}>
-                                Update Trainings
-                            </Button>
-                        </Card.Body>
-                    </Card>
-                </div>)
-            ) 
             })
             return (
                 <div className="row">
@@ -317,6 +423,129 @@ export class ViewVolunteers extends Component {
         console.log(this.state.nameSearch)
     }
     
+
+    handleNameChange = (e) => {
+        this.setState({
+            name: e.target.value
+        })
+    }
+
+    handleLanguageChange = (e) => {
+        this.setState({
+            language: e.target.value
+        })
+    }
+
+    handleAffiliationChange = (e) => {
+        this.setState({
+            affiliation: e.target.value
+        })
+    }
+
+    handleReferralChange = (e) => {
+        this.setState({
+            referral: e.target.value
+        })
+    }
+
+    handleOrientationChange = (e) => {
+        this.setState({
+            orientation: e.target.value
+        })
+    }
+
+    handleNewsletterChange = (e) => {
+        this.setState({
+            newsletter: e.target.value
+        })
+    }
+
+    handleContactChange = (e) => {
+        this.setState({
+            contactWhenShort: e.target.value
+        })
+    }
+
+    handleBlueShirtChange = (e) => {
+        this.setState({
+            blueShirt: e.target.value
+        })
+    }
+
+    handleNameTagChange = (e) => {
+        this.setState({
+            nameTag: e.target.value
+        })
+    }
+
+    handleInterviewChange = (e) => {
+        this.setState({
+            personalInterviewCompleted: e.target.value
+        })
+    }
+
+    handleBackgroundChange = (e) => {
+        this.setState({
+            backgroundCheck: e.target.value
+        })
+    }
+
+    handleInventoryChange = (e) => {
+        this.setState({
+            canEditInventory: e.target.value
+        })
+    }
+
+    handleTrainingChange = (e) => {
+        console.log(e)
+        var newTrainings = []
+        e.forEach( function(element, index, array) {
+            newTrainings.push({ id: element.value, name: element.label })
+        })
+        console.log(newTrainings)
+        this.setState({
+            trainings: newTrainings
+        })
+        console.log(this.state.trainings);
+    }
+
+    renderTrainings = () => {
+        if (this.state.fullTrainings != null) {
+            // const p = this.state.fullTrainings.map((t, index) => {
+            //     return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
+            // })
+            // return p;
+            // <FormGroup style={styling.formgroupdiv}>
+            //     <FormLabel>Trainings: </FormLabel>
+            //     <Form.Control as="select" multiple value={options} onChange={this.handleTrainingChange}>
+            //         {options.map(options => (
+            //         <option key={option.name} value={option.value}>
+            //             {option.name}
+            //         </option>
+            //         ))}
+            //     </Form.Control>
+            // </FormGroup>
+            const p = this.state.fullTrainings.map((t, index) => {
+                return <option key={t.name} value={t.value}>{t.name}</option>
+            })
+            return p;
+        }
+    }
+
+    renderTest = () => {
+        if (this.state.fullTrainings != null) {
+            var mOptions = []
+            this.state.fullTrainings.forEach( function(element, index, array) {
+                mOptions.push({ value: element.id, label: element.name })
+            })
+            const p = <Select 
+            onChange={(e) => this.handleTrainingChange(e)}
+            options={mOptions}
+            isMulti />
+            return p;
+        }
+    }
+
     renderLoading = () => {
         return (
             <div style={styling.center}>
@@ -327,7 +556,7 @@ export class ViewVolunteers extends Component {
 
     render() {
 
-        return (this.state.volunteers_list != null && this.state.volunteers_list.length > 0)
+        return (this.state.volunteerList != null && this.state.volunteerList.length > 0)
             ? (<div>
                 {this.renderRedirect()}
                 <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirect}>
@@ -335,15 +564,110 @@ export class ViewVolunteers extends Component {
                 </Button>
 
                 {this.editVolunteers()}
-                <Form inline>
-                    <FormControl style={{marginLeft: '15px'}} type="text" placeholder="Search" className="mr-sm-2" value={this.nameSearch} onChange={this.updateSearchText}/>
-                    {/* <Button variant="outline-success" onClick={}>Search Volunteers</Button> */}
-                </Form>
                 <Button variant="primary" size="lg" style={styling.ann} onClick={this.setEdit} className="float-right">
                     Search Volunteer ID
                 </Button>
 
                 <h1 style={styling.head}>Volunteer List</h1>
+
+                <div style={styling.filterdiv}>
+                    <h3>Filter volunteers: </h3>
+                    <Form>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Search by Name: </FormLabel>
+                            <FormControl type="text" placeholder="Name" value={this.state.name} style={{display:'inline'}} onChange={this.handleNameChange} />
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Search by Language: </FormLabel>
+                            <FormControl type="text" placeholder="Name" value={this.state.language} style={{display:'inline'}} onChange={this.handleLanguageChange} />
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Search by Affiliation: </FormLabel>
+                            <FormControl type="text" placeholder="Name" value={this.state.affiliation} style={{display:'inline'}} onChange={this.handleAffiliationChange} />
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Search by Referral: </FormLabel>
+                            <FormControl type="text" placeholder="Name" value={this.state.referral} style={{display:'inline'}} onChange={this.handleReferralChange} />
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Orientation: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline'}} value={this.state.orientation} onChange={this.handleOrientationChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Completed</option>
+                                <option value={2}>Not Completed</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Newsletter: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.newsletter} onChange={this.handleNewsletterChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Acceptable</option>
+                                <option value={2}>Not Acceptable</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Contact When Short: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.contactWhenShort} onChange={this.handleContactChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Acceptable</option>
+                                <option value={2}>Not Acceptable</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Blue Shirt: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.blueShirt} onChange={this.handleBlueShirtChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>True</option>
+                                <option value={2}>False</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Personal Interview: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.personalInterviewCompleted} onChange={this.handleInterviewChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Completed</option>
+                                <option value={2}>Not Completed</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Background Check: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.backgroundCheck} onChange={this.handleBackgroundChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>Completed</option>
+                                <option value={2}>Not Completed</option>
+                            </Form.Control>
+                        </FormGroup>
+                        <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel style={{ display: 'inline' }}>Can Modify Inventory: </FormLabel>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.canEditInventory} onChange={this.handleInventoryChange}>
+                                <option value={0}>All</option>
+                                <option value={1}>True</option>
+                                <option value={2}>False</option>
+                            </Form.Control>
+                        </FormGroup>
+                        {/* <FormGroup style={styling.formgroupdiv}>
+                            <FormLabel>Trainings: </FormLabel>
+                            <Form.Control as="select" multiple value={this.state.trainings} onChange={this.handleTrainingChange}>
+                                {this.renderTrainings()}
+                            </Form.Control>
+                        </FormGroup> */}
+                        <div className="container">
+                            <div className="row">
+                            <div className="col-md-3"></div>
+                            <div className="col-md-6">
+                                {this.renderTest()}
+                            </div>
+                            <div className="col-md-4"></div>
+                            </div>
+                        </div>
+                        <Button variant="primary" size="lg" onClick={this.onFilter} style={{margin: '5px'}}>
+                            Filter
+                        </Button>
+                        <Button variant="danger" size="lg" onClick={this.onClearFilter}>
+                            Clear Filters
+                        </Button>
+                    </Form>
+                </div>
 
                 <div style={styling.deckDiv}>
                     {this.renderVolunteers()}
@@ -409,5 +733,14 @@ const styling = {
     },
     center: {
         textAlign: "center"
+    },
+    filterdiv: {
+        padding: '20px 20px',
+        marginLeft: '7%',
+    },
+    formgroupdiv: {
+        display: 'inline-block',
+        marginRight: '5px',
+        paddingTop: '2px'
     },
 }

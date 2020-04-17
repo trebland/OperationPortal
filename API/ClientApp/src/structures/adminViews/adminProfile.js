@@ -11,9 +11,44 @@ export class AdminProfile extends Component {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin,
             retrievedU: false,
-            user: []
+            user: [],
+            firstname: '',
+            lastname: '',
+            preferredname: '',
+            regexp : /^[0-9\b]+$/,
+            phone: '',
+            referral: '',
+            affiliation: '',
+            birthday: '',
+            newsletter: null,
+            contactWhenShort: null,
+            picture: null,
+            pictureResult: '',
+            id: null,
+            updated: false,
+            updateResult: '',
+            languages: null
         }
         this.getUser()
+
+        this.setContact = this.setContact.bind(this)
+        this.setNewsletter = this.setNewsletter.bind(this)
+        this.handleFirstnameChange = this.handleFirstnameChange.bind(this)
+        this.handleLastnameChange = this.handleLastnameChange.bind(this)
+        this.handlePreferrednameChange = this.handlePreferrednameChange.bind(this)
+        this.handlePhoneChange = this.handlePhoneChange.bind(this)
+        this.handleReferralChange = this.handleReferralChange.bind(this)
+        this.handleAffiliationChange = this.handleAffiliationChange.bind(this)
+        this.handleBirthdayChange = this.handleBirthdayChange.bind(this)
+        this.handlePictureChange = this.handlePictureChange.bind(this)
+    }
+
+    componentDidMount() {
+        this.mounted = true
+    }
+
+    componentWillUnmount() {
+        this.mounted = false
     }
 
     setRedirectDash = () => {
@@ -33,6 +68,100 @@ export class AdminProfile extends Component {
                 }}
             />
         }
+    }
+
+    setContact = () => {
+        this.setState({
+            contactWhenShort: !this.state.contactWhenShort
+        })
+        console.log(this.state.contactWhenShort)
+    }
+
+    setNewsletter = () => {
+        this.setState({
+            newsletter: !this.state.newsletter
+        })
+        console.log(this.state.newsletter)
+    }
+
+    handleFirstnameChange = (e) => {
+        this.setState({
+            firstname: e.target.value
+        })
+        console.log(this.state.firstname)
+    }
+
+    handleLastnameChange = (e) => {
+        this.setState({
+            lastname: e.target.value
+        })
+        console.log(this.state.lastname)
+    }
+    
+    handlePreferrednameChange = (e) => {
+        this.setState({
+            preferredname: e.target.value
+        })
+        console.log(this.state.preferredname)
+    }
+
+    handlePhoneChange = (e) => {
+        let idd = e.target.value
+        if(idd === '' || this.state.regexp.test(idd)) {
+            this.setState({
+                phone: idd,
+            })
+        }
+        console.log(this.state.phone)
+    }
+
+    handleReferralChange = (e) => {
+        this.setState({
+            referral: e.target.value
+        })
+        console.log(this.state.referral)
+    }
+
+    handleAffiliationChange = (e) => {
+        this.setState({
+            affiliation: e.target.value
+        })
+        console.log(this.state.affiliation)
+    }
+
+    handleBirthdayChange = (e) => {
+        this.setState({
+            birthday: e.target.value
+        })
+        console.log(this.state.birthday)
+    }
+
+    parsePicture = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                resolve(event.target.result);
+            };
+
+            reader.onerror = (err) => {
+                reject(err);
+            };
+
+            reader.readAsDataURL(file); 
+        });
+    }
+
+    handlePictureChange = (e) => {
+        const file = e.target.files[0];
+
+        this.parsePicture(file).then((result) => {
+            let pic = (result.split(","))[1];
+            this.setState({
+                pictureResult: file.name + ' selected',
+                picture: pic
+            })
+        });
     }
 
     getUser = () => {
@@ -63,13 +192,25 @@ export class AdminProfile extends Component {
                 }
             })
             .then((data) => {
-                console.log(data)
                 if(this.state.retrievedU) {
                     var res = JSON.parse(data)
+                    res = res.profile
                     console.log(res)
-                    // this.setState({
-                    //     user: 
-                    // })
+                    this.setState({
+                        firstname: res.firstName,
+                        lastname: res.lastName,
+                        contactWhenShort: res.contactWhenShort,
+                        newsletter: res.newsletter,
+                        preferredname: res.preferredName,
+                        phone: res.phone,
+                        birthday: res.birthday,
+                        referral: res.referral,
+                        affiliation: res.affiliation,
+                        picture: res.picture,
+                        id: res.id,
+                        languages: res.languages
+                        // “languages”: [“string”]
+                    })
                 }
             })
         }
@@ -78,70 +219,162 @@ export class AdminProfile extends Component {
         }
     }
 
+    onSubmit = () => {
+        try {
+            fetch('api/volunteer-profile-edit' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        'id': this.state.id,
+                        'affiliation': this.state.affiliation,
+                        'referral': this.state.referral,
+                        'languages': this.state.languages,
+                        'newsletter': this.state.newsletter,
+                        'contactWhenShort': this.state.contactWhenShort,
+                        'phone': this.state.phone,
+                        'firstName': this.state.firstname,
+                        'lastName': this.state.lastname,
+                        'preferredName': this.state.preferredname,
+                        'birthday': this.state.birthday,
+                        'picture': this.state.picture
+                    }
+                )
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('Update profile successful')
+                    this.setState({
+                        updated: true,
+                        updateResult: 'Profile was saved!'
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('Update profile unsuccessful')
+                    this.setState({
+                        updated: false
+                    })
+                    return res.text()
+                }
+            })
+            .then((data) => {
+                if(this.state.updated === false) {
+                    var res = JSON.parse(data)
+                    console.log(res.error)
+                    this.setState({
+                        updateResult: 'Profile not saved, please include a picture.'
+                    })
+                    console.log(this.state.updateResult)
+                }
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
+
+
     renderProfile = () => {
         return (
             <div>
                 <Form>
                     <Form.Row>
                         <Form.Group as={Col}>
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control type="text" placeholder="First Name" />
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control type="text" placeholder="First Name" value={this.state.firstname} onChange={this.handleFirstnameChange}/>
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control type="text" placeholder="Last Name" />
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control type="text" placeholder="Last Name" value={this.state.lastname} onChange={this.handleLastnameChange}/>
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Preferred Name</Form.Label>
-                        <Form.Control type="text" placeholder="Preferred Name" />
+                            <Form.Label>Preferred Name</Form.Label>
+                            <Form.Control type="text" placeholder="Preferred Name" value={this.state.preferredname} onChange={this.handlePreferrednameChange}/>
                         </Form.Group>
                     </Form.Row>
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="Email" />
+                            <Form.Label>Phone Number</Form.Label>
+                            <Form.Control type="text" placeholder= '##########' maxLength='10' value={this.state.phone} onChange={this.handlePhoneChange}/>
+                            <Form.Text>
+                            Please format with no spaces, parenthesis, or dashes. Ex: ##########
+                        </Form.Text>
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Phone Number</Form.Label>
-                        <Form.Control type="number" placeholder="###-###-####" />
+                            <Form.Label>Birthday</Form.Label>
+                            <Form.Control type="date" placeholder="Birthday" value={this.state.birthday} onChange={this.handleBirthdayChange}/>
                         </Form.Group>
+
+                        <Form.Group as={Col}>
+                            <Form.Label>Referral</Form.Label>
+                            <Form.Control type="text" placeholder="Referral" value={this.state.referral} onChange={this.handleReferralChange}/>
+                        </Form.Group>
+
+                        <Form.Group as={Col}>
+                            <Form.Label>Affiliation</Form.Label>
+                            <Form.Control type="text" placeholder="Affiliation" value={this.state.affiliation} onChange={this.handleAffiliationChange}/>
+                        </Form.Group>
+                        {/* {“id” ”picture”:byte[], languages} */}
 
                     </Form.Row>
 
-                    <br/>
+                    {/* <Form.Label>Profile Picture</Form.Label> */}
+                    <div className='custom-file' style={{width: '400px'}}>
+                        
+                        <input type="file" className="custom-file-input" id="picture" accept=".jpg,.jpeg,.png" onChange={this.handlePictureChange}/>
+                        <Form.Label className="custom-file-label">Choose Picture</Form.Label>
+                        <p style={{ textAlign: 'center' }}>{this.state.pictureResult}</p>
+                    </div>
+
+                    <br></br>
+                    <br></br>
 
                     <Form.Row>
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Orientation" />
+                        <Form.Group style={{marginRight: "50px", marginLeft: '10px'}}>
+                            <Form.Label>Newsletter</Form.Label>
+                            <Form.Check 
+                                type="checkbox" 
+                                label="Yes"
+                                checked={this.state.newsletter ? true : false} 
+                                onChange={this.setNewsletter}
+                            />
                         </Form.Group>
                         
                         <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Contact When Short" />
+                            <Form.Label>Contact When Short</Form.Label>
+                            <Form.Check 
+                                type="checkbox" 
+                                label="Yes" 
+                                checked={this.state.contactWhenShort ? true : false}
+                                onChange={this.setContact}
+                            />
                         </Form.Group>
 
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Background Check" />
-                        </Form.Group>
-
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Blue Shirt" />
-                        </Form.Group>
-
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Name Tag" />
-                        </Form.Group>
                     </Form.Row>
-
-                    <br/>
-
-                    <Button variant="primary" type="submit">
-                        Submit
-                    </Button>
+                    
+                    <br></br>
+                    <br></br>
                 </Form>
+                <div>
+                    <center>
+                        {this.renderRedirect()}
+                        <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} style={{ justifyContent: 'center', width: '80%', marginBottom: '20px' }}>
+                            Save
+                        </Button>
+                        <p style={this.state.updated ? { color: 'green' } : { color: 'red' }}>{this.state.updateResult}</p>
+                    </center>
+                </div>
             </div>
         )
     }
@@ -184,21 +417,3 @@ const styling = {
         padding: '20px 20px'
     }
 }
-
-// POST api/volunteer-profile-edit
-// Roles accessed by: volunteers, volunteer captains, bus drivers, staff
-// Input:
-// {“id”:“affiliation”: “string”, “referral”: “string”, “languages”: [“string”], “newsletter”: “bool”, “contactWhenShort”: “bool”, “phone”: “string”, “firstName”: “string”, “lastName”: “string”, “preferredName”:”string”, “birthday”:datetime,”picture”:byte[]}
-// Output:
-// On success {“error”:”string”, “volunteer”:{“firstName”:”string”, “preferredName”:”string”, “lastName”:”string”, “orientation”: “bool”, “training”: [{“name”: “string”}], “affiliation”: “string”, “referral”: “string”, “languages”: [“language”: “string”], “newsletter”: “bool”, “contactWhenShort”: “bool”, “phone”: “string”, “email”: “string”,“blueShirt”:bool, “nametag”:bool, “personalInterviewCompleted”:bool, “backgroundCheck”:bool, “yearStarted”:int, “canEditInventory”:bool, “picture”:byte[], “birthday”:DateTime}}
-// On failure {“error”:”string”}
-
-
-
-// GET api/auth/user
-// Roles accessed by: all logged-in users
-// Input: 
-// None
-// Output:
-// On success: {“error”:””, “profile”:{"id": int, "firstName": "string", "lastName": "string", "role": "string", “CanEditInventory”:bool}, “CheckedIn”: bool, “classes”: [{“id”:int, “name”:“string”, “numstudents”:int, “teacherId”:int, “teacherName”:”string”}], “buses”: [{"id": int, "driverId": int,  "driverName": "string", "name": "string", "route": "string",  "lastOilChange": DateTime, "lastTireChange": DateTime, "lastMaintenance": DateTime}]}}
-// On failure: {“error”:”string”}

@@ -15,11 +15,12 @@ class User {
   this.classes, this.buses});
 
   factory User.fromJson(Map<String, dynamic> json) {
+    List<Class> mClasses = (json['classes'] != null) ? (json['classes'].map<Class>((value) => new Class.fromJson(value)).toList()) : (List<Class>());
     return User(
       profile: json['profile'] != null ? Profile.fromJson(json['profile']) : null,
       checkedIn: json['checkedIn'] != null ? json['checkedIn'] : false,
-      isTeacher: json['isTeacher'] != null ? json['isTeacher'] : false,
-      classes: (json['classes'] != null) ? (json['classes'].map<Class>((value) => new Class.fromJson(value)).toList()) : (List<Class>()),
+      classes: mClasses,
+      isTeacher: json['isTeacher'] != null ? json['isTeacher'] : (mClasses.length > 0 ? true : false),
       buses: (json['buses'] != null) ? (json['buses'].map<Bus>((value) => new Bus.fromJson(value)).toList()) : (List<Bus>()),
     );
   }
