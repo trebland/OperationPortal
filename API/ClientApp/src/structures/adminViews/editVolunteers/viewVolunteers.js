@@ -550,7 +550,7 @@ export class ViewVolunteers extends Component {
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
                             <FormLabel style={{ display: 'inline' }}>Blue Shirt: </FormLabel>
-                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.contactWhenShort} onChange={this.handleBlueShirtChange}>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.blueShirt} onChange={this.handleBlueShirtChange}>
                                 <option value={0}>All</option>
                                 <option value={1}>True</option>
                                 <option value={2}>False</option>
@@ -558,7 +558,7 @@ export class ViewVolunteers extends Component {
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
                             <FormLabel style={{ display: 'inline' }}>Personal Interview: </FormLabel>
-                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.contactWhenShort} onChange={this.handleInterviewChange}>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.personalInterviewCompleted} onChange={this.handleInterviewChange}>
                                 <option value={0}>All</option>
                                 <option value={1}>Completed</option>
                                 <option value={2}>Not Completed</option>
@@ -566,7 +566,7 @@ export class ViewVolunteers extends Component {
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
                             <FormLabel style={{ display: 'inline' }}>Background Check: </FormLabel>
-                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.contactWhenShort} onChange={this.handleBackgroundChange}>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.backgroundCheck} onChange={this.handleBackgroundChange}>
                                 <option value={0}>All</option>
                                 <option value={1}>Completed</option>
                                 <option value={2}>Not Completed</option>
@@ -574,7 +574,7 @@ export class ViewVolunteers extends Component {
                         </FormGroup>
                         <FormGroup style={styling.formgroupdiv}>
                             <FormLabel style={{ display: 'inline' }}>Can Modify Inventory: </FormLabel>
-                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.contactWhenShort} onChange={this.handleInventoryChange}>
+                            <Form.Control as="select" style={{ display: 'inline' }} value={this.state.canEditInventory} onChange={this.handleInventoryChange}>
                                 <option value={0}>All</option>
                                 <option value={1}>True</option>
                                 <option value={2}>False</option>
