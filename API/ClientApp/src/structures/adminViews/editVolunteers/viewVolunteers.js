@@ -468,7 +468,7 @@ export class ViewVolunteers extends Component {
 
     handleTrainingChange = (e) => {
         this.setState({
-            trainings: !trainings.includes(e.target.value) ? trainings.add(e.target.value) : trainings
+            trainings: !this.state.trainings.includes(e.target.value) ? this.state.trainings.add(e.target.value) : this.state.trainings
         })
     }
 
