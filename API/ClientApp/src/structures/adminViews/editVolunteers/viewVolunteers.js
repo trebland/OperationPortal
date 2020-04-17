@@ -36,6 +36,7 @@ export class ViewVolunteers extends Component {
         }
         console.log(this.state.jwt)
         this.updateSearchText = this.updateSearchText.bind(this)
+        this.getTrainings()
         this.getVolunteers()
     }
 
@@ -474,6 +475,20 @@ export class ViewVolunteers extends Component {
 
     renderTrainings = () => {
         if (this.state.fullTrainings != null) {
+            // const p = this.state.fullTrainings.map((t, index) => {
+            //     return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
+            // })
+            // return p;
+            // <FormGroup style={styling.formgroupdiv}>
+            //     <FormLabel>Trainings: </FormLabel>
+            //     <Form.Control as="select" multiple value={options} onChange={this.handleTrainingChange}>
+            //         {options.map(options => (
+            //         <option key={option.name} value={option.value}>
+            //             {option.name}
+            //         </option>
+            //         ))}
+            //     </Form.Control>
+            // </FormGroup>
             const p = this.state.fullTrainings.map((t, index) => {
                 return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
             })
