@@ -140,6 +140,7 @@ namespace API.Data
                 Phone = dr["phone"].ToString(),
                 Email = dr["email"].ToString(),
                 BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                DriversLicense = dr["driverslicense"] == DBNull.Value ? false : (bool)dr["driverslicense"],
                 BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
                 NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                 PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
@@ -197,6 +198,7 @@ namespace API.Data
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
                     BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    DriversLicense = dr["driverslicense"] == DBNull.Value ? false : (bool)dr["driverslicense"],
                     BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
@@ -265,6 +267,7 @@ namespace API.Data
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
                     BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],
+                    DriversLicense = dr["driverslicense"] == DBNull.Value ? false : (bool)dr["driverslicense"],
                     BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
@@ -1068,8 +1071,8 @@ namespace API.Data
             NpgsqlDataAdapter da;
             DataTable dt = new DataTable();
             DataRow dr;
-            string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, yearStarted, CanEditInventory, Picture) 
-                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, @year, false, @picture ) 
+            string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, driverslicense, yearStarted, CanEditInventory, Picture) 
+                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, false, @year, false, @picture ) 
                            RETURNING id";
 
             // Connect to DB
@@ -1110,7 +1113,7 @@ namespace API.Data
         }
 
         /// <summary>
-        /// Allows for updating a volunteer's profile information.  DOES NOT update email or any of the administrative records about them
+        /// Allows for updating a volunteer's profile information.  DOES NOT update any of the administrative records about them
         /// </summary>
         /// <param name="v">A VolunteerModel object.  Should contain id, first name, last name, preferred name, affiliation, referral, newsletter, phone, birthday, picture, and contactwhenshort</param>
         public void UpdateVolunteerProfile(VolunteerModel v)
@@ -1164,6 +1167,7 @@ namespace API.Data
             string sql = @"UPDATE Volunteers 
                            SET orientation = @orientation,
                                backgroundcheck = @background,
+                               driverslicense = @license,
                                blueshirt = @shirt,
                                nametag = @nametag,
                                personalinterviewcompleted = @interview,
@@ -1180,6 +1184,7 @@ namespace API.Data
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
                     cmd.Parameters.Add("@orientation", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Orientation;
                     cmd.Parameters.Add("@background", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BackgroundCheck;
+                    cmd.Parameters.Add("@license", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.DriversLicense;
                     cmd.Parameters.Add("@shirt", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BlueShirt;
                     cmd.Parameters.Add("@nametag", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.NameTag;
                     cmd.Parameters.Add("@interview", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.PersonalInterviewCompleted;
@@ -1368,6 +1373,7 @@ namespace API.Data
                     Phone = dr["phone"].ToString(),
                     Email = dr["email"].ToString(),
                     BlueShirt = dr["blueshirt"] == DBNull.Value ? false : (bool)dr["blueshirt"],
+                    DriversLicense = dr["driverslicense"] == DBNull.Value ? false : (bool)dr["driverslicense"],
                     NameTag = dr["nametag"] == DBNull.Value ? false : (bool)dr["nametag"],
                     PersonalInterviewCompleted = dr["personalinterviewcompleted"] == DBNull.Value ? false : (bool)dr["personalinterviewcompleted"],
                     BackgroundCheck = dr["backgroundcheck"] == DBNull.Value ? false : (bool)dr["backgroundcheck"],

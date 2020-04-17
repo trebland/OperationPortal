@@ -19,8 +19,11 @@ export class AdminVolunteerEdit extends Component {
             nametag: props.location.state.volunteer.nameTag,
             inventory: props.location.state.volunteer.canEditInventory,
             role: props.location.state.volunteer.role,
+            drivers: props.location.state.volunteer.driversLicense,
             roleupdate: -1,
-            finished: false
+            finished: false,
+            success: false,
+            result: ''
         }
     }
 
@@ -56,23 +59,38 @@ export class AdminVolunteerEdit extends Component {
                     personalInterviewCompleted: this.state.personal,
                     backgroundCheck: this.state.background,
                     yearStarted: this.state.year,
-                    canEditInventory: this.state.inventory
+                    canEditInventory: this.state.inventory,
+                    driversLicense: this.state.drivers
                 })
             })
             .then((res) => {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201)){
                     console.log("profile edit successfull")
+                    this.setState({
+                        success: true
+                    })
                     return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500)){
                     console.log("profile edit unsuccessful")
+                    this.setState({
+                        success: false
+                    })
+                    return res.text()
                 }
             })
             .then((data) => {
-                if(data != null) {
+                var res = JSON.parse(data)
+                console.log(res)
+                if(this.state.success) {
                     this.setState({
-                        redirect: true
+                        result: 'Volunteer profile saved!'
+                    })
+                }
+                else if(this.state.success === false) {
+                    this.setState({
+                        result: res.error
                     })
                 }
             })
@@ -94,6 +112,13 @@ export class AdminVolunteerEdit extends Component {
                 }}/>
             )
         }
+    }
+
+    setDriver = () => {
+        this.setState({
+            drivers: !this.state.drivers
+        })
+
     }
 
     setOrientation = () => {
@@ -420,6 +445,22 @@ export class AdminVolunteerEdit extends Component {
                         </Col>
                     </Form.Group>
 
+                    <Form.Group style={{marginRight: "50px"}}>
+                        <Form.Label as="legend">
+                            <b>Drivers License</b>
+                        </Form.Label>
+                        <Col sm={10} style={{marginTop: '7px'}}>
+                            <Form.Check
+                                type="checkbox"
+                                label="Yes"
+                                name="formHorizontalRadios"
+                                id="formHorizontalRadios1"
+                                onChange={this.setDriver}
+                                checked={this.state.drivers ? true : false}
+                            />
+                        </Col>
+                    </Form.Group>
+
                     <Form.Group as={Col}>
                         <Form.Label><b>Year Started</b></Form.Label>
                         <Form.Control plaintext readOnly defaultValue={vol.yearStarted} />
@@ -429,6 +470,7 @@ export class AdminVolunteerEdit extends Component {
                 <Button variant="link" variant="primary" size="lg" onClick={this.assignRole}>
                     Submit
                 </Button>
+                <p style={this.state.success ? { color: 'green' } : { color: 'red' }}>{this.state.result}</p>
             </div>
         )
     }

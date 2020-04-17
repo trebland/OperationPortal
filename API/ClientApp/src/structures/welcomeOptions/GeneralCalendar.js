@@ -117,7 +117,7 @@ export class GeneralCalendar extends Component {
                     Back to Dashboard
                 </Button>
                 <div style={styling.cal}>
-                    <h1>General Calendar</h1>
+                    <h1>All Attending Groups</h1>
                     <Calendar
                         selectable
                         popup

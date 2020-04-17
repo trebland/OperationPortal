@@ -196,6 +196,7 @@ namespace API.Controllers
                     LastName = updatedChild.LastName,
                     PreferredName = updatedChild.LastName,
                     ContactNumber = updatedChild.ContactNumber,
+                    ContactEmail = updatedChild.ContactEmail,
                     ParentName = updatedChild.ParentName,
                     BusId = updatedChild.BusId,
                     Birthday = updatedChild.Birthday,

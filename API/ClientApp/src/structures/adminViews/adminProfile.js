@@ -23,7 +23,11 @@ export class AdminProfile extends Component {
             newsletter: null,
             contactWhenShort: null,
             picture: null,
-            pictureResult: ''
+            pictureResult: '',
+            id: null,
+            updated: false,
+            updateResult: '',
+            languages: null
         }
         this.getUser()
 
@@ -191,12 +195,22 @@ export class AdminProfile extends Component {
                 if(this.state.retrievedU) {
                     var res = JSON.parse(data)
                     res = res.profile
+                    console.log(res)
                     this.setState({
-                        user: res,
+                        firstname: res.firstName,
+                        lastname: res.lastName,
                         contactWhenShort: res.contactWhenShort,
-                        newsletter: res.newsletter
+                        newsletter: res.newsletter,
+                        preferredname: res.preferredName,
+                        phone: res.phone,
+                        birthday: res.birthday,
+                        referral: res.referral,
+                        affiliation: res.affiliation,
+                        picture: res.picture,
+                        id: res.id,
+                        languages: res.languages
+                        // “languages”: [“string”]
                     })
-                    console.log(this.state.user)
                 }
             })
         }
@@ -204,6 +218,68 @@ export class AdminProfile extends Component {
             console.log(e)
         }
     }
+
+    onSubmit = () => {
+        try {
+            fetch('api/volunteer-profile-edit' , {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${this.state.jwt}`
+                },
+                body: JSON.stringify(
+                    {
+                        'id': this.state.id,
+                        'affiliation': this.state.affiliation,
+                        'referral': this.state.referral,
+                        'languages': this.state.languages,
+                        'newsletter': this.state.newsletter,
+                        'contactWhenShort': this.state.contactWhenShort,
+                        'phone': this.state.phone,
+                        'firstName': this.state.firstname,
+                        'lastName': this.state.lastname,
+                        'preferredName': this.state.preferredname,
+                        'birthday': this.state.birthday,
+                        'picture': this.state.picture
+                    }
+                )
+            })
+            .then((res) => {
+                console.log(res.status)
+                if((res.status === 200 || res.status === 201) && this.mounted === true){
+                    console.log('Update profile successful')
+                    this.setState({
+                        updated: true,
+                        updateResult: 'Profile was saved!'
+                    })
+                    return res.text()
+                }
+                else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
+                    console.log('Update profile unsuccessful')
+                    this.setState({
+                        updated: false
+                    })
+                    return res.text()
+                }
+            })
+            .then((data) => {
+                if(this.state.updated === false) {
+                    var res = JSON.parse(data)
+                    console.log(res.error)
+                    this.setState({
+                        updateResult: 'Profile not saved, please include a picture.'
+                    })
+                    console.log(this.state.updateResult)
+                }
+            })
+        }
+        catch(e) {
+            console.log(e)
+        }
+    }
+
+
 
     renderProfile = () => {
         return (
@@ -229,7 +305,7 @@ export class AdminProfile extends Component {
                     <Form.Row>
                         <Form.Group as={Col}>
                             <Form.Label>Phone Number</Form.Label>
-                            <Form.Control type="text" placeholder="###-###-####" maxLength='10' value={this.state.phone} onChange={this.handlePhoneChange}/>
+                            <Form.Control type="text" placeholder= '##########' maxLength='10' value={this.state.phone} onChange={this.handlePhoneChange}/>
                             <Form.Text>
                             Please format with no spaces, parenthesis, or dashes. Ex: ##########
                         </Form.Text>
@@ -237,7 +313,7 @@ export class AdminProfile extends Component {
 
                         <Form.Group as={Col}>
                             <Form.Label>Birthday</Form.Label>
-                            <Form.Control type="date" placeholder="Birthday" onChange={this.handleBirthdayChange}/>
+                            <Form.Control type="date" placeholder="Birthday" value={this.state.birthday} onChange={this.handleBirthdayChange}/>
                         </Form.Group>
 
                         <Form.Group as={Col}>
@@ -258,7 +334,7 @@ export class AdminProfile extends Component {
                         
                         <input type="file" className="custom-file-input" id="picture" accept=".jpg,.jpeg,.png" onChange={this.handlePictureChange}/>
                         <Form.Label className="custom-file-label">Choose Picture</Form.Label>
-                        <p style={{ textAlign: 'center' }}></p>
+                        <p style={{ textAlign: 'center' }}>{this.state.pictureResult}</p>
                     </div>
 
                     <br></br>
@@ -289,11 +365,16 @@ export class AdminProfile extends Component {
                     
                     <br></br>
                     <br></br>
-
-                    <Button variant="primary" type="submit">
-                        Submit
-                    </Button>
                 </Form>
+                <div>
+                    <center>
+                        {this.renderRedirect()}
+                        <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} style={{ justifyContent: 'center', width: '80%', marginBottom: '20px' }}>
+                            Save
+                        </Button>
+                        <p style={this.state.updated ? { color: 'green' } : { color: 'red' }}>{this.state.updateResult}</p>
+                    </center>
+                </div>
             </div>
         )
     }
@@ -336,21 +417,3 @@ const styling = {
         padding: '20px 20px'
     }
 }
-
-// POST api/volunteer-profile-edit
-// Roles accessed by: volunteers, volunteer captains, bus drivers, staff
-// Input:
-// {“id”:“affiliation”: “string”, “referral”: “string”, “languages”: [“string”], “newsletter”: “bool”, “contactWhenShort”: “bool”, “phone”: “string”, “firstName”: “string”, “lastName”: “string”, “preferredName”:”string”, “birthday”:datetime,”picture”:byte[]}
-// Output:
-// On success {“error”:”string”, “volunteer”:{“firstName”:”string”, “preferredName”:”string”, “lastName”:”string”, “orientation”: “bool”, “training”: [{“name”: “string”}], “affiliation”: “string”, “referral”: “string”, “languages”: [“language”: “string”], “newsletter”: “bool”, “contactWhenShort”: “bool”, “phone”: “string”, “email”: “string”,“blueShirt”:bool, “nametag”:bool, “personalInterviewCompleted”:bool, “backgroundCheck”:bool, “yearStarted”:int, “canEditInventory”:bool, “picture”:byte[], “birthday”:DateTime}}
-// On failure {“error”:”string”}
-
-
-
-// GET api/auth/user
-// Roles accessed by: all logged-in users
-// Input: 
-// None
-// Output:
-// On success: {“error”:””, “profile”:{"id": int, "firstName": "string", "lastName": "string", "role": "string", “CanEditInventory”:bool}, “CheckedIn”: bool, “classes”: [{“id”:int, “name”:“string”, “numstudents”:int, “teacherId”:int, “teacherName”:”string”}], “buses”: [{"id": int, "driverId": int,  "driverName": "string", "name": "string", "route": "string",  "lastOilChange": DateTime, "lastTireChange": DateTime, "lastMaintenance": DateTime}]}}
-// On failure: {“error”:”string”}

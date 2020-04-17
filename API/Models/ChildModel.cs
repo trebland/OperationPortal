@@ -24,6 +24,7 @@ namespace API.Models
         public bool ParentalEmailOptIn { get; set; }
         public string ParentName { get; set; }
         public string ContactNumber { get; set; }
+        public string ContactEmail { get; set; }
         public string OrangeShirt { get; set; }
         public bool WaiverReceived { get; set; }
         public DateTime? SuspendedStart { get; set; }

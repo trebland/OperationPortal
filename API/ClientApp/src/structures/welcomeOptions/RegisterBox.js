@@ -12,8 +12,10 @@ export class RegisterBox extends Component {
         email: "",
         password: "",
         redirectDash: false,
-        redirect: false
-        // result: ""
+        redirect: false,
+        result: "",
+        success: false
+
       };
       this.handleFirstnameChange = this.handleFirstnameChange.bind(this);
       this.handleLastnameChange = this.handleLastnameChange.bind(this);
@@ -41,19 +43,37 @@ export class RegisterBox extends Component {
             .then((res) => {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201)){
-                    console.log("posted successfully")
-                    return this.setState({
-                        redirect: true
+                    console.log("registered successfully")
+                    this.setState({
+                      success: true
                     })
+                    return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500)){
-                    console.log("Email already exists.")
-                    return (
-                        this.setState({
-                            redirect: false
-                        })
-                    )
+                    console.log("register unsuccessful ")
+                    this.setState({
+                      success: false
+                    })
+                    return res.text()
                 }
+            })
+            .then((data) => {
+              if(this.state.success) {
+                var res = JSON.parse(data)
+                console.log(res)
+                this.setState({
+                  result: 'Account registered!',
+                  redirect: true
+                })
+              }
+              else if(this.state.success === false) {
+                var res = JSON.parse(data)
+                console.log(res.error)
+                this.setState({
+                  result: res.error,
+                  redirect: false
+                })
+              }
             })
         }
         catch(e) {
@@ -154,6 +174,7 @@ export class RegisterBox extends Component {
                         <Button variant="link" variant="primary" size="lg" onClick={this.onSubmit} >
                             Submit
                         </Button>
+                        <p style={this.state.success ? { color: 'green' } : { color: 'red' }}>{this.state.result}</p>
                     </center>
                 </div>
 
