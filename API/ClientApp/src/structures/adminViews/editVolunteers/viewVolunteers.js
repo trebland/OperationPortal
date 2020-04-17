@@ -232,7 +232,7 @@ export class ViewVolunteers extends Component {
 
         if (this.state.trainings.length > 0) {
             this.state.trainings.forEach( function(bigT, index, array) {
-                volunteerList = volunteerList.filter(c => c.trainings.forEach( function(lilT, lilIndex, array) { if (bigT.id == lilT.id) return true; else if (lilIndex == (c.trainings.length-1)) return false;} ));
+                volunteerList = volunteerList.filter(c => c.trainings.forEach( function(lilT, lilIndex, array) { if (bigT.value == lilT.id) return true; else if (lilIndex == (c.trainings.length-1)) return false;} ));
             })
         }
 
