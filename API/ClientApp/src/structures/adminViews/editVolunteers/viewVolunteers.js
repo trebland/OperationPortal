@@ -475,7 +475,7 @@ export class ViewVolunteers extends Component {
     renderTrainings = () => {
         if (this.state.fullTrainings != null) {
             const p = this.state.fullTrainings.map((t, index) => {
-                return <Form.Check key={index} inline value={t.id} label={t.name} type={type} id={`inline-${type}-1`} />
+                return <Form.Check key={index} inline value={t.id} label={t.name} type={"checkbox"} />
             })
             return p;
         }
