@@ -117,7 +117,7 @@ export class UserAnnouncements extends Component {
                     Back to Dashboard
                 </Button>
 
-                <h1 style={styling.head}>Orlando Children's Church - Announcements</h1><br/><br/>
+                <h1 style={styling.head}>Weekly Announcements</h1><br/><br/>
                 
                 <div style={styling.outderdiv} >
                     {this.renderAnnouncements()}
