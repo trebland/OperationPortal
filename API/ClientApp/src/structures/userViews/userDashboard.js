@@ -104,7 +104,7 @@ export class UserDashboard extends Component {
                 </Button>
                 <center>
                     <div style={styling.header}>
-                        <h1>{ret} Dashboard</h1>
+                        <h1>Welcome to Orlando Children's Church - {ret} Dashboard</h1>
                     </div>
                 </center>
                 <center>
