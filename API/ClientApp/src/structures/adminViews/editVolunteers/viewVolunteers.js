@@ -498,8 +498,9 @@ export class ViewVolunteers extends Component {
     }
 
     handleTrainingChange = (e) => {
+        console.log(e)
         this.setState({
-            trainings: e.target.value
+            trainings: e.value
         })
     }
 
@@ -534,7 +535,7 @@ export class ViewVolunteers extends Component {
             })
             const p = <Select 
             value={this.state.trainings}
-            onChange={this.handleTrainingChange}
+            onChange={(e) => this.handleTrainingChange(e)}
             options={mOptions}
             isMulti />
             return p;
