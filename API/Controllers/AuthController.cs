@@ -239,6 +239,18 @@ namespace OCCTest.Controllers
             {
                 user = await userManager.FindByNameAsync(user.UserName);
                 await userManager.AddToRoleAsync(user, "Volunteer");
+
+                try
+                {
+                    await EmailHelpers.SendEmail(user.Email, "Welcome to Orlando Children's Church!", 
+                        $"Thank you for signing up for Orlando Children's Church, {newUser.FirstName}!\n\n"
+                        +"Please remember to visit our operation portal's website at https://www.operation-portal.com in order to finish filling out your profile.\n\n"
+                        +"Thanks,\nThe OCC team", configModel.EmailOptions);
+                }
+                catch(Exception e)
+                {
+                    // We don't want to abord the signup if the user isn't able to get the email, so this catch remains empty
+                }
             }
             else
             {

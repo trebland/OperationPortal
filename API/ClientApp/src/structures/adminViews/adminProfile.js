@@ -84,59 +84,71 @@ export class AdminProfile extends Component {
                 <Form>
                     <Form.Row>
                         <Form.Group as={Col}>
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control type="text" placeholder="First Name" />
+                            <Form.Label>First Name</Form.Label>
+                            <Form.Control type="text" placeholder="First Name" />
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control type="text" placeholder="Last Name" />
+                            <Form.Label>Last Name</Form.Label>
+                            <Form.Control type="text" placeholder="Last Name" />
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Preferred Name</Form.Label>
-                        <Form.Control type="text" placeholder="Preferred Name" />
+                            <Form.Label>Preferred Name</Form.Label>
+                            <Form.Control type="text" placeholder="Preferred Name" />
                         </Form.Group>
                     </Form.Row>
 
                     <Form.Row>
                         <Form.Group as={Col}>
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="Email" />
+                            <Form.Label>Phone Number</Form.Label>
+                            <Form.Control type="number" placeholder="###-###-####" />
                         </Form.Group>
 
                         <Form.Group as={Col}>
-                        <Form.Label>Phone Number</Form.Label>
-                        <Form.Control type="number" placeholder="###-###-####" />
+                            <Form.Label>Birthday</Form.Label>
+                            <Form.Control type="text" placeholder="Birthday" />
                         </Form.Group>
+
+                        <Form.Group as={Col}>
+                            <Form.Label>Referral</Form.Label>
+                            <Form.Control type="text" placeholder="Referral" />
+                        </Form.Group>
+
+                        <Form.Group as={Col}>
+                            <Form.Label>Affiliation</Form.Label>
+                            <Form.Control type="text" placeholder="Affiliation" />
+                        </Form.Group>
+                        {/* {“id” ”picture”:byte[]} */}
 
                     </Form.Row>
 
-                    <br/>
+                    {/* <Form.Label>Profile Picture</Form.Label> */}
+                    <div className='custom-file' style={{width: '400px'}}>
+                        
+                        <input type="file" className="custom-file-input" id="picture" accept=".jpg,.jpeg,.png" />
+                        <Form.Label className="custom-file-label">Choose Picture</Form.Label>
+                        <p style={{ textAlign: 'center' }}></p>
+                    </div>
+
+                    <br></br>
+                    <br></br>
 
                     <Form.Row>
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Orientation" />
+                        <Form.Group style={{marginRight: "50px", marginLeft: '10px'}}>
+                            <Form.Label>Newsletter</Form.Label>
+                            <Form.Check type="checkbox" label="Newsletter" />
                         </Form.Group>
                         
                         <Form.Group style={{marginRight: "50px"}}>
+                            <Form.Label>Contact When Short</Form.Label>
                             <Form.Check type="checkbox" label="Contact When Short" />
                         </Form.Group>
 
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Background Check" />
-                        </Form.Group>
-
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Blue Shirt" />
-                        </Form.Group>
-
-                        <Form.Group style={{marginRight: "50px"}}>
-                            <Form.Check type="checkbox" label="Name Tag" />
-                        </Form.Group>
                     </Form.Row>
-
-                    <br/>
+                    
+                    <br></br>
+                    <br></br>
 
                     <Button variant="primary" type="submit">
                         Submit

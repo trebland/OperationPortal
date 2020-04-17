@@ -75,7 +75,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           "Class Name",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 24, color: textComplementColor),
+                          style: TextStyle(fontSize: 20, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -89,7 +89,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           widget.mClass.name,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 16),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -97,7 +97,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           "Number of Students",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 24, color: textComplementColor),
+                          style: TextStyle(fontSize: 20, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -111,7 +111,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           '${widget.mClass.numStudents}',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 16),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -119,7 +119,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           "Location",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 24, color: textComplementColor),
+                          style: TextStyle(fontSize: 20, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -133,7 +133,7 @@ class ClassProfileState extends State<ClassProfilePage> {
                         child: Text(
                           widget.mClass.location,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 16),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -148,18 +148,30 @@ class ClassProfileState extends State<ClassProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Class Info"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          buildPictureNameRow(),
-          buildAdditionalInfo(),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+        AppBar appBar = AppBar(
+          title: Text("Class Info"),
+        );
+        return Scaffold(
+          appBar: appBar,
+          body: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: <Widget>[
+                    buildPictureNameRow(),
+                    buildAdditionalInfo(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

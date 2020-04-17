@@ -156,7 +156,7 @@ export class AdminChildEdit extends Component {
                 reject(err);
             };
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file); 
         });
     }
 

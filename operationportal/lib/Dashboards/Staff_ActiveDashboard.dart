@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:operationportal/Structs/Storage.dart';
 import 'package:operationportal/Structs/User.dart';
 import 'package:operationportal/Widget/AppBar.dart';
+import 'package:operationportal/Widget/ChildCheckIn.dart';
 import 'package:operationportal/Widget/Inventory.dart';
 import 'package:operationportal/Widget/StaffWidgets/Roster.dart';
 import 'package:operationportal/Widget/StaffWidgets/VolunteerCheckIn.dart';
@@ -21,7 +22,8 @@ class Staff_ActiveDashboard_Page extends StatefulWidget {
 class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with SingleTickerProviderStateMixin
 {
   final List<Tab> myTabs = <Tab>[
-    Tab(text: 'Check-In'),
+    Tab(text: 'Volunteer Check-In'),
+    Tab(text: 'Child Check-In'),
     Tab(text: 'Volunteers'),
     Tab(text: 'Roster'),
     Tab(text: 'Suspended'),
@@ -82,8 +84,10 @@ class Staff_ActiveDashboard_State extends State<Staff_ActiveDashboard_Page> with
       body: TabBarView(
         controller: _tabController,
         children: myTabs.map((Tab tab) {
-          if (tab.text == "Check-In")
+          if (tab.text == "Volunteer Check-In")
             return VolunteerCheckInPage(storage: storage,);
+          else if (tab.text == "Child Check-In")
+            return ChildCheckInPage(storage: storage,);
           else if(tab.text == "Volunteers")
             return VolunteerWidgetPage(storage: storage,);
           else if(tab.text == "Roster")

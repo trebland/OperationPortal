@@ -35,7 +35,9 @@ export class AdminCalendar extends Component {
             groupemail: '',
             groupcount: '', 
             regexp : /^[0-9\b]+$/,
-            retrieved: false
+            retrieved: false,
+            retrievedGroup: false,
+            resultGroup: ''
         }
         console.log(this.state.jwt)
         this.handleNameChange = this.handleNameChange.bind(this)
@@ -451,7 +453,7 @@ export class AdminCalendar extends Component {
         }
     }
 
-    signupGroup = () => {
+    signupAGroup = () => {
         console.log('clicked')
         let a = this.state.groupdate
         let year = a.substring(0, 4)
@@ -481,10 +483,17 @@ export class AdminCalendar extends Component {
                 console.log(res.status)
                 if((res.status === 200 || res.status === 201) && this.mounted === true){
                     console.log('add group successful')
+                    this.setState({
+                        retrievedGroup: true
+                    })
                     return res.text()
                 }
                 else if((res.status === 401 || res.status === 400 || res.status === 500) && this.mounted === true){
                     console.log('add group failed')
+                    this.setState({
+                        retrievedGroup: false,
+                        resultGroup: 'Did not add group. Date provided must be a Saturday'
+                    })
                     return res.text()
                 }
             })
@@ -493,7 +502,10 @@ export class AdminCalendar extends Component {
                 console.log(res)
             })
             .then(() => {
-                window.location.reload(false) 
+                if(this.state.retrievedGroup) {
+                    window.location.reload(false) 
+                }
+                
             })
         }
         catch(e) {
@@ -573,9 +585,10 @@ export class AdminCalendar extends Component {
                         <Form.Control type="text" placeholder="Number of people in Group" value={this.state.groupcount} onChange={this.handleGroupCount}/>
                     </Form.Group>
                     
-                    <Button variant="link" variant="primary" size="lg" onClick={this.signupGroup}>
+                    <Button variant="link" variant="primary" size="lg" onClick={this.signupAGroup}>
                         Signup Group
                     </Button>
+                    <p style={this.state.retrievedGroup ? { color: 'green' } : { color: 'red' }}>{this.state.resultGroup}</p>
                 </Form>
             </div>
         )

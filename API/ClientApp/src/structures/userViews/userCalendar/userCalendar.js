@@ -443,7 +443,7 @@ export class UserCalendar extends Component {
                     Back to Dashboard
                 </Button>
                 <div style={styling.cal}>
-                    <h1>{ret} Calendar</h1>
+                    <h1>Orlando Children's Church - {ret} Calendar</h1>
                     <Calendar
                         selectable
                         popup
