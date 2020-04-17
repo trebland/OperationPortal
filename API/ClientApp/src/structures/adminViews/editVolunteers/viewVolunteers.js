@@ -276,7 +276,7 @@ export class ViewVolunteers extends Component {
             canEditInventory: 0,
             trainings: [],
             trainingsHolder: [],
-            roster: this.state.fullVolunteerList
+            volunteerList: this.state.fullVolunteerList
         })
     }
 
