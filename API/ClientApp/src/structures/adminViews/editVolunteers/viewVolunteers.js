@@ -230,6 +230,10 @@ export class ViewVolunteers extends Component {
             volunteerList = volunteerList.filter(c => this.state.canEditInventory == 1 ? c.canEditInventory : !c.canEditInventory);
         }
 
+        if (this.state.trainings > 0) {
+            volunteerList = volunteerList.filter(c => c.trainings.includes(this.state.trainings));
+        }
+
         return volunteerList;
     }
 
