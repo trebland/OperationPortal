@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Card, Form, FormGroup, FormLabel, FormControl, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
+import Select from 'react-select'
 import './cards.css'
 
 export class ViewVolunteers extends Component {
@@ -490,6 +491,17 @@ export class ViewVolunteers extends Component {
             // </FormGroup>
             const p = this.state.fullTrainings.map((t, index) => {
                 return <option key={t.name} value={t.value}>{t.name}</option>
+                <Select options={Countries} components={animatedComponents}
+              isMulti />
+            })
+            return p;
+        }
+    }
+
+    renderTest = () => {
+        if (this.state.fullTrainings != null) {
+            const p = this.state.fullTrainings.map((t, index) => {
+                return { key={index}, label: t.name, value: t.id }
             })
             return p;
         }
@@ -594,12 +606,22 @@ export class ViewVolunteers extends Component {
                                 <option value={2}>False</option>
                             </Form.Control>
                         </FormGroup>
-                        <FormGroup style={styling.formgroupdiv}>
+                        {/* <FormGroup style={styling.formgroupdiv}>
                             <FormLabel>Trainings: </FormLabel>
                             <Form.Control as="select" multiple value={this.state.trainings} onChange={this.handleTrainingChange}>
                                 {this.renderTrainings()}
                             </Form.Control>
-                        </FormGroup>
+                        </FormGroup> */}
+                        <div className="container">
+                            <div className="row">
+                            <div className="col-md-3"></div>
+                            <div className="col-md-6">
+                                <Select options={this.renderTest()}
+                                isMulti />
+                            </div>
+                            <div className="col-md-4"></div>
+                            </div>
+                        </div>
                         <Button variant="primary" size="lg" onClick={this.onFilter} style={{margin: '5px'}}>
                             Filter
                         </Button>
