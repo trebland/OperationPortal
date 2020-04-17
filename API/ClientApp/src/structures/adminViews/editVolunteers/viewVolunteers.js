@@ -231,7 +231,7 @@ export class ViewVolunteers extends Component {
         }
 
         if (this.state.trainings.length > 0) {
-            trainings.forEach( function(element, index, array) {
+            this.state.trainings.forEach( function(element, index, array) {
                 volunteerList = volunteerList.filter(c => !c.trainings.includes(element));
             })
         }
@@ -533,7 +533,7 @@ export class ViewVolunteers extends Component {
                 mOptions.push({ value: element.id, label: element.name })
             })
             const p = <Select 
-            value={trainings}
+            value={this.state.trainings}
             onChange={this.handleTrainingChange}
             options={mOptions}
             isMulti />
