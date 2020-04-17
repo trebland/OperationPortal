@@ -24,6 +24,7 @@ namespace API.Models
         public string[] AgesInterested { get; set; }
         public bool Newsletter { get; set; }
         public bool ContactWhenShort { get; set; }
+        public bool DriversLicense { get; set; }
         public bool BackgroundCheck { get; set; }
         public bool BlueShirt { get; set; }
         public bool NameTag { get; set; }

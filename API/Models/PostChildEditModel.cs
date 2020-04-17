@@ -8,6 +8,7 @@ namespace API.Models
         public string LastName { get; set; }
         public string PreferredName { get; set; }
         public string ContactNumber { get; set; }
+        public string ContactEmail { get; set; }
         public string ParentName { get; set; }
         public int BusId { get; set; }
         public string Birthday { get; set; }

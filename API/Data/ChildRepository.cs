@@ -204,12 +204,12 @@ namespace API.Data
                     parm = -1;
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@contactnumber", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                        cmd.Parameters.Add($"@contactnumber", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ContactNumber;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@parentname", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ParentName;
+                        cmd.Parameters.Add($"@parentname", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ParentName;
                     }
 
                     if (updated[++parm])
@@ -313,6 +313,12 @@ namespace API.Data
                 if (child.ContactNumber != null)
                 {
                     parameters.Append($"contactnumber = @p{parm},");
+                    updated[parm] = true;
+                }
+                parm++;
+                if (child.ContactEmail != null)
+                {
+                    parameters.Append($"contactemail = @p{parm},");
                     updated[parm] = true;
                 }
                 parm++;
@@ -435,7 +441,12 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar, 10).Value = child.ContactNumber;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ContactNumber;
+                    }
+
+                    if (updated[++parm])
+                    {
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Varchar).Value = child.ContactEmail;
                     }
 
                     if (updated[++parm])
@@ -1108,6 +1119,7 @@ namespace API.Data
             child.PreferredName = dr["preferredname"].ToString();
             child.ParentName = dr["parentname"].ToString();
             child.ContactNumber = dr["contactnumber"].ToString();
+            child.ContactEmail = dr["contactemail"].ToString();
             child.Grade = grade;
             child.Class = new Pair
             {
@@ -1189,6 +1201,7 @@ namespace API.Data
             child.LastName = dr["lastname"].ToString();
             child.PreferredName = dr["preferredname"].ToString();
             child.ContactNumber = dr["contactnumber"].ToString();
+            child.ContactEmail = dr["contactemail"].ToString();
             child.ParentName = dr["parentname"].ToString();
             child.BusId = DBNull.Value.Equals(dr["busid"]) ? 0 : (int)dr["busid"];
             child.Birthday = dr["birthday"].ToString();
