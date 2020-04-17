@@ -181,7 +181,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                             .map<DropdownMenuItem<Bus>>((Bus value) {
                                           return DropdownMenuItem<Bus>(
                                             value: value,
-                                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 14, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 14, decoration: TextDecoration.none,)),
+                                            child: value.id == null ? Text('Select Bus', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                                           );
                                         }).toList(),
                                       ),
@@ -200,6 +200,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                             new Radius.circular(20)
                                         ),
                                       ),
+                                      padding: EdgeInsets.all(5),
                                       margin: EdgeInsets.only(left: 10),
                                     ),
                                   ]
@@ -286,7 +287,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                             .map<DropdownMenuItem<Class>>((Class value) {
                                           return DropdownMenuItem<Class>(
                                             value: value,
-                                            child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 14, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 14, decoration: TextDecoration.none,)),
+                                            child: value.id == null ? Text('Select Class', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)) : Text('${value.name}', style: TextStyle(fontSize: 16, decoration: TextDecoration.none,)),
                                           );
                                         }).toList(),
                                       ),
@@ -305,6 +306,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                             new Radius.circular(20)
                                         ),
                                       ),
+                                      padding: EdgeInsets.all(5),
                                       margin: EdgeInsets.only(left: 10),
                                     ),
                                   ]
@@ -399,7 +401,7 @@ class RosterWidgetState extends State<RosterWidgetPage>
                                   backgroundImage: (children[index].picture != null && children[index].picture.isNotEmpty) ? MemoryImage(base64.decode((children[index].picture))) : null,
                                 ),
                               ),
-                              title: Text( (children[index].preferredName != null && children[index].preferredName.isNotEmpty ? '${children[index].preferredName} (${children[index].firstName}) ': '${children[index].firstName} ') + '${children[index].lastName}',
+                              title: Text('${children[index].firstName} ' + '${children[index].lastName}',
                                   style: TextStyle(color: Colors.white)),
                               subtitle: Text('${children[index].birthday != null ? 'Age: ' + '${calculateBirthday(children[index])}' : 'No Birthday Assigned'}', style: TextStyle(color: Colors.white)),
                               onTap: ()

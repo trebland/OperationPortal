@@ -288,32 +288,21 @@ class VolunteerProfileState extends State<VolunteerProfilePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        AppBar appBar = AppBar(
-          title: Text("User Profile"),
-        );
-        return Scaffold(
-          appBar: appBar,
-          body: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: viewportConstraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: <Widget>[
-                    buildPictureNameRow(),
-                    buildSecondRowInfo(),
-                    buildThirdRowInfo(),
-                    buildFourthRowInfo(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Volunteer Profile'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          buildPictureNameRow(),
+          buildContactInfo(),
+          buildSecondRowInfo(),
+          buildThirdRowInfo(),
+          buildFourthRowInfo(),
+        ],
+      ),
     );
   }
 }

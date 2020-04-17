@@ -71,7 +71,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
-  Widget buildBirthdayAndGenderRow (DateTime birthday, String gender)
+  Widget buildBirthdayAndGenderRow (String birthday, String gender)
   {
     return Container(
       child: IntrinsicHeight(
@@ -94,7 +94,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null ? '${calculateBirthday(widget.child)}' : "N/A",
+                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(widget.child)}' : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -117,7 +117,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null ? formatDate(birthday.toString()) : "N/A",
+                        birthday != null && birthday.isNotEmpty ? birthday.split(' ')[0] : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -140,7 +140,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
                       ),
                       Container(
                         child: Text(
-                          gender != null && gender.isNotEmpty ? gender : "N/A",
+                          gender != null ? gender : "N/A",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -152,68 +152,6 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
         ),
       ),
       margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-    );
-  }
-
-  Widget buildContactInformationRow()
-  {
-    return Container(
-      child: IntrinsicHeight(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>
-            [
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "Contact Number",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        widget.child.contactNumber != null && widget.child.contactNumber.isNotEmpty ? formatNumber(widget.child.contactNumber) : "N/A",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-                margin: EdgeInsets.only(right: 20),
-              ),
-              Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "Parent Name",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Container(
-                      child: Text(
-                        widget.child.parentName != null && widget.child.parentName.isNotEmpty ? widget.child.parentName : "N/A",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-                margin: EdgeInsets.only(right: 20),
-              ),
-            ]
-        ),
-      ),
-      margin: EdgeInsets.all(10),
     );
   }
 
@@ -235,8 +173,7 @@ class SemiChildProfileState extends State<SemiChildProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
-          buildContactInformationRow(),
+          buildBirthdayAndGenderRow(formatDate(widget.child.birthday.toString()), widget.child.gender),
           Container(
             child: IntrinsicHeight(
               child: Row(

@@ -86,7 +86,7 @@ class TrainingViewerState extends State<TrainingViewerPage> {
                   case ConnectionState.active:
                     return new Text('');
                   case ConnectionState.done:
-                    if (snapshot.hasError || !snapshot.hasData) {
+                    if (snapshot.hasError) {
                       return Center(
                         child: Text("No Suspended Students/Issues Connecting"),
                       );

@@ -76,7 +76,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           "Bus Name",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: textComplementColor),
+                          style: TextStyle(fontSize: 24, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -90,7 +90,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           widget.bus.name,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -98,7 +98,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           "Bus Route",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: textComplementColor),
+                          style: TextStyle(fontSize: 24, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -112,7 +112,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           widget.bus.route,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -124,7 +124,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           "Last Oil Change",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: textComplementColor),
+                          style: TextStyle(fontSize: 24, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -138,7 +138,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           formatDate(widget.bus.lastOilChange.toString()),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -146,7 +146,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           "Last Tire Change",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: textComplementColor),
+                          style: TextStyle(fontSize: 24, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -160,7 +160,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           formatDate(widget.bus.lastTireChange.toString()),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -168,7 +168,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           "Last Maintenance",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: textComplementColor),
+                          style: TextStyle(fontSize: 24, color: textComplementColor),
                         ),
                         decoration: new BoxDecoration(
                           color: primaryWidgetColor,
@@ -182,7 +182,7 @@ class BusProfileState extends State<BusProfilePage> {
                         child: Text(
                           formatDate(widget.bus.lastMaintenance.toString()),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 20),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
                       ),
@@ -197,30 +197,29 @@ class BusProfileState extends State<BusProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints viewportConstraints) {
-        AppBar appBar = AppBar(
-          title: Text("Bus Info"),
-        );
-        return Scaffold(
-          appBar: appBar,
-          body: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: viewportConstraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: <Widget>[
-                    buildPictureNameRow(),
-                    buildAdditionalInfo(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Bus Info"),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          /*
+            “bus”:
+            {"id": int,
+            "driverId": int,
+            "driverName": "string",
+            "name": "string",
+            "route": "string",
+            "lastOilChange": DateTime,
+            "lastTireChange": DateTime,
+            "lastMaintenance": DateTime
+          */
+          buildPictureNameRow(),
+          buildAdditionalInfo(),
+        ],
+      ),
     );
   }
 }

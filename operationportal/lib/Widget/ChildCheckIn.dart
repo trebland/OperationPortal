@@ -39,7 +39,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
                   children: <Widget>
                   [
                     Flexible(
-                      child: Text("Returning Child", style: TextStyle(fontSize: 24, color: Colors.white),),
+                      child: Text("Returning Child", style: TextStyle(fontSize: 30, color: Colors.white),),
                     ),
                     Container(
                       child: FlatButton(
@@ -120,9 +120,9 @@ class ChildCheckInState extends State<ChildCheckInPage>
                             padding: EdgeInsets.all(10),
                             margin: EdgeInsets.all(10),
                           ),
-                          (snapshot.data.birthday != null && DateTime.now().difference(snapshot.data.birthday).inDays < 7 && DateTime.now().isBefore(snapshot.data.birthday))
+                          snapshot.data.birthday == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
                               ? Container(
-                              child: Text("Upcoming Birthday!", style: TextStyle(fontSize: 20, color: Colors.white),),
+                              child: Text("Happy Birthday!", style: TextStyle(fontSize: 20, color: Colors.white),),
                               decoration: new BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: new BorderRadius.all(
@@ -190,8 +190,7 @@ class ChildCheckInState extends State<ChildCheckInPage>
   Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
-      setState(() => this.barcode = (barcode != null && barcode.isNotEmpty ? barcode.split('!')[1] : ""));
-      print(this.barcode);
+      setState(() => this.barcode = barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {

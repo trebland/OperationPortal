@@ -37,10 +37,6 @@ List<RosterChild> sortedChildren (List<RosterChild> children)
 
 String formatDate(String date)
 {
-  print(date);
-  if (date == null || date.isEmpty)
-    return "N/A";
-
   String formattedDate = "";
   date = date.split('T')[0];
   date = date.split(' ')[0];

@@ -87,7 +87,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
     return widget.child.isSuspended ? "Suspended" : "Not Suspended";
   }
 
-  Widget buildBirthdayAndGenderRow (DateTime birthday, String gender)
+  Widget buildBirthdayAndGenderRow (String birthday, String gender)
   {
     return Container(
       child: IntrinsicHeight(
@@ -110,7 +110,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null ? '${calculateBirthday(widget.child)}' : "N/A",
+                        birthday != null && birthday.isNotEmpty ? '${calculateBirthday(widget.child)}' : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -133,7 +133,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                     ),
                     Container(
                       child: Text(
-                        birthday != null ? formatDate(birthday.toString()) : "N/A",
+                        birthday != null && birthday.isNotEmpty ? birthday : "N/A",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16),
                       ),
@@ -156,7 +156,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
                       ),
                       Container(
                         child: Text(
-                          (gender != null && gender.isNotEmpty) ? gender : "N/A",
+                          gender != null ? gender : "N/A",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16),
                         ),
@@ -252,7 +252,7 @@ class ChildProfileViewerState extends State<ChildProfileViewerPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           buildPictureNameRow(widget.child.firstName, widget.child.lastName),
-          buildBirthdayAndGenderRow(widget.child.birthday, widget.child.gender),
+          buildBirthdayAndGenderRow(formatDate(widget.child.birthday.toString()), widget.child.gender),
           buildContactInformationRow(),
           Container(
             child: IntrinsicHeight(

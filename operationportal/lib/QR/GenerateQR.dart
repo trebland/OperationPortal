@@ -71,7 +71,7 @@ class QRState extends State<QRPage>
               ),
               child: Center (
                   child: QrImage(
-                  data: "operation-portal.com!" + widget.id,
+                  data: widget.id,
                   version: QrVersions.auto,
                   size: 320,
                   errorStateBuilder: (cxt, err) {

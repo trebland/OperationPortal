@@ -19,7 +19,7 @@ class RosterComponent extends React.Component {
                             </Card.Header>
                             <Card.Body>
                                 <div style={styling.imgContainer}>
-                                    <QRCode value={("operationportal.com!" + c.id)} />
+                                    <QRCode value={(c.id)} />
                                 </div>
                             </Card.Body>
                         </Card>
