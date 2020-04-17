@@ -534,7 +534,6 @@ export class ViewVolunteers extends Component {
                 mOptions.push({ value: element.id, label: element.name })
             })
             const p = <Select 
-            value={this.state.trainings}
             onChange={(e) => this.handleTrainingChange(e)}
             options={mOptions}
             isMulti />
