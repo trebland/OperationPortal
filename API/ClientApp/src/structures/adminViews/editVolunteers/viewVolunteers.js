@@ -675,4 +675,13 @@ const styling = {
     center: {
         textAlign: "center"
     },
+    filterdiv: {
+        padding: '20px 20px',
+        marginLeft: '7%',
+    },
+    formgroupdiv: {
+        display: 'inline-block',
+        marginRight: '5px',
+        paddingTop: '2px'
+    },
 }
