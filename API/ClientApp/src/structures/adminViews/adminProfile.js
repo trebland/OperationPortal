@@ -265,9 +265,10 @@ export class AdminProfile extends Component {
             })
             .then((data) => {
                 if(this.state.updated === false) {
-                    console.log(data)
+                    var res = JSON.parse(data)
+                    console.log(res.error)
                     this.setState({
-                        updateResult: data.error
+                        updateResult: 'Profile not saved, please include a picture.'
                     })
                     console.log(this.state.updateResult)
                 }
