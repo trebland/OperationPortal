@@ -255,6 +255,7 @@ namespace API.Controllers
                     LastName = child.LastName,
                     PreferredName = child.LastName,
                     ContactNumber = child.ContactNumber,
+                    ContactEmail = child.ContactEmail,
                     ParentName = child.ParentName,
                     BusId = child.BusId,
                     Birthday = child.Birthday,

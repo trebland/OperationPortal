@@ -17,6 +17,7 @@ export class AdminChildEdit extends Component {
                 lastName: '',
                 preferredName: '',
                 contactNumber: '',
+                contactEmail: '',
                 parentName: '',
                 busId: 0,
                 birthday: null,
@@ -43,6 +44,7 @@ export class AdminChildEdit extends Component {
             this.handleLastNameChange = this.handleLastNameChange.bind(this);
             this.handlePreferredNameChange = this.handlePreferredNameChange.bind(this);
             this.handleContactNumberChange = this.handleContactNumberChange.bind(this);
+            this.handleContactEmailChange = this.handleContactEmailChange.bind(this);
             this.handleParentNameChange = this.handleParentNameChange.bind(this);
             this.handleBusIdChange = this.handleBusIdChange.bind(this);
             this.handleBirthdayChange = this.handleBirthdayChange.bind(this);
@@ -99,6 +101,12 @@ export class AdminChildEdit extends Component {
     handleContactNumberChange = (e) => {
         this.setState({
             contactNumber: e.target.value
+        })
+    }
+
+    handleContactEmailChange = (e) => {
+        this.setState({
+            contactEmail: e.target.value
         })
     }
 
@@ -226,6 +234,7 @@ export class AdminChildEdit extends Component {
                     lastName: data.lastName,
                     preferredName: data.preferredName,
                     contactNumber: data.contactNumber,
+                    contactEmail: data.contactEmail,
                     parentName: data.parentName,
                     busId: data.busId,
                     birthday: data.birthday,
@@ -319,6 +328,7 @@ export class AdminChildEdit extends Component {
                     LastName: this.state.lastName,
                     PreferredName: this.state.preferredName,
                     ContactNumber: this.state.contactNumber,
+                    ContactEmail: this.state.contactEmail,
                     ParentName: this.state.parentName,
                     BusId: this.state.busId,
                     Birthday: this.state.birthday,
@@ -453,6 +463,10 @@ export class AdminChildEdit extends Component {
                         <FormGroup>
                             <FormLabel>Contact Number</FormLabel>
                             <FormControl type="telephone" placeholder="Contact Number" value={this.state.contactNumber} onChange={this.handleContactNumberChange} />
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Contact Email</FormLabel>
+                            <FormControl type="email" placeholder="Contact Email" value={this.state.contactEmail} onChange={this.handleContactEmailChange} />
                         </FormGroup>
                         <FormGroup>
                             <Form.Check inline label="Parental Email Opt-In" checked={this.state.parentalEmailOptIn} onChange={this.handleParentalEmailOptInChange} type="checkbox" />

@@ -422,6 +422,10 @@ export class AdminChildList extends Component {
                                             <td>{c.contactNumber || 'None saved'}</td>
                                         </tr>
                                         <tr>
+                                            <th style={styling.childTH}>Contact Email: </th>
+                                            <td>{c.contactEmail || 'None saved'}</td>
+                                        </tr>
+                                        <tr>
                                             <th style={styling.childTH}>Parental waiver: </th>
                                             <td>{c.parentalWaiver ? 'True' : 'False'} </td>
                                         </tr>
