@@ -174,6 +174,30 @@ export class ViewVolunteers extends Component {
             );
         }
 
+        if (this.state.language) {
+            volunteerList = volunteerList.filter(c =>
+                c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+                || c.languages.toLowerCase().indexOf(this.state.language.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.affiliation) {
+            volunteerList = volunteerList.filter(c =>
+                c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+                || c.affiliation.toLowerCase().indexOf(this.state.affiliation.toLowerCase()) != -1
+            );
+        }
+
+        if (this.state.referral) {
+            volunteerList = volunteerList.filter(c =>
+                c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+                || c.referral.toLowerCase().indexOf(this.state.referral.toLowerCase()) != -1
+            );
+        }
+
         if (this.state.orientation) {
             volunteerList = volunteerList.filter(c => this.state.orientation == 1 ? c.orientation : !c.orientation);
         }
@@ -204,6 +228,12 @@ export class ViewVolunteers extends Component {
 
         if (this.state.canEditInventory) {
             volunteerList = volunteerList.filter(c => this.state.canEditInventory == 1 ? c.canEditInventory : !c.canEditInventory);
+        }
+
+        if (this.state.trainings.length > 0) {
+            trainings.forEach( function(element, index, array) {
+                volunteerList = volunteerList.filter(c => !c.trainings.includes(element));
+            })
         }
 
         return volunteerList;
@@ -469,7 +499,7 @@ export class ViewVolunteers extends Component {
 
     handleTrainingChange = (e) => {
         this.setState({
-            trainings: !this.state.trainings.includes(e.target.value) ? this.state.trainings.add(e.target.value) : this.state.trainings
+            trainings: e.target.value
         })
     }
 
@@ -502,7 +532,10 @@ export class ViewVolunteers extends Component {
             this.state.fullTrainings.forEach( function(element, index, array) {
                 mOptions.push({ value: element.id, label: element.name })
             })
-            const p = <Select options={mOptions}
+            const p = <Select 
+            value={trainings}
+            onChange={this.handleTrainingChange}
+            options={mOptions}
             isMulti />
             return p;
         }
