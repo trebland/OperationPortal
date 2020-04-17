@@ -491,8 +491,6 @@ export class ViewVolunteers extends Component {
             // </FormGroup>
             const p = this.state.fullTrainings.map((t, index) => {
                 return <option key={t.name} value={t.value}>{t.name}</option>
-                <Select options={Countries} components={animatedComponents}
-              isMulti />
             })
             return p;
         }
