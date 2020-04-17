@@ -231,6 +231,7 @@ export class ViewVolunteers extends Component {
         }
 
         if (this.state.trainings > 0) {
+            console.log("Filter by Trainings...")
             volunteerList = volunteerList.filter(c => c.trainings.includes(this.state.trainings));
         }
 
