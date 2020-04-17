@@ -230,18 +230,7 @@ export class ViewVolunteers extends Component {
             volunteerList = volunteerList.filter(c => this.state.canEditInventory == 1 ? c.canEditInventory : !c.canEditInventory);
         }
 
-        if (this.state.trainings.length > 0) {
-            this.state.trainings.forEach( function(bigT, index, array) {
-                volunteerList = volunteerList.filter(c => c.trainings.forEach( function(lilT, lilIndex, array) { if (bigT.value == lilT.id) return true; else if (lilIndex == (c.trainings.length-1)) return false;} ));
-            })
-        }
-
         return volunteerList;
-    }
-
-    checkTrainings ()
-    {
-
     }
 
     onFilter = () => {
@@ -504,9 +493,15 @@ export class ViewVolunteers extends Component {
 
     handleTrainingChange = (e) => {
         console.log(e)
-        this.setState({
-            trainings: e
+        var newTrainings = []
+        e.forEach( function(element, index, array) {
+            newTrainings.push({ id: element.id, name: element.name })
         })
+        console.log(newTrainings)
+        this.setState({
+            trainings: newTrainings
+        })
+        console.log(this.state.trainings);
     }
 
     renderTrainings = () => {
