@@ -500,7 +500,7 @@ export class ViewVolunteers extends Component {
     handleTrainingChange = (e) => {
         console.log(e)
         this.setState({
-            trainings: e.value
+            trainings: e
         })
     }
 
