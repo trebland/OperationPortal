@@ -53,7 +53,6 @@ export class AdminChildQRList extends Component {
             loading: false,
             redirect: false,
             edit: false,
-            editId: 0,
             bus: null,
             myRef: React.createRef(),
             busList: [],
@@ -64,26 +63,6 @@ export class AdminChildQRList extends Component {
         this.getBusList()
         this.getChildren()
     }
-
-    calculateAge = (birthday) => {
-        var bDate = new Date(birthday);
-        var birthYear = bDate.getFullYear();
-        var birthMonth = bDate.getMonth();
-        var birthDay = bDate.getDate();
-        var now = new Date();
-        var curYear = now.getFullYear();
-        var curMonth = now.getMonth();
-        var curDay = now.getDate();
-        var diff = curYear - birthYear;
-        if (birthMonth > curMonth) diff--;
-        else {
-            if (birthMonth == curMonth) {
-                if (birthDay > curDay) diff--;
-            }
-        }
-        return diff;
-    }
-
 
     getBusList() {
         fetch('/api/bus-list', {
@@ -217,13 +196,6 @@ export class AdminChildQRList extends Component {
         )
     }
 
-    renderNothing = () => {
-        return (
-            <div>
-            </div>
-        )
-    }
-
     setRedirect = () => {
         this.setState({
             redirect: true
@@ -244,11 +216,11 @@ export class AdminChildQRList extends Component {
     };
 
     render() {
-        if (!this.state.loggedin) {
-            return <Redirect to={{
-                pathname: '/login',
-            }} />
-        }
+        // if (!this.state.loggedin) {
+        //     return <Redirect to={{
+        //         pathname: '/login',
+        //     }} />
+        // }
         
         return (this.state.roster != null && this.state.roster.length > 0)
             ? (<div>
@@ -260,7 +232,7 @@ export class AdminChildQRList extends Component {
                 {this.renderBusDropdown()}
                 
                 <h1 style={styling.head}>QR List</h1>
-                {this.state.bus == null ? this.renderNothing() : this.renderPrintAndRoster()}
+                {this.state.bus == null ? <div></div> : this.renderPrintAndRoster()}
             </div>) 
             : (<div>
                 {this.renderRedirect()}
@@ -286,39 +258,18 @@ const styling = {
     center: {
         textAlign: "center"
     },
-    outderdiv: {
-        padding: '20px 20px',
-        marginLeft: '75px'
-    },
     butt: {
         marginTop: '15px',
         marginLeft: '15px',
         marginBottom: '15px'
-    },
-    table: {
-        height: '400px',
-        width: '1000px'
     },
     deckDiv: {
         justifyContent: 'center',
         alignContent: 'center',
         marginTop: '50px',
     },
-    ann: {
-        marginTop: '15px',
-        marginRight: '15px',
-        marginBottom: '15px'
-    },
     right: {
         float: 'right'
-    },
-    childTable: {
-        tableLayout: 'fixed',
-        width: '100%',
-        marginBottom:'10px'
-    },
-    childTH: {
-        textAlign: 'right'
     },
     image: {
         maxWidth: '300px',

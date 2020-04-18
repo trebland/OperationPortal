@@ -9,6 +9,7 @@ export class UserProfile extends Component {
         this.state = {
             redirectDash: false,
             jwt: props.location.state.jwt,
+            role: props.location.state.role,
             loggedin: props.location.state.loggedin,
             retrievedU: false,
             user: [],
@@ -62,10 +63,11 @@ export class UserProfile extends Component {
     renderRedirect = () => {
         if(this.state.redirectDash) {
             return <Redirect to={{
-                    pathname: '/admin-dashboard',
+                    pathname: '/dashboard',
                     state: {
                         jwt: this.state.jwt,
-                        loggedin: this.state.loggedin
+                        loggedin: this.state.loggedin,
+                        role: this.state.role
                     }
                 }}
             />

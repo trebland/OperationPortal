@@ -16,6 +16,7 @@ export class UserDashboard extends Component {
             role: props.location.state.role,
             redirectQR: false
         }
+        console.log(this.state.jwt)
         
     }
     
