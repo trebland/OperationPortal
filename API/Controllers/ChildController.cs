@@ -612,8 +612,7 @@ namespace API.Controllers
                 String subject = "New note: " + childName + " in class " + className + " - " + model.Priority + ".";
 
 
-                // TODO: Change to occ's email
-                // await EmailHelpers.SendEmail("jackienvdmmmm@knights.ucf.edu", subject, message, configModel.EmailOptions);
+                await EmailHelpers.SendEmail("child-notes@orlandochildrenschurch.org", subject, message, configModel.EmailOptions);
 
                 repo.AddNote(model.Author, model.ChildId, model.Content, model.Date);
 

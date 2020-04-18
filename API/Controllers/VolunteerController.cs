@@ -1083,8 +1083,7 @@ namespace API.Controllers
             {
                 try
                 {
-                    // TODO: change this to appropriate OCC email
-                    await EmailHelpers.SendEmail("thomas.anchor@knights.ucf.edu", $"{vm.Date.ToString("dd/MM/yyyy")} - {job.Name} may be understaffed",
+                    await EmailHelpers.SendEmail("volunteer-needs@orlandochildrenschurch.org", $"{vm.Date.ToString("dd/MM/yyyy")} - {job.Name} may be understaffed",
                         $"A cancellation has left {job.Name} with fewer than its minimum of {job.Min} volunteers signed up on {vm.Date.ToString("dd/MM/yyyy")}.", configModel.EmailOptions);
                 }
                 catch (Exception)
