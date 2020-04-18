@@ -91,7 +91,6 @@ export class LoginBox extends Component {
                         jwt: res
                     })
                 }
-                console.log(this.state.jwt)
             }
         })
         .then(() => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // import Form from 'react-bootstrap/Form'
-import { Button, Form, Col, Row } from 'react-bootstrap'
+import { Button, Form, Col } from 'react-bootstrap'
 import { Redirect } from 'react-router-dom'
 
 export class UserProfile extends Component {
@@ -27,7 +27,8 @@ export class UserProfile extends Component {
             id: null,
             updated: false,
             updateResult: '',
-            languages: null
+            languages: null,
+            language_string: ''
         }
         this.getUser()
 
@@ -41,6 +42,7 @@ export class UserProfile extends Component {
         this.handleAffiliationChange = this.handleAffiliationChange.bind(this)
         this.handleBirthdayChange = this.handleBirthdayChange.bind(this)
         this.handlePictureChange = this.handlePictureChange.bind(this)
+        this.handleLanguages = this.handleLanguages.bind(this)
     }
 
     componentDidMount() {
@@ -60,7 +62,7 @@ export class UserProfile extends Component {
     renderRedirect = () => {
         if(this.state.redirectDash) {
             return <Redirect to={{
-                    pathname: '/dashboard',
+                    pathname: '/admin-dashboard',
                     state: {
                         jwt: this.state.jwt,
                         loggedin: this.state.loggedin
@@ -82,6 +84,13 @@ export class UserProfile extends Component {
             newsletter: !this.state.newsletter
         })
         console.log(this.state.newsletter)
+    }
+
+    handleLanguages = (e) => {
+        this.setState({
+            language_string: e.target.value.replace(/[^\w\s]/gi, '')
+        })
+        console.log(this.state.language_string)
     }
 
     handleFirstnameChange = (e) => {
@@ -165,6 +174,7 @@ export class UserProfile extends Component {
     }
 
     getUser = () => {
+        
         try {
             fetch('api/auth/user' , {
                 // method: 'GET',
@@ -220,6 +230,10 @@ export class UserProfile extends Component {
     }
 
     onSubmit = () => {
+        var c = this.state.language_string.replace(/ /g, '').toString()
+        console.log(c)
+        this.state.languages.push(c)
+        console.log(this.state.languages)
         try {
             fetch('api/volunteer-profile-edit' , {
                 method: 'POST',
@@ -266,11 +280,16 @@ export class UserProfile extends Component {
             .then((data) => {
                 if(this.state.updated === false) {
                     var res = JSON.parse(data)
-                    console.log(res.error)
+                    console.log(res)
                     this.setState({
                         updateResult: 'Profile not saved, please include a picture.'
                     })
                     console.log(this.state.updateResult)
+                }
+                else if(this.state.updated) {
+                    this.setState({
+                        language_string: ''
+                    })
                 }
             })
         }
@@ -282,6 +301,13 @@ export class UserProfile extends Component {
 
 
     renderProfile = () => {
+        if(this.state.languages != undefined) {
+            var language = this.state.languages.map((details) => {
+                return (
+                    details + ' | ' 
+                )
+            })
+        }
         return (
             <div>
                 <Form>
@@ -307,13 +333,13 @@ export class UserProfile extends Component {
                             <Form.Label>Phone Number</Form.Label>
                             <Form.Control type="text" placeholder= '##########' maxLength='10' value={this.state.phone} onChange={this.handlePhoneChange}/>
                             <Form.Text>
-                            Please format with no spaces, parenthesis, or dashes. Ex: ##########
-                        </Form.Text>
+                                Please format with no spaces, parenthesis, or dashes. Ex: ##########
+                            </Form.Text>
                         </Form.Group>
 
                         <Form.Group as={Col}>
                             <Form.Label>Birthday</Form.Label>
-                            <Form.Control type="date" placeholder="Birthday" value={this.state.birthday} onChange={this.handleBirthdayChange}/>
+                            <Form.Control type="date" placeholder="Birthday" onChange={this.handleBirthdayChange}/>
                         </Form.Group>
 
                         <Form.Group as={Col}>
@@ -327,6 +353,17 @@ export class UserProfile extends Component {
                         </Form.Group>
                         {/* {“id” ”picture”:byte[], languages} */}
 
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group>
+                            <Form.Label>Languages</Form.Label>
+                            <Form.Control type="text" placeholder="Language" maxLength="13" value={this.state.language_string} onChange={this.handleLanguages}/>
+                            <Form.Text>
+                                Please add one language at a time then click save.<br></br>
+                                <b>Current Languages: </b>{language}
+                            </Form.Text>
+                        </Form.Group>
                     </Form.Row>
 
                     {/* <Form.Label>Profile Picture</Form.Label> */}

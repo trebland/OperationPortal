@@ -132,6 +132,7 @@ export class AdminChildQRList extends Component {
             }
         })
         .then((data) => {
+            console.log(data)
             if (this.mounted === true) {
                 console.log(data.fullRoster)
 
@@ -207,10 +208,12 @@ export class AdminChildQRList extends Component {
     }
 
     renderLoading = () => {
+        const sty = { position: "fixed", top: "50%", left: "50%"};
         return (
-            <div style={styling.center}>
-                <Spinner animation="border" />
+            <div>
+                <Spinner style={sty} animation="border" />
             </div>
+                
         )
     }
 
@@ -269,15 +272,15 @@ export class AdminChildQRList extends Component {
 
                 <p style={styling.center}>
                     Please wait while we load the information!
-                    {this.renderLoading()}
                 </p>
+                {this.renderLoading()}
             </div>)
     }
 }
 
 const styling = {
     head: {
-        marginBottom: "15px",
+        marginBottom: "15px", 
         textAlign: "center"
     },
     center: {

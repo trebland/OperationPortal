@@ -48,6 +48,7 @@ import { AdminUpdateTrainings } from './structures/adminViews/editVolunteers/adm
 import { AdminChildList } from './structures/adminViews/adminChild/adminChildList'
 import { AdminChildEdit } from './structures/adminViews/adminChild/adminChildEdit'
 import { AdminChildQRList } from './structures/adminViews/adminChild/adminQRList'
+import { UserQRList } from './structures/userViews/userQRList'
 
 // http://jquense.github.io/react-big-calendar/examples/index.html#basic
 
@@ -106,6 +107,7 @@ export default class App extends Component {
             <Route path='/admin-child-list' component={AdminChildList}/>
             <Route path='/admin-child-edit/:id' component={AdminChildEdit} />
             <Route path='/admin-qr-list' component={AdminChildQRList} />
+            <Route path='/user-qr-list' component={UserQRList} />
 
             
             <Route component={NotFound} />

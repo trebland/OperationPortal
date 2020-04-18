@@ -13,9 +13,9 @@ export class UserDashboard extends Component {
             redirectProfile: false,
             redirectCal: false,
             redirectLogout: false,
-            role: props.location.state.role
+            role: props.location.state.role,
+            redirectQR: false
         }
-        console.log(this.state.jwt)
         
     }
     
@@ -50,11 +50,22 @@ export class UserDashboard extends Component {
                 }
             }}/>
         }
+        else if(this.state.redirectQR){
+            return <Redirect to={{
+                pathname: '/user-qr-list',
+                state: {
+                    jwt: this.state.jwt,
+                    loggedin: this.state.loggedin,
+                    role: this.state.role
+                }
+            }}/>
+        }
         else if(this.state.redirectLogout){
             return <Redirect to={{
                 pathname: '/'
             }}/>
         }
+        
         
     }
 
@@ -81,32 +92,16 @@ export class UserDashboard extends Component {
             redirectLogout: true
         })
     }
-  
 
-    render () {
-        var ro 
-        var ret = ''
-        if(this.state.role != undefined) {
-            ro = this.state.role.split(/(?=[A-Z])/)
-            if(ro.length === 1) {
-                ret = ro[0]
-            }
-            else {
-                ret = ro[0] + ' ' + ro[1]
-            }
-        }
-        
-        return(
-            <div>
-                {this.renderRedirect()}
-                <Button variant="primary" size="lg" style={styling.logout} onClick={this.setRedirectLogout}>
-                        Logout
-                </Button>
-                <center>
-                    <div style={styling.header}>
-                        <h1>Welcome to Orlando Children's Church - {ret} Dashboard</h1>
-                    </div>
-                </center>
+    setRedirectQR = () => {
+        this.setState({
+            redirectQR: true
+        })
+    }
+
+    busDriverButton = () => {
+        if(this.state.role === 'BusDriver') {
+            return (
                 <center>
                     <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
                         Edit Profile
@@ -119,7 +114,78 @@ export class UserDashboard extends Component {
                     <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
                         View Calendar
                     </Button>
-                </center>  
+
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectQR}>
+                        Print QR Sheet
+                    </Button>
+                </center>
+            )
+        }
+    }
+
+    volunteerButton = () => {
+        return (
+            <center>
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
+                        Edit Profile
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectAnnouncements}>
+                    View Announcements
+                </Button>
+
+                <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
+                    View Calendar
+                </Button>
+            </center>
+        )
+    }
+
+    
+  
+
+    render () {
+        var ro 
+        var ret = ''
+        console.log(this.state.role)
+        if(this.state.role != undefined) {
+            ro = this.state.role.split(/(?=[A-Z])/)
+            if(ro.length === 1) {
+                ret = ro[0]
+            }
+            else {
+                ret = ro[0] + ' ' + ro[1]
+            }
+        }
+        console.log(ret)
+        
+        return(
+            <div>
+                {this.renderRedirect()}
+                <Button variant="primary" size="lg" style={styling.logout} onClick={this.setRedirectLogout}>
+                        Logout
+                </Button>
+                <center>
+                    <div style={styling.header}>
+                        <h1>Welcome to Orlando Children's Church - {ret} Dashboard</h1>
+                    </div>
+                </center>
+                {this.state.role === 'BusDriver' ? this.busDriverButton() : this.volunteerButton()}
+                {/* <center>
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectProfile}>
+                        Edit Profile
+                    </Button>
+
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectAnnouncements}>
+                        View Announcements
+                    </Button>
+
+                    <Button variant="primary" size="lg" style={styling.butt} onClick={this.setRedirectCal}>
+                        View Calendar
+                    </Button>
+
+                    {this.busDriverButton()}
+                </center>   */}
             </div>
         )
     }

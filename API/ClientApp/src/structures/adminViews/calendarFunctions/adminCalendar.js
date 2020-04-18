@@ -39,7 +39,6 @@ export class AdminCalendar extends Component {
             retrievedGroup: false,
             resultGroup: ''
         }
-        console.log(this.state.jwt)
         this.handleNameChange = this.handleNameChange.bind(this)
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this)
         this.handleDateChange = this.handleDateChange.bind(this)
@@ -316,7 +315,6 @@ export class AdminCalendar extends Component {
                         this.setState({
                             saturdayinfo: sat
                         })
-                        console.log(this.state.saturdayinfo)
                     }
                 }
                 
@@ -351,7 +349,6 @@ export class AdminCalendar extends Component {
         })
         .then((data) => {
             let res = JSON.parse(data)
-            console.log(res)
             let gro = res.groups
             let eve = res.events
             
@@ -499,7 +496,6 @@ export class AdminCalendar extends Component {
             })
             .then((data) => {
                 var res = JSON.parse(data)
-                console.log(res)
             })
             .then(() => {
                 if(this.state.retrievedGroup) {

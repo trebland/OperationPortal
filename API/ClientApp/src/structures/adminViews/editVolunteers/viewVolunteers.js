@@ -110,7 +110,6 @@ export class ViewVolunteers extends Component {
         .then((data) => {
             let res = JSON.parse(data)
             res = res.volunteers
-            console.log(res)
             if(this.mounted === true){
                 this.setState({
                     fullVolunteerList: res,
