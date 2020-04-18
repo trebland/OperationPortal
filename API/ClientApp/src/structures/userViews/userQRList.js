@@ -1,8 +1,8 @@
 import React, { useRef, Component } from 'react'
 import { Button, Card, Dropdown, DropdownButton, Spinner } from 'react-bootstrap/'
 import { Redirect } from 'react-router-dom'
-import '../cards.css'
-import { EditDetailsButton } from '../../customButtons'
+import './cards.css'
+import { EditDetailsButton } from '../customButtons'
 import QRCode from 'qrcode.react'
 import ReactToPrint from 'react-to-print'
 
