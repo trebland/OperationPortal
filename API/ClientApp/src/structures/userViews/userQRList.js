@@ -6,6 +6,37 @@ import { EditDetailsButton } from '../customButtons'
 import QRCode from 'qrcode.react'
 import ReactToPrint from 'react-to-print'
 
+
+class RosterComponent extends React.Component {
+    render() {
+        if (this.props.roster != null) {
+            const p = this.props.roster.map((c, index) => {
+                return (
+                    (c.bus.id == this.props.bus.id && !c.isSuspended)
+                    ? <div key={index}>
+                        <Card style={{ width: '25rem' }}>
+                            <Card.Header as='h5'>
+                                {(c.preferredName || c.firstName) + ' ' + (c.preferredName ? '(' + c.firstName + ')' : '') + ' ' + c.lastName} <span style={{ fontWeight: 'bold', color: 'red', float: 'right' }}>{c.isSuspended ? 'SUSPENDED' : ''}</span>
+                            </Card.Header>
+                            <Card.Body>
+                                <div style={styling.imgContainer}>
+                                    <QRCode value={("operationportal.com!" + c.id)} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </div>
+                    : <div key={index}></div>
+                )
+            })
+            return (
+                <div style={styling.deckDiv} className="row">
+                    {p}
+                </div>
+            )
+        }
+    }
+}
+
 export class UserQRList extends Component {
     constructor(props) {
         super(props) 
@@ -19,10 +50,37 @@ export class UserQRList extends Component {
             resultRoster: '',
             buses: [],
             roster: [],
-            bus: null
+            bus: null,
+            loading: false,
+            myRef: React.createRef(),
         }
         this.getBus()
     }
+
+    renderPrintAndRoster = () => {
+        if(this.state.bus != null) {
+            return (
+                <div>
+                    <ReactToPrint
+                        trigger={() => <Button variant="primary" size="lg" style={styling.butt}>Print QR Sheet</Button>}
+                        content={() => this.state.myRef.current}
+                    />
+    
+                    <RosterComponent roster={this.state.roster} bus={this.state.bus} ref={this.state.myRef} />
+                </div>
+            );
+        }
+        else if(this.state.bus === null) {
+            return (
+                <div>
+                    <center>
+                        <p>Please select a bus.</p>
+                    </center>
+                </div>
+            )
+        }
+        
+    };
 
     // Sets variable to false when ready to leave page
     componentWillUnmount = () => {
@@ -90,10 +148,11 @@ export class UserQRList extends Component {
 
     updateSelectedBus = (e) => {
         this.setState({
-            bus: e
+            bus: e,
+            loading: true
         })
-        console.log(this.state.bus)
-        this.getChildren(this.state.bus)
+        console.log(e)
+        this.getChildren(e)
     }
 
     getBus = () => {
@@ -140,6 +199,9 @@ export class UserQRList extends Component {
 
     getChildren = (id) => {
         if(id != null) {
+            this.setState({
+                loading: true
+            })
             var busid = id.id
             fetch('/api/roster?busId=' + busid, {
                 // method: 'GET',
@@ -171,7 +233,8 @@ export class UserQRList extends Component {
                 if(this.state.successRoster) {
                     res = res.busRoster
                     this.setState({
-                        roster: res
+                        roster: res,
+                        loading: false
                     })
                     console.log(this.state.roster)
                 }
@@ -194,6 +257,11 @@ export class UserQRList extends Component {
                 </Button>
                 {this.renderBusDropdown()}
                 <h1 style={styling.head}>QR List</h1>
+                {this.state.loading ? 
+                    this.renderLoading() 
+                    :
+                    this.renderPrintAndRoster()
+                }
             </div>
         )
     }

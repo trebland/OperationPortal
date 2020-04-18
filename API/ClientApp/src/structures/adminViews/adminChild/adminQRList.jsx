@@ -53,7 +53,6 @@ export class AdminChildQRList extends Component {
             loading: false,
             redirect: false,
             edit: false,
-            editId: 0,
             bus: null,
             myRef: React.createRef(),
             busList: [],
