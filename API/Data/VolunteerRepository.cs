@@ -228,7 +228,7 @@ namespace API.Data
             string sql = @"SELECT V.* 
                            FROM Volunteers AS V INNER JOIN 
                            Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
-                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(1 as bit) AND (V.Role = @volRole OR @allRoles = 1)";
+                           WHERE VA.dayattended = @date AND VA.scheduled = true AND (V.Role = @volRole OR @allRoles = 1)";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -329,13 +329,13 @@ namespace API.Data
             string sql = @"SELECT V.* 
                            FROM Volunteers AS V INNER JOIN 
                            Volunteer_Attendance AS VA ON VA.volunteerId = V.id 
-                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit) AND V.Role <> @volRole
+                           WHERE VA.dayattended = @date AND VA.scheduled = false AND V.Role <> @volRole
                            UNION 
                            SELECT V.* 
                            FROM Volunteers AS V INNER JOIN 
                            Volunteer_Attendance AS VA ON VA.volunteerId = V.id INNER JOIN 
                            Class_List AS CL ON CL.teacherId = V.id 
-                           WHERE VA.dayattended = @date AND VA.scheduled = CAST(0 as bit)";
+                           WHERE VA.dayattended = @date AND VA.scheduled = false";
 
             // Connect to DB
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -1072,7 +1072,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             DataRow dr;
             string sql = @"INSERT INTO Volunteers (firstName, lastName, preferredName, email, role, weekendsAttended, orientation, affiliation, referral, newsletter,contactWhenShort, phone, backgroundCheck, blueShirt, nametag, personalInterviewCompleted, driverslicense, yearStarted, CanEditInventory, Picture) 
-                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, CAST(0 as bit), '', '', CAST(0 as bit), CAST(0 as bit), '', false, false, false, false, false, @year, false, @picture ) 
+                           VALUES (@firstName, @lastName, @prefName, @email, 1, 0, false, '', '', false, false, '', false, false, false, false, false, @year, false, @picture ) 
                            RETURNING id";
 
             // Connect to DB
@@ -1144,8 +1144,8 @@ namespace API.Data
                     cmd.Parameters.Add("@phone", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Phone;
                     cmd.Parameters.Add("@referral", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Referral;
                     cmd.Parameters.Add("@affiliation", NpgsqlTypes.NpgsqlDbType.Varchar).Value = v.Affiliation;
-                    cmd.Parameters.Add("@newsletter", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Newsletter;
-                    cmd.Parameters.Add("@contact", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.ContactWhenShort;
+                    cmd.Parameters.Add("@newsletter", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.Newsletter;
+                    cmd.Parameters.Add("@contact", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.ContactWhenShort;
                     cmd.Parameters.Add("@birthday", NpgsqlTypes.NpgsqlDbType.Date).Value = v.Birthday;
                     cmd.Parameters.Add("@picture", NpgsqlTypes.NpgsqlDbType.Bytea).Value = v.Picture;
 
@@ -1182,7 +1182,7 @@ namespace API.Data
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = v.Id;
-                    cmd.Parameters.Add("@orientation", NpgsqlTypes.NpgsqlDbType.Bit).Value = v.Orientation;
+                    cmd.Parameters.Add("@orientation", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.Orientation;
                     cmd.Parameters.Add("@background", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BackgroundCheck;
                     cmd.Parameters.Add("@license", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.DriversLicense;
                     cmd.Parameters.Add("@shirt", NpgsqlTypes.NpgsqlDbType.Boolean).Value = v.BlueShirt;
@@ -1300,7 +1300,7 @@ namespace API.Data
             {
                 string sql = @"SELECT * FROM Volunteer_Attendance
                               WHERE volunteerid = @volunteerId 
-                              AND attended = CAST(1 as bit)";
+                              AND attended = true";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
@@ -1342,8 +1342,8 @@ namespace API.Data
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
-                    cmd.Parameters.Add("@checkedIn", NpgsqlTypes.NpgsqlDbType.Bit).Value = checkedIn;
-                    cmd.Parameters.Add("@signedUp", NpgsqlTypes.NpgsqlDbType.Bit).Value = signedUp;
+                    cmd.Parameters.Add("@checkedIn", NpgsqlTypes.NpgsqlDbType.Boolean).Value = checkedIn;
+                    cmd.Parameters.Add("@signedUp", NpgsqlTypes.NpgsqlDbType.Boolean).Value = signedUp;
                     cmd.Parameters.Add("@day", NpgsqlTypes.NpgsqlDbType.Date).Value = day;
                     NpgsqlDataAdapter da = new NpgsqlDataAdapter(cmd);
                     con.Open();

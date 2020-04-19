@@ -476,7 +476,7 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.ParentalWaiver;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Boolean).Value = child.ParentalWaiver;
                     }
 
                     if (updated[++parm])
@@ -491,17 +491,17 @@ namespace API.Data
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.BusWaiver;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Boolean).Value = child.BusWaiver;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.HaircutWaiver;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Boolean).Value = child.HaircutWaiver;
                     }
 
                     if (updated[++parm])
                     {
-                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Bit).Value = child.ParentalEmailOptIn;
+                        cmd.Parameters.Add($"@p{parm}", NpgsqlTypes.NpgsqlDbType.Boolean).Value = child.ParentalEmailOptIn;
                     }
 
                     if (updated[++parm])
@@ -860,7 +860,7 @@ namespace API.Data
                 {
                     con.Open();
                     cmd.Parameters.Add("@childid", NpgsqlTypes.NpgsqlDbType.Integer).Value = childId;
-                    cmd.Parameters.Add("@received", NpgsqlTypes.NpgsqlDbType.Bit).Value = received;
+                    cmd.Parameters.Add("@received", NpgsqlTypes.NpgsqlDbType.Boolean).Value = received;
                     cmd.ExecuteNonQuery();
                     con.Close();
                 }

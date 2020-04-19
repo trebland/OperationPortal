@@ -212,13 +212,13 @@ namespace API.Data
             {
                 string sql = @"SELECT COUNT(volunteerid)
                                FROM Volunteer_Attendance va
-                               WHERE attended = CAST(1 AS bit)
+                               WHERE attended = true
                                AND dayattended = @date
                                AND 0 = 
 	                               (SELECT COUNT(*) FROM Volunteer_Attendance 
 	                                WHERE volunteerid = va.volunteerid 
 	                                AND dayattended <> va.dayattended
-	                                AND attended = CAST(1 as bit))";
+	                                AND attended = true)";
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
@@ -243,13 +243,13 @@ namespace API.Data
             {
                 string sql = @"SELECT COUNT(volunteerid)
                                FROM Volunteer_Attendance va
-                               WHERE attended = CAST(1 AS bit)
+                               WHERE attended = true
                                AND dayattended = @date
                                AND 0 <> 
 	                               (SELECT COUNT(*) FROM Volunteer_Attendance 
 	                                WHERE volunteerid = va.volunteerid 
 	                                AND dayattended <> va.dayattended
-	                                AND attended = CAST(1 as bit))";
+	                                AND attended = true)";
 
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {

@@ -40,9 +40,14 @@ namespace API
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("DevConnection"));
-                //options.UseSqlServer(
-                  //  Configuration.GetConnectionString("LocalConnection"));
+                if (Configuration.GetValue<string>("Environment") == "Deployed.Prod")
+                {
+                    options.UseNpgsql(Configuration.GetConnectionString("ProdConnection"));
+                }
+                else
+                {
+                    options.UseNpgsql(Configuration.GetConnectionString("DevConnection"));
+                }
 
                 options.UseOpenIddict();
             });
@@ -65,9 +70,16 @@ namespace API
 
             services.Configure<ConfigurationModel>(options =>
             {
-                options.ConnectionString = Configuration.GetConnectionString("DevConnection");
                 options.Environment = Configuration.GetValue<string>("Environment");
                 options.DebugMode = true;
+                if (options.Environment == "Deployed.Prod")
+                {
+                    options.ConnectionString = Configuration.GetConnectionString("ProdConnection");
+                }
+                else
+                {
+                    options.ConnectionString = Configuration.GetConnectionString("DevConnection");
+                }
                 options.EmailOptions = new EmailConfig
                 {
                     Name = Configuration.GetValue<string>("EmailName"),

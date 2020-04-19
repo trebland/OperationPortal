@@ -85,8 +85,8 @@ namespace API.Data
                 {
                     cmd.Parameters.Add("@vid", NpgsqlTypes.NpgsqlDbType.Integer).Value = attendance.VolunteerId;
                     cmd.Parameters.Add("@date", NpgsqlTypes.NpgsqlDbType.Date).Value = attendance.DayAttended;
-                    cmd.Parameters.Add("@scheduled", NpgsqlTypes.NpgsqlDbType.Bit).Value = attendance.Scheduled;
-                    cmd.Parameters.Add("@attended", NpgsqlTypes.NpgsqlDbType.Bit).Value = attendance.Attended;
+                    cmd.Parameters.Add("@scheduled", NpgsqlTypes.NpgsqlDbType.Boolean).Value = attendance.Scheduled;
+                    cmd.Parameters.Add("@attended", NpgsqlTypes.NpgsqlDbType.Boolean).Value = attendance.Attended;
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -111,7 +111,7 @@ namespace API.Data
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer).Value = id;
-                    cmd.Parameters.Add("@sched", NpgsqlTypes.NpgsqlDbType.Bit).Value = scheduled;
+                    cmd.Parameters.Add("@sched", NpgsqlTypes.NpgsqlDbType.Boolean).Value = scheduled;
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -126,7 +126,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             List<DateTime> dates = new List<DateTime>();
             string sql = @"SELECT dayattended FROM volunteer_attendance 
-                           WHERE scheduled = CAST(1 as bit) AND volunteerId = @vid 
+                           WHERE scheduled = true AND volunteerId = @vid 
                            AND date_part('month', dayattended) = @month AND date_part('year', dayattended) = @year";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))
@@ -158,7 +158,7 @@ namespace API.Data
             DataTable dt = new DataTable();
             List<DateTime> dates = new List<DateTime>();
             string sql = @"SELECT dayattended FROM volunteer_attendance 
-                           WHERE scheduled = CAST(0 as bit) AND volunteerId = @vid 
+                           WHERE scheduled = false AND volunteerId = @vid 
                            AND date_part('month', dayattended) = @month AND date_part('year', dayattended) = @year";
 
             using (NpgsqlConnection con = new NpgsqlConnection(connString))

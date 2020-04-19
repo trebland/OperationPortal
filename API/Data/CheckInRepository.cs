@@ -94,7 +94,7 @@ namespace API.Data
                 if (dt.Rows.Count == 0)
                 {
                     sql = @"INSERT INTO Volunteer_Attendance (volunteerid, dayattended, scheduled, attended)
-                            VALUES (@volunteerId, @now, CAST(0 as bit), CAST(1 as bit))";
+                            VALUES (@volunteerId, @now, false, true)";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                     {
                         cmd.Parameters.Add("@volunteerId", NpgsqlTypes.NpgsqlDbType.Integer).Value = volunteerId;
@@ -107,7 +107,7 @@ namespace API.Data
                 else if (DBNull.Value.Equals(dt.Rows[0]["attended"]) || !(bool)dt.Rows[0]["attended"])
                 {
                     sql = @"UPDATE Volunteer_Attendance 
-                            SET attended = CAST(1 as bit)
+                            SET attended = true
                             WHERE volunteerid = @volunteerId
                             AND dayattended = @now";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -164,7 +164,7 @@ namespace API.Data
                 if (dt.Rows.Count == 0)
                 {
                     sql = @"INSERT INTO Volunteer_Attendance (volunteerid, dayattended, scheduled, attended)
-                            VALUES (@driverId, @date, CAST(1 as bit), CAST(1 as bit))";
+                            VALUES (@driverId, @date, true, true)";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
                     {
                         cmd.Parameters.Add("@driverId", NpgsqlTypes.NpgsqlDbType.Integer).Value = driverId;
@@ -177,7 +177,7 @@ namespace API.Data
                 else if (DBNull.Value.Equals(dt.Rows[0]["attended"]) || !(bool)dt.Rows[0]["attended"])
                 {
                     sql = @"UPDATE Volunteer_Attendance 
-                            SET scheduled = CAST(1 as bit), attended = CAST(1 as bit)
+                            SET scheduled = true, attended = true
                             WHERE volunteerid = @driverId
                             AND dayattended = @date";
                     using (NpgsqlCommand cmd = new NpgsqlCommand(sql, con))
@@ -201,7 +201,7 @@ namespace API.Data
             {
                 
                 string sql = @"UPDATE Volunteer_Attendance 
-                        SET scheduled = CAST(0 as bit), attended = CAST(0 as bit)
+                        SET scheduled = false, attended = false
                         WHERE volunteerid = @driverId
                         AND dayattended = @date";
 
