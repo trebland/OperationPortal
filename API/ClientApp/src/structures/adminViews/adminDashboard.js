@@ -25,7 +25,6 @@ export class AdminDashboard extends Component {
             jwt: props.location.state.jwt,
             loggedin: props.location.state.loggedin
         }
-        console.log(this.state.jwt)
     }
     
     renderRedirect = () => {
