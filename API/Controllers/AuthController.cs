@@ -228,9 +228,9 @@ namespace OCCTest.Controllers
                 Email = profile.Email
             };
 
-            if (!await roleManager.RoleExistsAsync(UserHelpers.UserRoles.Staff.ToString()))
+            if (!await roleManager.RoleExistsAsync(UserHelpers.UserRoles.Volunteer.ToString()))
             {
-                await roleManager.CreateAsync(new IdentityRole { Name = UserHelpers.UserRoles.Staff.ToString() });
+                await roleManager.CreateAsync(new IdentityRole { Name = UserHelpers.UserRoles.Volunteer.ToString() });
             }
 
             IdentityResult result = await userManager.CreateAsync(user, newUser.Password);
@@ -238,7 +238,7 @@ namespace OCCTest.Controllers
             if (result.Succeeded)
             {
                 user = await userManager.FindByNameAsync(user.UserName);
-                await userManager.AddToRoleAsync(user, UserHelpers.UserRoles.Staff.ToString());
+                await userManager.AddToRoleAsync(user, UserHelpers.UserRoles.Volunteer.ToString());
 
                 try
                 {
